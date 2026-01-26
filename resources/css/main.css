@@ -1,0 +1,117 @@
+body{
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: row;
+    gap: 0.1rem;
+    background-image: url(/public/photos/DashboardBG.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    margin: 0;
+    padding: 0;
+}
+.side-bar-container{
+    border-top-right-radius: 1.5rem;
+    border-bottom-right-radius: 1.5rem;
+    height: 100vh;
+    padding: 2rem;
+    background: rgba(47, 47, 47, 0.491); 
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    transition: max-width 0.8s
+}
+.side-bar-container.collapsed{
+    width: 100%;
+    max-width: 250px;
+}
+.logo-and-drop-down-container{
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.sidebar-container-logo{
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+}
+.drop-down-container-button,
+.button,
+.subsystem-span,
+.logout-button{
+    transition: transform 0.9s, font-size 0.9s;
+}
+.drop-down-container-button.clicked{
+    transform: rotate(180deg);
+    font-size: 1.2rem;
+}
+.subsystem-span.clicked,
+.logout-button.clicked{
+    font-size: 1.2rem;
+}
+.button.clicked{
+    font-size: 1.2rem;
+    transform: rotate(90deg);
+}
+.drop-down-main-container{
+    display: flex;
+    gap: 0.7rem;
+    flex-direction: column;
+    margin-bottom: 4rem;
+}
+.subsystem{
+    padding: 0.9rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 5rem;
+}
+.subsystem:hover{
+    background-color: yellow;
+}
+.subsystem:hover .subsystem-span,
+.subsystem:hover i,
+.subsystem,
+i{
+    color: black;
+    cursor: pointer;
+}
+.subsystem-span,
+i{
+    font-size: 1.5rem;
+    color: white;
+}
+.subsystem-span,
+i,
+.logout-button,
+.subsystem{
+    transition: color 0.5s, background-color 0.5s, font-size 1s;
+}
+.subsystem-feature{
+    display: none;
+    flex-direction: column;
+    margin-top: 0.5rem; 
+    gap: 0.3rem; 
+}
+.feature{
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+.logout-button-wrapper{
+    display: flex;
+}
+.logout-button{
+    color: red;
+    border: none;
+    background: none;
+}
+.main-content{
+    flex: 1;
+    display: flex;
+    min-width: 0;
+}
