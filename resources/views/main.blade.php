@@ -35,9 +35,11 @@
                         <span class="subsystem-span">New Transaction</span>
                     </div>
                 </a>
-                <div class="transaction-history feature">
-                    <span class="subsystem-span">Transaction History</span>                    
-                </div>
+                <a href="{{ route('POShistory') }}">
+                    <div class="transaction-history feature">
+                        <span class="subsystem-span">Transaction History</span>                    
+                    </div>
+                </a>
             </div>
             <a href="{{ route('kp') }}">
                 <div class="kitchen-production-container subsystem">

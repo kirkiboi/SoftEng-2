@@ -22,6 +22,9 @@ Route::get('/inventorymanagement', function () {
 Route::get('/analysisandreporting', function () {
     return view('AR');
 })->name('ar');
+Route::get('/transactionhistory', function () {
+    return view('POShistory');
+})->name('POShistory');
 
 Route::get('/menuandpricing', [ProductController::class, 'index'])->name('mp');
 Route::post('/products', [ProductController::class, 'store'])->name('products.store');
