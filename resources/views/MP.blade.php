@@ -7,6 +7,7 @@
     </div>
 @endif
 @vite(['resources/css/mp.css'])
+@vite(['resources/js/mp.js'])
     <div class="menu-pricing-parent-container">
         <div class="header-container">
             <div class="controls-container">
