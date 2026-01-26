@@ -1,0 +1,103 @@
+.kitchen-production-main-container{
+    width: 100%;
+    background-color: white;
+}
+.kitchen-production-parent-container{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1.5rem;
+}
+.header-container{
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+.header-container input{
+    padding: 0.2rem 0 0.2rem 0.5rem;
+    border: 1px solid grey;
+    border-radius: 0.3rem;
+    flex: 0.5;
+}
+.add-item-container {
+    margin-left: auto;
+}
+.header-container button{
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 10rem;
+    padding: 0.3rem 1.5rem;
+}
+.main-body-container{
+    padding: 1.5rem;
+    display: flex;
+    gap: 2.5rem;
+}
+.header-wrapper{
+    gap: 1rem;
+    display: flex;
+    align-items: center;
+}
+.queued-container,
+.cooking-container,
+.done-container{
+    flex: 1;
+    border-radius: 1rem;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background-color: rgb(224, 224, 224);;
+}
+.queue-icon,
+.cooking-icon,
+.done-icon{
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.queue-icon{
+    background-color: blue;
+}
+.cooking-icon{
+    background-color: orange;
+}
+.done-icon{
+    background-color: green;
+}
+.wrapper{
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    background-color: white;
+    padding: 1rem;
+}
+.navigation-buttons{
+    margin-top: 1rem;
+}
+.start-button{
+    background-color: orange;
+    padding: 0.4rem 0.7rem 0.4rem 0.7rem;
+}
+.cancel-button{
+    background-color: red;
+    padding: 0.4rem 1rem 0.4rem 1rem;
+}
+.start-button,
+.cancel-button,
+.complete-button,
+.serve-button{
+    border:none;
+    border-radius: 10rem;
+    color: white;
+}
+.complete-button{
+    background-color: green;
+    padding: 0.4rem 1.2rem 0.4rem 1.2rem;
+}
+.serve-button{
+    background-color: rgb(77, 76, 76);
+}

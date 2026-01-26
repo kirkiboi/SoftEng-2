@@ -3,18 +3,15 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 class ProductController extends Controller
-
 {
     public function index(Request $request)
     {
         $search = $request->query('search');
-
         $products = Product::when($search, function ($query, $search) {
             $query->where('name', 'LIKE', "%{$search}%");
         })
         ->paginate(6)
         ->withQueryString(); 
-
         return view('MP', compact('products', 'search'));
     }
     public function edit(Product $product)

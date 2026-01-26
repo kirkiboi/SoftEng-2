@@ -21,24 +21,22 @@
             </div>
         </div>
         <div class="drop-down-main-container">
-            <a href="{{ route('pos') }}">
-                <div class="point-of-sales-container subsystem">
-                    <div class="point-of-sale">
-                        <span class ="subsystem-span">Point of Sale</span>
-                    </div>
-                    <div class="subsystem-drop-down">
-                        <i class="fa-solid fa-angles-right button"></i>
-                    </div>
+            <div class="point-of-sales-container subsystem">
+                <div class="point-of-sale">
+                    <span class ="subsystem-span">Point of Sale</span>
                 </div>
-            </a>
-            <div class="subsystem-feature">
-                <div class="new-transaction feature">
-                    <span>X</span>
-                    <span class ="subsystem-span">New Transaction</span>
+                <div class="subsystem-drop-down">
+                    <i class="fa-solid fa-angles-right button-pos"></i>
                 </div>
+            </div>
+            <div class="subsystem-feature-pos" data-subsystem="pos">    
+                <a href="{{ route('pos') }}">
+                    <div class="new-transaction feature">
+                        <span class="subsystem-span">New Transaction</span>
+                    </div>
+                </a>
                 <div class="transaction-history feature">
-                    <span>X</span>
-                    <span class ="subsystem-span">Transaction History</span>                    
+                    <span class="subsystem-span">Transaction History</span>                    
                 </div>
             </div>
             <a href="{{ route('kp') }}">

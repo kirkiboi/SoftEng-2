@@ -11,7 +11,7 @@
     <div class="menu-pricing-parent-container">
         <div class="header-container">
             <div class="controls-container">
-                <svg id="filter-button" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <svg id="filter-button" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" class="filter-icon">
                     <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
                 <div class="filter-dropdown" id="filterDropdown" style="display: none;">
