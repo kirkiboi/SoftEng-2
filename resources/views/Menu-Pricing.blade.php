@@ -92,7 +92,6 @@
         <div class="floating-add-item">
             <span>Add Item</span>
         </div>
-
         <form method="POST"
             action="{{ route('products.store') }}"
             enctype="multipart/form-data"
@@ -103,7 +102,6 @@
                 <input type="text" class="input" name="name">
             </div>
             <div class="floating-add-item-category-container">
-                
                 <span>Item Category</span>
                 <div class="category-input-wrapper">
                     <input type="radio" id="drinks" name="category" value="drinks" checked>
@@ -114,12 +112,10 @@
                     <label for="meals">Meals</label>
                 </div>
             </div>
-
             <div class="floating-add-item-item-price-container">
                 <label for="price">Price</label>
                 <input type="text" name="price" class="input" placeholder="₱ 00.00">
             </div>
-
             <div class="floating-add-item-image-container">
                 <label>Image</label>
                 <div class="file-upload-area" id="uploadArea">

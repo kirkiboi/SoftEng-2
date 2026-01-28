@@ -19,13 +19,17 @@
                 </div>
                 <hr>
             </div>
-
             <div class="login-form-container">
+                @if ($errors->any())
+                    <div class="alert alert-danger text-center">
+                        {{ $errors->first() }}
+                    </div>
+                @endif
                 <form class="login-form" method="POST" action="{{ route('login.submit') }}">
                     @csrf
                     <div class="input-wrapper">
                         <i class="fa-regular fa-user"></i>
-                        <input class="login-inputs" type="email" name="email" placeholder="email" value="{{ old('email') }}" required>
+                        <input class="login-inputs" type="email" name="email" placeholder="email" autocomplete="off" required>
                     </div>
                     <div class="input-wrapper">
                         <i class="fa-solid fa-lock"></i>
@@ -34,7 +38,6 @@
                     <button class="login-button">Login</button>
                 </form>
             </div>
-
         </div>
     </body>
 </html>

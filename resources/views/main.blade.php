@@ -21,6 +21,8 @@
             </div>
         </div>
         <div class="drop-down-main-container">
+
+            <!-- Point of Sales shit ni -->
             <div class="point-of-sales-container subsystem">
                 <div class="point-of-sale">
                     <span class ="subsystem-span">Point of Sale</span>
@@ -29,7 +31,7 @@
                     <i class="fa-solid fa-angles-right button-pos"></i>
                 </div>
             </div>
-            <div class="subsystem-feature-pos" data-subsystem="pos">    
+            <div class="subsystem-feature">    
                 <a href="{{ route('pos') }}">
                     <div class="new-transaction feature">
                         <span class="subsystem-span">New Transaction</span>
@@ -41,67 +43,74 @@
                     </div>
                 </a>
             </div>
+
+            <!-- Kitchen production shit ni diri ha -->
             <a href="{{ route('kp') }}">
-                <div class="kitchen-production-container subsystem">
+                <div class="kitchen-production-container">
                     <div class="kitchen-production">
                         <span class ="subsystem-span">Kitchen Production</span>
                     </div>              
                 </div>
             </a>
 
-            <a href="{{ route('im') }}">
-                <div class="inventory-management-container subsystem">
-                    <div class="inventory-management">
-                        <span class ="subsystem-span">Inventory Management</span>
-                    </div>
-                    <div class="subsystem-drop-down">
-                        <i class="fa-solid fa-angles-right button"></i>
-                    </div>
+            <!-- Inventory Manager shit ni -->
+            <div class="inventory-management-container subsystem">
+                <div class="inventory-management">
+                    <span class ="subsystem-span">Inventory Management</span>
                 </div>
-            </a>
-            <div class="subsystem-feature">
-                <div class="new-transaction feature">
-                    <span>X</span>
-                    <span class ="subsystem-span">Ingredient Master List</span>
-                </div>
-                <div class="transaction-history feature">
-                    <span>X</span>
-                    <span class ="subsystem-span">Stock-In History</span>                    
+                <div class="subsystem-drop-down">
+                    <i class="fa-solid fa-angles-right button"></i>
                 </div>
             </div>
 
-            <a href="{{ route('mp') }}">
-                <div class="menu-pricing-container subsystem">
-                    <div class="menu-pricing">
-                        <span class ="subsystem-span">Menu & Pricing </span>
-                    </div>
-                    <div class="subsystem-drop-down">
-                        <i class="fa-solid fa-angles-right button"></i>
-                    </div>
-                </div>
-            </a>
-            
             <div class="subsystem-feature">
-                <div class="new-transaction feature">
-                    <span>X</span>
-                    <span class ="subsystem-span">Item Master List</span>
-                </div>
-                <div class="transaction-history feature">
-                    <span>X</span>
-                    <span class ="subsystem-span">Pricing History</span>                    
-                </div>
+                <a href="{{ route('im') }}">
+                    <div class="new-transaction feature">
+                        <span>X</span>
+                        <span class ="subsystem-span">Ingredient Master List</span>
+                    </div>
+                </a>
+                <a href="{{ route('stock-history') }}">
+                    <div class="transaction-history feature">
+                        <span>X</span>
+                        <span class ="subsystem-span">Stock-In History</span>                    
+                    </div>
+                </a>
             </div>
 
-            <a href="{{ route('ar') }}">
-                <div class="analysis-and-reporting-container subsystem">
-                    <div class="analysis-and-reporting">
-                        <span class ="subsystem-span">Analysis & Reporting</span>
-                    </div>
-                    <div class="subsystem-drop-down">
-                        <i class="fa-solid fa-angles-right button"></i>
-                    </div>
+            <!-- Menu and Pricing shit ni diria -->
+            <div class="menu-pricing-container subsystem">
+                <div class="menu-pricing">
+                    <span class ="subsystem-span">Menu & Pricing </span>
                 </div>
-            </a>
+                <div class="subsystem-drop-down">
+                    <i class="fa-solid fa-angles-right button"></i>
+                </div>
+            </div>
+            <div class="subsystem-feature">
+                <a href="{{ route('mp') }}">
+                    <div class="new-transaction feature">
+                        <span>X</span>
+                        <span class ="subsystem-span">Item Master List</span>
+                    </div>
+                </a>
+                <a href="{{ route('pricing-history') }}">
+                    <div class="transaction-history feature">
+                        <span>X</span>
+                        <span class ="subsystem-span">Pricing History</span>                    
+                    </div>
+                </a>
+            </div>
+
+            <!-- CVAM ass shit ni diria -->
+            <div class="analysis-and-reporting-container subsystem">
+                <div class="analysis-and-reporting">
+                    <span class ="subsystem-span">Analysis & Reporting</span>
+                </div>
+                <div class="subsystem-drop-down">
+                    <i class="fa-solid fa-angles-right button"></i>
+                </div>
+            </div>
             <div class="subsystem-feature">
                 <div class="new-transaction feature">
                     <span>X</span>
@@ -118,7 +127,7 @@
             </div>
         </div>
 
-        <form action="">
+        <form action="{{ route('login') }}">
             <div class="logout-button-wrapper">
                 <i>X</i>
                 <button class="logout-button subsystem-span">Logout</button>

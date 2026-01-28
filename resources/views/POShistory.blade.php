@@ -1,7 +1,7 @@
 @extends('main')
 @section('poshistory', 'System 1')
 @section('content')
-@vite(['resources/css/poshistory.css'])
+@vite(['resources/css/pos-history.css'])
 @vite(['resources/js/poshistory.js'])
     <div class="main-container">
         <div class="parent-container">

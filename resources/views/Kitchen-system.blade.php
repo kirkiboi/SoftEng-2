@@ -1,7 +1,7 @@
     @extends('main')
     @section('kp', 'System 2')
     @section('content')
-    @vite(['resources/css/kp.css'])
+    @vite(['resources/css/kitchen-system.css'])
         <div class="kitchen-production-main-container">
             <div class="kitchen-production-parent-container">
                 <div class="header-container">

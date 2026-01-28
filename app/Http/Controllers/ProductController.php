@@ -12,7 +12,7 @@ class ProductController extends Controller
         })
         ->paginate(6)
         ->withQueryString(); 
-        return view('MP', compact('products', 'search'));
+        return view('Menu-Pricing', compact('products', 'search'));
     }
     public function edit(Product $product)
     {

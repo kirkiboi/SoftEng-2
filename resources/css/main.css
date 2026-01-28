@@ -2,7 +2,7 @@ body{
     overflow-y: hidden;
     display: flex;
     flex-direction: row;
-    gap: 0.1rem;
+    gap: 1rem;
     background-image: url(/public/photos/DashboardBG.jpg);
     background-size: cover;
     background-repeat: no-repeat;
@@ -19,7 +19,7 @@ body{
     max-width: 400px;
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
+    gap: 1rem;
     transition: max-width 0.8s
 }
 .side-bar-container.collapsed{
@@ -39,13 +39,21 @@ body{
     max-width: 100%;
     height: auto;
 }
-.subsystem-feature-pos{
-    display: none;
+
+.subsystem-feature {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition:
+        max-height 1s ease,
+        opacity 1s ease,
+        transform 1s ease;
 }
-.subsystem-feature-pos.active{
-    display: flex;
-    flex-direction: column;
-    padding-left: 0.5rem;
+.subsystem-feature.active {
+    max-height: 500px; 
+    opacity: 1;
+    transform: translateY(0);
 }
 .button-pos{
     transition: transform 1s;
@@ -73,7 +81,7 @@ body{
 }
 .drop-down-main-container{
     display: flex;
-    gap: 0.7rem;
+    gap: 0.5rem;
     flex-direction: column;
     margin-bottom: 4rem;
 }
@@ -125,4 +133,10 @@ i,
 }
 a{
     text-decoration: none;
+}
+.point-of-sales-container.active{
+    border-bottom: 3px solid grey;
+}
+.inventory-management-container.active{
+
 }
