@@ -6,7 +6,7 @@
 .parent-container{
     display: flex;
     flex-direction: column;
-    gap: 5rem;
+    gap: 2rem;
 }
 .header-container{
     background-color: rgb(244, 243, 243);

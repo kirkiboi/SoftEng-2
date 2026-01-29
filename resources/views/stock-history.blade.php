@@ -3,7 +3,6 @@
 @section('content')
 @vite(['resources/css/stock-history.css'])
 @vite(['resources/js/poshistory.js'])
-
 <div class="main-container">
     <div class="parent-container">
         <div class="header-container">

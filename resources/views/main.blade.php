@@ -66,13 +66,11 @@
             <div class="subsystem-feature">
                 <a href="{{ route('im') }}">
                     <div class="new-transaction feature">
-                        <span>X</span>
                         <span class ="subsystem-span">Ingredient Master List</span>
                     </div>
                 </a>
                 <a href="{{ route('stock-history') }}">
                     <div class="transaction-history feature">
-                        <span>X</span>
                         <span class ="subsystem-span">Stock-In History</span>                    
                     </div>
                 </a>
@@ -90,13 +88,11 @@
             <div class="subsystem-feature">
                 <a href="{{ route('mp') }}">
                     <div class="new-transaction feature">
-                        <span>X</span>
                         <span class ="subsystem-span">Item Master List</span>
                     </div>
                 </a>
                 <a href="{{ route('pricing-history') }}">
                     <div class="transaction-history feature">
-                        <span>X</span>
                         <span class ="subsystem-span">Pricing History</span>                    
                     </div>
                 </a>
@@ -113,15 +109,12 @@
             </div>
             <div class="subsystem-feature">
                 <div class="new-transaction feature">
-                    <span>X</span>
                     <span class ="subsystem-span">Financial Dashboard</span>
                 </div>
                 <div class="transaction-history feature">
-                    <span>X</span>
                     <span class ="subsystem-span">Cost & Variance Reports</span>                    
                 </div>
                 <div class="transaction-history feature">
-                    <span>X</span>
                     <span class ="subsystem-span">Yield & Forecasting Reports</span>                    
                 </div>
             </div>
@@ -129,7 +122,6 @@
 
         <form action="{{ route('login') }}">
             <div class="logout-button-wrapper">
-                <i>X</i>
                 <button class="logout-button subsystem-span">Logout</button>
             </div>
         </form>

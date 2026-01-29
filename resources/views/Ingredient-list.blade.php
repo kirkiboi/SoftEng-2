@@ -12,20 +12,22 @@
         <div class="parent-container">
             <div class="header-container">
                 <div class="filter-and-search-container">
-                <svg id="filter-button" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" class="filter-icon">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-                <input 
-                    type="text"
-                    name="search"
-                    class="search-input"
-                    placeholder="Search"
-                    value="{{ request('search') }}"
-                >
+                    <svg id="filter-button" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" class="filter-icon">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                    <form method="GET" action="{{ route('im') }}" class="search-form">
+                        <input 
+                            type="text"
+                            name="search"
+                            class="search-input"
+                            placeholder="Search"
+                            value="{{ request('search') }}"
+                        >
+                        <button type="submit">Search</button>
+                    </form>
                 </div>
                 <div class="pagination-container">
-                    <span>1 - 8 of 52</span>
-                    <span> < > </span>
+                    {{ $ingredients->links() }}
                 </div>
                 <div class="button-container">
                     <button class="record-stock-in-button">Record Stock In</button>
@@ -37,15 +39,17 @@
                     <colgroup>
                         <col style="width: 19%">
                         <col style="width: 20%">
+                        <col style="width: 25%">
                         <col style="width: 15%">
                         <col style="width: 13%">
                         <col style="width: 16%">
-                        <col style="width: 8%">
+                        <col style="width: 6%">
                         <col style="width: 8%">
                     </colgroup>
                     <thead>
                         <tr class="tr">
                             <th class="th">Ingredient Name</th>
+                            <th class="th">Category</th>
                             <th class="th">Unit of Measurement</th>
                             <th class="th">Current Stock</th>
                             <th class="th">Unit Cost</th>
@@ -58,6 +62,7 @@
                         @foreach($ingredients as $ingredient)
                             <tr class="tr">
                                 <td>{{ $ingredient->name }}</td>
+                                <td>{{ $ingredient->category }}</td>
                                 <td>{{ $ingredient->unit }}</td>
                                 <td>{{ $ingredient->stock }}{{ $ingredient->unit }}</td>
                                 <td>₱{{ number_format($ingredient->cost_per_unit, 2) }}</td>

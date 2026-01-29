@@ -1,9 +1,8 @@
 @extends('main')
 @section('poshistory', 'System 1')
 @section('content')
-@vite(['resources/css/stock-history.css'])
+@vite(['resources/css/pricing-history.css'])
 @vite(['resources/js/poshistory.js'])
-
 <div class="main-container">
     <div class="parent-container">
         <div class="header-container">
@@ -22,7 +21,7 @@
             </div>
             <div class="date-container">
                 <button class="date-filter-button">
-                    <span>30 Days</span>
+                    <span>Last 30 Days</span>
                     <i class="fa-solid fa-calendar"></i>
                 </button>
                 <input
@@ -36,7 +35,7 @@
                 <span> < > </span>
             </div>
             <div class="export-sales-data-container">
-                <button>
+                <button class="export-audit-log-button">
                     <i class="fa-solid fa-print"></i>
                     <span>Export Audit Log</span>
                 </button>
@@ -55,33 +54,33 @@
                 <thead>
                     <tr class="tr">
                         <th class="th">Item Name</th>
+                        <th class="th">Action Type</th>
                         <th class="th">Date & Time</th>
-                        <th class="th">Supplier Name</th>
-                        <th class="th">Quantity Received</th>
-                        <th class="th">User ID</th>
-                        <th class="th">Unit Cost</th>
-                        <th class="th">Total Cost</th>
+                        <th class="th">User</th>
+                        <th class="th">Previous Price</th>
+                        <th class="th">New Price</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="tr">
-                        <td>Chicken Breast</td>
-                        <td>1/27/2026 12:44 PM</td>
-                        <td>Star Poultry Inc.</td>
-                        <td>50.0kg</td>
-                        <td>Cotton F. Zayas</td>
-                        <td>180</td>
-                        <td>9000</td>
-                    </tr>
-                    <tr class="tr">
-                        <td>Red Onions</td>
-                        <td>1/27/2026 1:00 PM</td>
-                        <td>Davao Produce Co.</td>
-                        <td>20.0kg</td>
-                        <td>Blanco F. Zayas</td>
-                        <td>155</td>
-                        <td>3,100</td>
-                    </tr>
+                    @forelse ($logs as $log)
+                        <tr>
+                            <td>{{ $log->product_name }}</td>
+                            <td>{{ ucfirst($log->action) }}</td>
+                            <td>{{ $log->created_at->format('m/d/Y h:i A') }}</td>
+                            <td>
+                                {{ $log->user 
+                                    ? $log->user->first_name . ' ' . $log->user->last_name 
+                                    : 'System' 
+                                }}
+                            </td>
+                            <td>{{ $log->old_price ? '₱ '.number_format($log->old_price,2) : '-' }}</td>
+                            <td>{{ $log->new_price ? '₱ '.number_format($log->new_price,2) : '-' }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6">No audit logs found.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
