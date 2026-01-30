@@ -171,7 +171,12 @@ th, td {
     font-weight: bold;
     z-index: 1001;
 }
+#filter-button{
+    cursor: pointer;
+}
 .filter-dropdown {
+    top: 9%;
+    left: 27.2%;
     position: absolute;
     background: white;
     border: 1px solid #ccc;

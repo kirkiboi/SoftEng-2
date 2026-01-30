@@ -2,6 +2,9 @@
 namespace App\Http\Controllers;
 use App\Models\Ingredient;
 use Illuminate\Http\Request;
+use App\Models\IngredientAuditLog;
+use Illuminate\Support\Facades\Auth;
+
 class IngredientController extends Controller
 {
     public function index(Request $request)
@@ -13,7 +16,6 @@ class IngredientController extends Controller
         }
 
         $ingredients = $ingredients->paginate(8);
-
         $ingredients->appends($request->all());
 
         return view('ingredient-list', compact('ingredients'));
@@ -33,8 +35,19 @@ class IngredientController extends Controller
             'stock' => 'required|numeric|min:0',
             'threshold' => 'required'
         ]);
+        $ingredient = Ingredient::create($validated);
 
-        Ingredient::create($validated);
+        IngredientAuditLog::create([
+            'user_name' => Auth::user()->name,  
+            'ingredient_id' => $ingredient->id,
+            'unit_cost' => $ingredient->cost_per_unit,
+            'total_cost' => $ingredient->cost_per_unit * $ingredient->stock,
+        ]);
         return redirect()->back()->with('success', 'Ingredient added successfully');
+    }
+    public function auditLog()
+    {
+        $logs = IngredientAuditLog::latest()->paginate(10);
+        return view('stock-history', compact('logs'));
     }
 }

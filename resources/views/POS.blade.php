@@ -1,5 +1,5 @@
 @extends('main')
-@section('pos', 'System 1')
+@section('point of sales', 'System 1')
 @section('content')
 @vite(['resources/css/new-transaction.css'])
     <div class="pos-main-container">

@@ -1,5 +1,5 @@
 @extends('main')
-@section('poshistory', 'System 1')
+@section('inventory audit log', 'System 1')
 @section('content')
 @vite(['resources/css/stock-history.css'])
 @vite(['resources/js/poshistory.js'])
@@ -45,42 +45,30 @@
             <table>
                 <colgroup>
                     <col style="width: 20%">
-                    <col style="width: 16%">
-                    <col style="width: 16%">
-                    <col style="width: 16%">
-                    <col style="width: 16%">
-                    <col style="width: 16%">
+                    <col style="width: 20%">
+                    <col style="width: 20%">
+                    <col style="width: 20%">
+                    <col style="width: 20%">
                 </colgroup>
                 <thead>
                     <tr class="tr">
                         <th class="th">Item Name</th>
                         <th class="th">Date & Time</th>
-                        <th class="th">Supplier Name</th>
-                        <th class="th">Quantity Received</th>
                         <th class="th">User ID</th>
                         <th class="th">Unit Cost</th>
                         <th class="th">Total Cost</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="tr">
-                        <td>Chicken Breast</td>
-                        <td>1/27/2026 12:44 PM</td>
-                        <td>Star Poultry Inc.</td>
-                        <td>50.0kg</td>
-                        <td>Cotton F. Zayas</td>
-                        <td>180</td>
-                        <td>9000</td>
-                    </tr>
-                    <tr class="tr">
-                        <td>Red Onions</td>
-                        <td>1/27/2026 1:00 PM</td>
-                        <td>Davao Produce Co.</td>
-                        <td>20.0kg</td>
-                        <td>Blanco F. Zayas</td>
-                        <td>155</td>
-                        <td>3,100</td>
-                    </tr>
+                    @foreach($logs as $log)
+                        <tr>
+                            <td>{{ optional($log->ingredient)->name ?? 'Deleted Ingredient' }}</td>
+                            <td>{{ $log->created_at }}</td>
+                            <td>{{ $log->user_id }}</td>
+                            <td>{{ $log->total_cost }}</td>
+                            <td>{{ $log->unit_cost }}</td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>

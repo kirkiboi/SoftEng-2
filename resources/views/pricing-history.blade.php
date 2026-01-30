@@ -1,5 +1,5 @@
 @extends('main')
-@section('poshistory', 'System 1')
+@section('product audit log', 'System 4')
 @section('content')
 @vite(['resources/css/pricing-history.css'])
 @vite(['resources/js/productAuditLog.js'])

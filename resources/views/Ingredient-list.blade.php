@@ -1,5 +1,5 @@
 @extends('main')
-@section('im', 'System 3')
+@section('ingredient inventory management', 'System 3')
 @section('content')
 @if (session('success'))
     <div class="my-alert alert-success">
@@ -138,6 +138,45 @@
                 <div class="floating-add-item-options">
                     <button type="button" class="cancel-button">Cancel</button>
                     <button type="submit" class="add-button">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="record-stock-in-container">
+        <div class="record-stock-in-wrapper">
+            <div class="record-stock-in">
+                <h2>Record Stock In</h2>
+            </div>
+            <form action="">
+                <div class="ingredient-name-container">
+                    <span>ingredient name</span>
+                    <select name="ingredient-name" id="ingredient-name">
+                        <option value=""></option>
+                    </select>
+                </div>
+                <div class="quantity-received-wrapper">
+                    <span>Quantity Received</span>
+                    <input type="text">
+                </div>
+                <div class="supplier-name-wrapper">
+                    <span>Supplier</span>
+                    <select name="" id=""></select>
+                </div>
+                <div class="cost-per-unit-wrapper">
+                    <input type="number">
+                </div>
+                <div class="delivery-date-wrapper">
+                    <button type="button" class="date-filter-button" id="dateBtn">
+                        <span>
+                            26/10/2026
+                        </span>
+                        <i class="fa-solid fa-calendar"></i>
+                    </button>
+                </div>
+                <div class="functionality-container">
+                    <button>cancel</button>
+                    <button>update stock</button>
                 </div>
             </form>
         </div>

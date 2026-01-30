@@ -1,5 +1,5 @@
 @extends('main')
-@section('mp', 'System 4')
+@section('menu and pricing', 'System 4')
 @section('content')
 @if (session('success'))
     <div class="my-alert alert-success">
@@ -120,7 +120,7 @@
             </div>
             <div class="floating-add-item-item-price-container">
                 <label for="price">Price</label>
-                <input type="text" name="price" class="input" placeholder="₱ 00.00">
+                <input type="number" name="price" class="input" placeholder="₱ 00.00">
             </div>
             <div class="floating-add-item-image-container">
                 <label>Image</label>
