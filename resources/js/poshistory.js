@@ -1,18 +1,19 @@
-const dateBtn = document.querySelector(".date-filter-button");
-const dateInput = document.getElementById("dateInput");
+const dateBtn = document.getElementById('dateBtn');
+const dateInput = document.getElementById('dateInput');
 
-const today = new Date().toISOString().split("T")[0];
-dateInput.value = today;
+if (dateBtn && dateInput) {
+    dateBtn.addEventListener('click', () => {
+        dateInput.style.display = 'block';
+        dateInput.focus();
+    });
 
-dateBtn.addEventListener("click", () => {
-  dateInput.showPicker(); 
-});
+    dateInput.addEventListener('change', () => {
+        dateInput.form.submit();
+    });
 
-dateInput.addEventListener("change", () => {
-  if (dateInput.value === today) {
-    dateBtn.textContent = "Today";
-  } else {
-    const selected = new Date(dateInput.value);
-    dateBtn.textContent = selected.toLocaleDateString();
-  }
-});
+    document.addEventListener('click', (e) => {
+        if (!dateBtn.contains(e.target) && !dateInput.contains(e.target)) {
+            dateInput.style.display = 'none';
+        }
+    });
+}

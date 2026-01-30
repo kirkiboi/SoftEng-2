@@ -197,6 +197,11 @@ th, td {
     align-items: center;
     padding-top: 1.8rem;
 }
+.fa-pencil,
+.fa-trash{
+    color: grey;
+    font-size: 1rem;
+}
 .edit-button, .delete-button {
     border: none;
     background: none;

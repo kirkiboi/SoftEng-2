@@ -2,7 +2,7 @@
 @section('poshistory', 'System 1')
 @section('content')
 @vite(['resources/css/pricing-history.css'])
-@vite(['resources/js/poshistory.js'])
+@vite(['resources/js/productAuditLog.js'])
 <div class="main-container">
     <div class="parent-container">
         <div class="header-container">
@@ -10,29 +10,65 @@
                 <svg id="filter-button" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" class="filter-icon">
                     <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
-            </div>
+                <div class="filter-dropdown" id="filterDropdown" style="display: none;">
+                    <form method="GET" action="{{ route('pricing-history') }}" class="filter-dropdown-form">
+                        {{-- Action filter --}}
+                        <div class="filter-group">
+                            <select name="action">
+                                <option value="">All</option>
+                                <option value="added" {{ request('action') === 'added' ? 'selected' : '' }}>Added</option>
+                                <option value="edited" {{ request('action') === 'edited' ? 'selected' : '' }}>Edited</option>
+                                <option value="deleted" {{ request('action') === 'deleted' ? 'selected' : '' }}>Deleted</option>
+                            </select>
+                        </div>
+                        {{-- User filter --}}
+                        <div class="filter-group">
+                            <select name="user_id">
+                                <option value="">All</option>
+                                @foreach ($users as $user)
+                                    <option value="{{ $user->id }}"
+                                        {{ request('user_id') == $user->id ? 'selected' : '' }}>
+                                        {{ $user->first_name }} {{ $user->last_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <button type="submit">Apply</button>
+                    </form>
+                </div>
+            </div>  
             <div class="search-container">
-                <input 
-                    type="text"
-                    name="search"
-                    class="search-input"
-                    placeholder="Search"
-                >
+                <form method="GET" action="{{ route('pricing-history') }}">
+                    <input 
+                        type="text"
+                        name="search"
+                        class="search-input"
+                        placeholder="Search"
+                        value="{{ request('search') }}"
+                    >
+                </form>
             </div>
             <div class="date-container">
-                <button class="date-filter-button">
-                    <span>Last 30 Days</span>
-                    <i class="fa-solid fa-calendar"></i>
-                </button>
-                <input
-                    type="date"
-                    id="dateInput"
-                    hidden
-                />
+                <form method="GET" action="{{ route('pricing-history') }}">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+
+                    <button type="button" class="date-filter-button" id="dateBtn">
+                        <span>
+                            {{ request('date') ? \Carbon\Carbon::parse(request('date'))->format('M d, Y') : 'Last 30 Days' }}
+                        </span>
+                        <i class="fa-solid fa-calendar"></i>
+                    </button>
+
+                    <input
+                        type="date"
+                        name="date"
+                        id="dateInput"
+                        value="{{ request('date') }}"
+                    />
+                </form>
             </div>
             <div class="pagination-container">
-                <span>1 - 8 of 52</span>
-                <span> < > </span>
+                {{ $logs->links() }}
             </div>
             <div class="export-sales-data-container">
                 <button class="export-audit-log-button">

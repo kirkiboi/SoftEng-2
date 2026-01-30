@@ -2,11 +2,35 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ProductAuditLog;
+use Carbon\Carbon;
+use App\Models\User;
+
 class ProductAuditLogController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $logs = ProductAuditLog::latest()->paginate(10); 
-        return view('pricing-history', compact('logs'));
+        $query = ProductAuditLog::with('user')->latest();
+
+        if ($request->filled('search')) {
+            $query->where('product_name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('date')) {
+            $date = Carbon::parse($request->date);
+            $query->whereDate('created_at', $date);
+        }
+         if ($request->filled('action')) {
+        $query->where('action', $request->action);
+        }
+
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        $logs = $query->paginate(10)->withQueryString();
+
+        $users = User::orderBy('first_name')->get();
+        $logs = $query->paginate(6)->withQueryString();
+        return view('pricing-history', compact('logs', 'users'));
     }
 }
