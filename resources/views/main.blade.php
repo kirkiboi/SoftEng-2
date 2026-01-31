@@ -25,6 +25,7 @@
             <!-- Point of Sales shit ni -->
             <div class="point-of-sales-container subsystem">
                 <div class="point-of-sale">
+                    <i class="fa-solid fa-cash-register me-3"></i>
                     <span class ="subsystem-span">Point of Sale</span>
                 </div>
                 <div class="subsystem-drop-down">
@@ -33,12 +34,14 @@
             </div>
             <div class="subsystem-feature">    
                 <a href="{{ route('pos') }}">
-                    <div class="new-transaction feature">
+                    <div class="new-transaction feature d-flex align-items-center">
+                        <i class="fa-solid fa-plus-circle me-3 sub-icon"></i>
                         <span class="subsystem-span">New Transaction</span>
                     </div>
                 </a>
                 <a href="{{ route('POShistory') }}">
-                    <div class="transaction-history feature">
+                    <div class="transaction-history feature d-flex align-items-center">
+                        <i class="fa-solid fa-receipt me-3 sub-icon"></i>
                         <span class="subsystem-span">Transaction History</span>                    
                     </div>
                 </a>
@@ -46,9 +49,10 @@
 
             <!-- Kitchen production shit ni diri ha -->
             <a href="{{ route('kp') }}">
-                <div class="kitchen-production-container">
+                <div class="kitchen-production-container subsystem {{ Request::is('kp*') ? 'active-page' : '' }}">
                     <div class="kitchen-production">
-                        <span class ="subsystem-span">Kitchen Production</span>
+                        <i class="fa-solid fa-utensils me-2"></i>
+                        <span class="subsystem-span">Kitchen Production</span>
                     </div>              
                 </div>
             </a>
@@ -56,6 +60,8 @@
             <!-- Inventory Manager shit ni -->
             <div class="inventory-management-container subsystem">
                 <div class="inventory-management">
+                    <!-- icon -->
+                    <i class="fa-solid fa-boxes-stacked me-3"></i>
                     <span class ="subsystem-span">Inventory Management</span>
                 </div>
                 <div class="subsystem-drop-down">
@@ -65,12 +71,14 @@
 
             <div class="subsystem-feature">
                 <a href="{{ route('im') }}">
-                    <div class="new-transaction feature">
+                    <div class="new-transaction feature d-flex align-items-center">
+                        <i class="fa-solid fa-list-check me-3 sub-icon"></i>
                         <span class ="subsystem-span">Ingredient Master List</span>
                     </div>
                 </a>
                 <a href="{{ route('stock-history') }}">
-                    <div class="transaction-history feature">
+                    <div class="transaction-history feature d-flex align-items-center">
+                        <i class="fa-solid fa-truck-ramp-box me-3 sub-icon"></i>
                         <span class ="subsystem-span">Stock-In History</span>                    
                     </div>
                 </a>
@@ -79,6 +87,7 @@
             <!-- Menu and Pricing shit ni diria -->
             <div class="menu-pricing-container subsystem">
                 <div class="menu-pricing">
+                    <i class="fa-solid fa-book-open me-3"></i>
                     <span class ="subsystem-span">Menu & Pricing </span>
                 </div>
                 <div class="subsystem-drop-down">
@@ -87,12 +96,14 @@
             </div>
             <div class="subsystem-feature">
                 <a href="{{ route('mp') }}">
-                    <div class="new-transaction feature">
+                    <div class="new-transaction feature d-flex align-items-center">
+                        <i class="fa-solid fa-clipboard-list me-3 sub-icon"></i>
                         <span class ="subsystem-span">Item Master List</span>
                     </div>
                 </a>
                 <a href="{{ route('pricing-history') }}">
-                    <div class="transaction-history feature">
+                    <div class="transaction-history feature d-flex align-items-center">
+                        <i class="fa-solid fa-tag me-3 sub-icon"></i>
                         <span class ="subsystem-span">Pricing History</span>                    
                     </div>
                 </a>
@@ -101,6 +112,7 @@
             <!-- CVAM ass shit ni diria -->
             <div class="analysis-and-reporting-container subsystem">
                 <div class="analysis-and-reporting">
+                    <i class="fa-solid fa-chart-line me-3"></i>
                     <span class ="subsystem-span">Analysis & Reporting</span>
                 </div>
                 <div class="subsystem-drop-down">
@@ -108,13 +120,16 @@
                 </div>
             </div>
             <div class="subsystem-feature">
-                <div class="new-transaction feature">
+                <div class="new-transaction feature d-flex align-items-center">
+                    <i class="fa-solid fa-gauge-high me-3 sub-icon"></i>
                     <span class ="subsystem-span">Financial Dashboard</span>
                 </div>
-                <div class="transaction-history feature">
+                <div class="transaction-history feature d-flex align-items-center">
+                    <i class="fa-solid fa-file-invoice-dollar me-3 sub-icon"></i>
                     <span class ="subsystem-span">Cost & Variance Reports</span>                    
                 </div>
-                <div class="transaction-history feature">
+                <div class="transaction-history feature d-flex align-items-center">
+                    <i class="fa-solid fa-magnifying-glass-chart me-3 sub-icon"></i>
                     <span class ="subsystem-span">Yield & Forecasting Reports</span>                    
                 </div>
             </div>
@@ -122,7 +137,10 @@
 
         <form action="{{ route('login') }}">
             <div class="logout-button-wrapper">
-                <button class="logout-button subsystem-span">Logout</button>
+                <button class="logout-button subsystem-span">
+                    <i class="fa-solid fa-right-from-bracket me-3" style="color: red;"></i>
+                    Logout
+                </button>
             </div>
         </form>
     </div>
