@@ -8,6 +8,7 @@ body{
     background-repeat: no-repeat;
     margin: 0;
     padding: 0;
+    font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 .side-bar-container{
     border-top-right-radius: 1.5rem;
@@ -117,6 +118,9 @@ i,
 .feature{
     padding: 0.5rem;
     border-radius: 4px;
+    padding-left: 3rem; /* indent */
+    display: flex;
+    align-items: center; 
 }
 .logout-button-wrapper{
     display: flex;
@@ -136,4 +140,16 @@ a{
 }
 .point-of-sales-container.active{
     border-bottom: 3px solid grey;
+}
+
+.feature .subsystem-span {
+    font-size: 1.1rem; /* Smaller than the main 1.5rem category */
+    opacity: 0.8;      /* Makes it slightly softer than the main heading */
+}
+
+.subsystem-span {
+    font-size: 1.2rem; /* Reduced from 1.5rem to look more professional */
+    font-weight: 500;   /* Makes it medium-thick */
+    letter-spacing: 0.5px; /* Adds a tiny bit of space between letters */
+    color: white;
 }

@@ -28,7 +28,7 @@
                     <span class ="subsystem-span">Point of Sale</span>
                 </div>
                 <div class="subsystem-drop-down">
-                    <i class="fa-solid fa-angles-right button-pos"></i>
+                    <i class="fa-solid fa-angles-right arrow-icon button-pos"></i>
                 </div>
             </div>
             <div class="subsystem-feature">    
@@ -59,7 +59,7 @@
                     <span class ="subsystem-span">Inventory Management</span>
                 </div>
                 <div class="subsystem-drop-down">
-                    <i class="fa-solid fa-angles-right button"></i>
+                    <i class="fa-solid fa-angles-right arrow-icon button"></i>
                 </div>
             </div>
 
@@ -82,7 +82,7 @@
                     <span class ="subsystem-span">Menu & Pricing </span>
                 </div>
                 <div class="subsystem-drop-down">
-                    <i class="fa-solid fa-angles-right button"></i>
+                    <i class="fa-solid fa-angles-right arrow-icon button"></i>
                 </div>
             </div>
             <div class="subsystem-feature">
@@ -104,7 +104,7 @@
                     <span class ="subsystem-span">Analysis & Reporting</span>
                 </div>
                 <div class="subsystem-drop-down">
-                    <i class="fa-solid fa-angles-right button"></i>
+                    <i class="fa-solid fa-angles-right arrow-icon button"></i>
                 </div>
             </div>
             <div class="subsystem-feature">
