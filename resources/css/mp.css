@@ -12,24 +12,23 @@
 .controls-container {
     display: flex;
     align-items: center;
-    gap: 3rem;
+    width: 100%;
+    justify-content: space-between;
 }
 .search-input {
     border-radius: 0.5rem;
     border: 1px solid grey;
-    width: 20rem;
+    width: 30rem;
     padding: 0.3rem 0.6rem;
     font-size: 1.2rem;
 }
-.pagination-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    gap: 5px;
+
+.pagination-container p {
+    margin-top: 0.8rem;
+    margin-right: 2rem;
 }
 .pagination-container .page-link {
-    padding: 5px 12px;
-    border-radius: 5px;
+    margin-top: 0.7rem;
     border: 1px solid #ccc;
     color: #333;
     text-decoration: none;
@@ -41,7 +40,7 @@
     color: white;
     border-color: #007bff;
 }
-.add-item-button {
+.add-item-button{
     border: none;
     background: red;
     color: white;
@@ -49,8 +48,19 @@
     padding: 0 1rem;
     border-radius: 10rem;
 }
+.floating-add-item-options,
+.floating-edit-item-options{
+    display: flex;
+    gap: 2rem;
+    padding-left: 40%;
+}
+.cancel-button{
+    background-color: rgb(246, 91, 91);
+}
 .cancel-button,
-.add-button {
+.add-button,
+.save-button {
+    min-width: 7rem;
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 10rem;
@@ -59,6 +69,9 @@
 .add-button {
     background-color: rgb(107, 107, 207);
     color: black;
+}
+.save-button{
+    background-color: rgb(66, 194, 66);
 }
 table {
     width: 100%;
@@ -78,6 +91,11 @@ th, td {
     border-radius: 50%;
     object-fit: cover;
 }
+.floating-edit-item-container,
+.POST-class{
+    border-bottom-left-radius: 0.6rem;
+    border-bottom-right-radius: 0.6rem;
+}
 .floating-add-item-container,
 .floating-edit-item-container,
 .floating-delete-item-container {
@@ -86,10 +104,9 @@ th, td {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: #ececec;
+    background: #f9f9f9;
     border-radius: 0.6rem;
     flex-direction: column;
-    gap: 1rem;
     z-index: 1000;
 }
 .floating-add-item-container.show,
@@ -97,12 +114,31 @@ th, td {
 .floating-delete-item-container.show {
     display: flex;
 }
+.floating-add-item,
+.floating-edit-item{
+    background-color: white;
+    border-top-right-radius: 0.6rem;
+    border-top-left-radius: 0.6rem;
+    display: flex;
+    padding: 1rem 1.5rem;
+    align-items: center;
+}
+.floating-add-item span,
+.floating-edit-item span{
+    font-size: 1.3rem;
+}
+.floating-add-item-category-container,
+.floating-edit-item-category-container{
+    display: flex;
+    gap: 0.3rem;
+    flex-direction: column;
+}
 .POST-class,
 .floating-edit-item-form {
     padding: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
     background: #d5d3d3;
 }
 .input {
@@ -114,6 +150,7 @@ th, td {
 .category-input-wrapper {
     display: inline-flex;
     gap: 0.2rem;
+    width: 12.2rem;
     background: #e6e6e6;
     padding: 0.2rem;
     border-radius: 0.2rem;
@@ -130,6 +167,11 @@ th, td {
     padding: 0.2rem 0.5rem;
     border-radius: 0.2rem;
     cursor: pointer;
+}
+.floating-add-item-image-container{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 .file-upload-area {
     border: 2px dashed #d1d5db;
@@ -173,9 +215,11 @@ th, td {
 }
 #filter-button{
     cursor: pointer;
+    width: 1.5rem;
+    height: 1.5rem;
 }
 .filter-dropdown {
-    top: 9%;
+    top: 11%;
     left: 27.2%;
     position: absolute;
     background: white;
@@ -207,6 +251,19 @@ th, td {
     color: grey;
     font-size: 1rem;
 }
+.floating-delete-item-container-wrapper{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+.floating-delete-item-options{
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;
+}
 .edit-button, .delete-button {
     border: none;
     background: none;
@@ -214,10 +271,30 @@ th, td {
     color: grey;
 }
 .delete-confirm-button {
-    background: #e74c3c;
+    background: #7d1307;
     color: white;
-    padding: 8px 16px;
-    border-radius: 8px;
     border: none;
     cursor: pointer;
+    min-width: 7rem;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 10rem;
+}
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); 
+    z-index: 999; 
+}
+.overlay.show {
+    display: block;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
