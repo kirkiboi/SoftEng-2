@@ -73,7 +73,7 @@
                 <a href="{{ route('im') }}">
                     <div class="new-transaction feature d-flex align-items-center">
                         <i class="fa-solid fa-list-check me-3 sub-icon"></i>
-                        <span class ="subsystem-span">Ingredient Master List</span>
+                        <span class ="subsystem-span">Ingredient Master Listss</span>
                     </div>
                 </a>
                 <a href="{{ route('stock-history') }}">
