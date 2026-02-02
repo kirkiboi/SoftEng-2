@@ -21,16 +21,46 @@
     align-items: center;
     gap: 2rem;
 }
+.filter-icon{
+    cursor: pointer;
+}
+.filter-drop-down-modal{
+    z-index: 1000;
+    border-radius: 1rem;
+    display: none;
+    position: absolute;
+    top: 13%;
+    left: 27.6%;
+    background-color: white;
+}
+.filter-drop-down-modal.show{
+    display: block;
+}
+.filter-drop-down-wrapper{
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+.filter-drop-down-wrapper button{
+    padding: 0.3rem 0.6rem;
+    background-color: rgb(87, 250, 87);
+    border-radius: 0.6rem;
+    border: 0.5px solid rgb(163, 163, 163);
+}
+.search-form{
+    width: 20rem;
+}
 .search-input{
+    padding: 0.3rem 0.6rem;
+    border-radius: 0.4rem;
+    border: 0.5px solid grey;
     max-width: 20rem;
     width: 100%;
 }
-.search-form{
-    display: flex;
-    gap: 0.5rem;
-}
 .pagination-container{
     display: flex;
+    margin-top: 1.5rem;
     gap: 2rem;
 }
 .button-container{
@@ -53,7 +83,7 @@
 }
 .main-body-container{
     background-color: rgb(233, 233, 233);
-    padding: 2rem;
+    padding: 1.5rem 1rem;
 }
 table {
     width: 100%;
@@ -61,17 +91,43 @@ table {
     table-layout: fixed;
 }
 th, td {
-    text-align: center;
+    /* text-align: center; */
     vertical-align: middle;
-    width: 16.66%;
     padding: 1rem;
-    text-align: left;
 }
 td{
-    border-right: 1px solid grey;
-    border-top: 1px solid grey;
+    border-top: 1px solid rgb(171, 171, 171);
+    border-right: 1px solid rgb(224, 224, 224);
 }
-.floating-add-ingredient-container{
+.td-actions{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 1rem;
+    box-sizing: border-box;
+}
+.td-actions i:hover{
+    color: black;
+    transform: scale(1.1);
+}
+.td-actions button{
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+.td-actions i{
+    font-size: 1rem;
+    color: grey;
+}
+.floating-add-ingredient-container,
+.floating-edit-ingredient-container,
+.floating-delete-item-container{
+    z-index: 1000;
     display: none;
     border-radius: 0.5rem;
     background-color: rgb(222, 222, 222);
@@ -80,31 +136,81 @@ td{
     left: 50%;
     transform: translate(-50%, -50%);
 }
-.floating-add-ingredient-container.active{
+.floating-add-ingredient-container.active,
+.floating-edit-ingredient-container.active,
+.floating-delete-item-container.active{
     display: block;
 }
-.floating-add-ingredient-container-wrapper{
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-.floating-add-item{
-    border-radius: 0.5rem;
-    padding: 1rem 2rem;
-    background-color: rgb(241, 240, 240);
-}
-.floating-add-item-category-container{
-    padding: 1rem 2rem;
-}
-.floating-add-ingredient-form{
+.floating-add-ingredient-container-wrapper,
+.floating-edit-ingredient-container-wrapper{
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
-.floating-add-item-options{
+.floating-add-item,
+.floating-edit-item{
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    padding: 1rem 1rem;
+    background-color: rgb(241, 240, 240);
+    display: flex;
+    align-items: center;
+}
+.floating-add-item-name-container,
+.floating-add-ingredient-cost-per-unit,
+.floating-add-ingredient-stock,
+.floating-add-ingredient-threshold
+{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.floating-add-item-name-container input,
+.floating-add-ingredient-cost-per-unit input,
+.floating-add-ingredient-stock input,
+.floating-add-ingredient-threshold input,
+.floating-edit-item-name-container input{
+    padding: 0.1rem 0.5rem;
+    border-radius: 0.3rem;
+    border: 0.5px solid grey;
+}
+.floating-add-item-category-container label,
+.floating-add-ingredient-unit label
+.floating-edit-item-category-container label,
+.floating-edit-ingredient-unit label{
+    min-width: 4rem
+}
+.floating-add-ingredient-form,
+.edit-ingredient-form{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    width: 25rem;
+}
+.floating-add-item-options,
+.floating-edit-item-options{
     display: flex;
     justify-content: space-evenly;
     padding: 2rem;
+}
+.add-button{
+    background-color: green;
+    min-width: 6rem;
+    border-radius: 0.3rem;
+    padding: 0.2rem 1rem;
+    color: white;
+    border-radius: 1rem;
+    border: 0.2px solid grey;
+}
+.cancel-button{
+    background-color: red;
+    border-radius: 0.3rem;
+    min-width: 6rem;
+    padding: 0.2rem 1rem;
+    color: white;
+    border-radius: 1rem;
+    border: 0.2px solid grey;
 }
 .my-alert {
     position: fixed;
@@ -118,9 +224,10 @@ td{
     font-weight: bold;
 }
 .record-stock-in-container{
+    z-index: 1000;
     background-color: white;
     display: none;
-    position: absolute;
+    position: fixed;
     top: 30%;
     left: 50%;
 }
@@ -129,4 +236,52 @@ td{
 }
 .record-stock-in-wrapper{
     padding: 2rem;
+}
+.overlay{
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); 
+    z-index: 999; 
+}
+.overlay.show {
+    display: block;
+}
+.floating-edit-item-name-container{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.floating-delete-item-container-wrapper{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+.floating-delete-item-options{
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;
+}
+.edit-button, .delete-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: grey;
+}
+.delete-confirm-button {
+    background: #7d1307;
+    color: white;
+    border: none;
+    cursor: pointer;
+    min-width: 7rem;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 10rem;
 }

@@ -22,6 +22,20 @@
 .add-item-container {
     margin-left: auto;
 }
+.add-batch-modal{
+    z-index: 1000;
+    border-radius: 0.5rem;
+    background-color: rgb(222, 222, 222);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.add-batch-modal-wrapper{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
 .header-container button{
     background-color: red;
     color: white;

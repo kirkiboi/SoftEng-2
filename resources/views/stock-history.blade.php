@@ -1,38 +1,67 @@
 @extends('main')
-@section('inventory audit log', 'System 1')
+@section('inventory audit log', 'System 3')
 @section('content')
 @vite(['resources/css/stock-history.css'])
-@vite(['resources/js/poshistory.js'])
+@vite(['resources/js/ingredientAuditLog.js'])
 <div class="main-container">
     <div class="parent-container">
         <div class="header-container">
             <div class="filter-container">
+                <!-- FILTER ICON -->
                 <svg id="filter-button" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" class="filter-icon">
                     <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
+                <!-- FILTER DROPDOWN -->
+                <div class="filter-dropdown" id="filterDropdown" >
+                    <form method="GET" action="{{ route('stock-history') }}" class="filter-dropdown-form">
+                        {{-- Action filter --}}
+                        <div class="filter-group">
+                            <select name="action">
+                                <option value="">All</option>
+                                <option value="created" {{ request('action') === 'created' ? 'selected' : '' }}>Added</option>
+                                <option value="updated" {{ request('action') === 'updated' ? 'selected' : '' }}>Updated</option>
+                                <option value="deleted" {{ request('action') === 'deleted' ? 'selected' : '' }}>Deleted</option>
+                            </select>
+                        </div>
+                        {{-- User filter --}}
+                        <div class="filter-group">
+                            <select name="user_id">
+                                <option value="">All</option>
+                                @foreach ($users as $user)
+                                    <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>
+                                        {{ $user->first_name }} {{ $user->last_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <button type="submit">Apply filter</button>
+                    </form>
+                </div>
             </div>
             <div class="search-container">
-                <input 
-                    type="text"
-                    name="search"
-                    class="search-input"
-                    placeholder="Search"
-                >
+                <form method="GET" action="{{ route('stock-history') }}">
+                    <input 
+                        type="text"
+                        name="search"
+                        class="search-input"
+                        placeholder="Search by ingredient name"
+                        value="{{ request('search') }}"
+                    >
+                </form>
             </div>
             <div class="date-container">
-                <button class="date-filter-button">
-                    <span>30 Days</span>
-                    <i class="fa-solid fa-calendar"></i>
-                </button>
-                <input
-                    type="date"
-                    id="dateInput"
-                    hidden
-                />
+                <form method="GET" action="{{ route('stock-history') }}">
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                    <input
+                        type="date"
+                        name="date"
+                        id="dateInput"
+                        value="{{ request('date') }}"
+                    />
+                </form>
             </div>
             <div class="pagination-container">
-                <span>1 - 8 of 52</span>
-                <span> < > </span>
+                {{ $logs->onEachSide(0)->links() }}
             </div>
             <div class="export-sales-data-container">
                 <button>
@@ -53,8 +82,9 @@
                 <thead>
                     <tr class="tr">
                         <th class="th">Item Name</th>
+                        <th class="th">Action</th>
                         <th class="th">Date & Time</th>
-                        <th class="th">User ID</th>
+                        <th class="th">User</th>
                         <th class="th">Unit Cost</th>
                         <th class="th">Total Cost</th>
                     </tr>
@@ -62,11 +92,17 @@
                 <tbody>
                     @foreach($logs as $log)
                         <tr>
-                            <td>{{ optional($log->ingredient)->name ?? 'Deleted Ingredient' }}</td>
+                            <td>{{ $log->ingredient_name ?? 'Deleted Ingredient' }}</td>
+                            <td>{{ ucfirst($log->action) }}</td>
                             <td>{{ $log->created_at }}</td>
-                            <td>{{ $log->user_id }}</td>
-                            <td>{{ $log->total_cost }}</td>
+                            <td>
+                                {{ $log->user 
+                                    ? $log->user->first_name . ' ' . $log->user->last_name 
+                                    : 'System' 
+                                }}
+                            </td>
                             <td>{{ $log->unit_cost }}</td>
+                            <td>{{ $log->total_cost }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -74,4 +110,5 @@
         </div>
     </div>
 </div>
+<div class="overlay" id="overlay"></div>
 @endsection

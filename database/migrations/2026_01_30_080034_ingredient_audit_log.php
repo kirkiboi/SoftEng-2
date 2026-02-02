@@ -11,9 +11,11 @@ return new class extends Migration
         Schema::create('ingredient_audit_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('ingredient_name');
             $table->foreignId('ingredient_id')->nullable()->constrained()->nullOnDelete();
             $table->decimal('unit_cost', 10,2)->nullable();
             $table->decimal('total_cost', 10,2)->nullable();
+            $table->string('action');
             $table->timestamps();
         });
     }

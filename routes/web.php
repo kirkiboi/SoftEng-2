@@ -27,7 +27,8 @@ Route::get('/stockhistory', [IngredientController::class, 'auditLog'])->name('st
 Route::get('/inventorymanagement', [IngredientController::class, 'index'])->name('im'); // Ingredient information padung sa table
 Route::post('/ingredients', [IngredientController::class, 'store'])->name('ingredients.store'); // Route pag mag add item
 Route::delete('/ingredients/{ingredients}', [IngredientController::class, 'destroy'])->name('ingredients.destroy'); // Route pang delete sa ingredient
-
+Route::put('/ingredients/{ingredient}', [IngredientController::class, 'update'])->name('ingredients.update'); // ROUTE TO UPDATE INGREDIENT
+    
 // Menu & Pricing Routes
 Route::get('/menuandpricing', [ProductController::class, 'index'])->name('mp'); // List sa products padung sa table
 Route::get('/menuandpricing/{product}/edit', [ProductController::class, 'edit'])->name('editMP'); // Route pang edit sa product

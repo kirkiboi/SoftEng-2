@@ -12,38 +12,62 @@
         <div class="parent-container">
             <div class="header-container">
                 <div class="filter-and-search-container">
-                    <svg id="filter-button" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" class="filter-icon">
+                    <!-- FILTER ICON STARTS HERE -->
+                    <svg id="filter-button" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22" class="filter-icon">
                         <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
+                    <!-- FILTER ICON ENDS HERE + FILTER MODAL STARTS HERE -->
+                    <form method="GET" action="{{ route('im') }}" class="filter-drop-down-modal">
+                        <div class="filter-drop-down-modal-container">
+                            <div class="filter-drop-down-wrapper">
+                                <select name="filter-category">
+                                    <option value="">All</option>
+                                    <option value="sweeteners">Sweeteners</option>
+                                    <option value="spices">Spices</option>
+                                    <option value="oils">Oils</option>
+                                    <option value="baking">Baking</option>
+                                    <option value="herbs">Herbs</option>
+                                    <option value="acids">Acids</option>
+                                    <option value="liquids">Liquids</option>
+                                    <option value="thickners">Thickners</option>
+                                    <option value="condiments">Condiments</option>
+                                </select>
+                                <button class="apply-filter-button">Apply Filter</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- FILTER MODAL ENDS HERE + SEARCH INPUT STARTS HERE -->
                     <form method="GET" action="{{ route('im') }}" class="search-form">
                         <input 
                             type="text"
                             name="search"
                             class="search-input"
-                            placeholder="Search"
+                            placeholder="Search by ingredient name"
                             value="{{ request('search') }}"
                         >
-                        <button type="submit">Search</button>
                     </form>
                 </div>
+                <!-- SEARCH INPUT ENDS HERE + PAGINATION CONTROL STARTS HERE -->
                 <div class="pagination-container">
                     {{ $ingredients->links() }}
                 </div>
+                <!--  SEARCH INPUT ENDS HERE + BUTTON CONTAINER DIRI TONG STOCK IN AND ADD INGREDIENTS-->
                 <div class="button-container">
                     <button class="record-stock-in-button">Record Stock In</button>
                     <button class="add-ingredient-button">Add Ingredient</button>
                 </div>
             </div>
+            <!-- BUTTONS ENDS HERE + MAIN BODY (TABLE) STARTS HERE -->
             <div class="main-body-container">
                 <table>
                     <colgroup>
                         <col style="width: 19%">
-                        <col style="width: 20%">
-                        <col style="width: 25%">
+                        <col style="width: 12%">
+                        <col style="width: 22%">
                         <col style="width: 15%">
-                        <col style="width: 13%">
-                        <col style="width: 16%">
-                        <col style="width: 6%">
+                        <col style="width: 12%">
+                        <col style="width: 11%">
+                        <col style="width: 8%">
                         <col style="width: 8%">
                     </colgroup>
                     <thead>
@@ -74,11 +98,20 @@
                                         <span class="status-ok">OK</span>
                                     @endif
                                 </td>
-                                <td>
+                                <td class="td-actions">
+                                    <button 
+                                        class="edit-ingredient-btn"
+                                        data-id="{{ $ingredient->id }}"
+                                        data-name="{{ $ingredient->name }}"
+                                        data-category="{{ $ingredient->category }}"
+                                        data-unit="{{ $ingredient->unit }}"
+                                        data-cost="{{ $ingredient->cost_per_unit }}"
+                                        data-threshold="{{ $ingredient->threshold }}"
+                                    ><i class="fa-solid fa-pencil"></i></button>
                                     <form method="POST" action="{{ route('ingredients.destroy', $ingredient->id) }}" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="delete-button">Delete</button>
+                                        <button type="submit" class="delete-button"><i class="fa-solid fa-trash"></i></button>
                                     </form>
                                 </td>
                             </tr>
@@ -88,6 +121,7 @@
             </div>
         </div>
     </div>
+    <!-- TABLE ENDS HERE + ADD INGREDIENT MODAL STARTS HERE -->
     <div class="floating-add-ingredient-container">
         <div class="floating-add-ingredient-container-wrapper">
             <div class="floating-add-item">
@@ -134,15 +168,57 @@
                     <label>Threshold</label>
                     <input type="number" step="0.01" name="threshold" value="0" required>
                 </div>
-                <input type="hidden" name="status" value="active">
                 <div class="floating-add-item-options">
-                    <button type="button" class="cancel-button">Cancel</button>
+                    <button type="button" class="cancel-button" id="add-ingredient-cancel-button">Cancel</button>
                     <button type="submit" class="add-button">Add</button>
                 </div>
             </form>
         </div>
     </div>
-
+    <!-- FLOATING EDIT INGREDIENT MODAL -->
+    <div class="floating-edit-ingredient-container">
+        <div class="floating-edit-ingredient-container-wrapper">
+            <div class="floating-edit-item">
+                <span>Edit ingredient</span>
+            </div>
+            <form method="POST" id="editIngredientForm" class="edit-ingredient-form">
+                @csrf
+                @method('PUT')
+                <div class="floating-edit-item-name-container">
+                    <label>Ingredient name</label>
+                    <input type="text" class="input" name="name" required>
+                </div>
+                <div class="floating-edit-item-category-container">
+                    <label>Category</label>
+                    <select name="category" required>
+                        <option value="sweeteners">sweeteners</option>
+                        <option value="spices">spices</option>
+                        <option value="oils">oils</option>
+                        <option value="baking">baking</option>
+                        <option value="herbs">herbs</option>
+                        <option value="acids">acids</option>
+                        <option value="liquids">liquids</option>
+                        <option value="thickners">thickners</option>
+                        <option value="condiments">condiments</option>
+                    </select>
+                </div>
+                <div class="floating-edit-ingredient-unit">
+                    <label>Unit</label>
+                    <select name="unit" required>
+                        <option value="kg">kg</option>
+                        <option value="g">g</option>
+                        <option value="pcs">pcs</option>
+                        <option value="ml">ml</option>
+                    </select>
+                </div>
+                <div class="floating-add-item-options">
+                    <button type="button" class="edit-cancel-button">Cancel</button>
+                    <button type="submit" class="add-button">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- EDIT INGREDIENT MODAL ENDS HERE + RECORD STOCK IN MODAL STARTS HERE -->
     <div class="record-stock-in-container">
         <div class="record-stock-in-wrapper">
             <div class="record-stock-in">
@@ -181,4 +257,20 @@
             </form>
         </div>
     </div>
+    <!-- RECORD STOCK IN MODAL ENDS HERE + DELETE INGREDIENT CONFIRMATION NGA MODAL -->
+    <div class="floating-delete-item-container" id="deleteModal" >
+        <div class="floating-delete-item-container-wrapper">
+            <div class="remove-item-header">
+                <h2>Remove Item</h2>
+            </div>
+            <div class="floating-delete-item">
+                <p class="delete-message">Are you sure you want to delete this item? If you delete, it will be permanently lost.</p>
+            </div>
+            <div class="floating-delete-item-options">
+                <button type="button" id="cancelDelete" class="cancel-button">Cancel</button>
+                <button type="button" id="confirmDelete" class="delete-confirm-button">Delete</button>
+            </div>
+        </div>
+    </div>
+<div class="overlay" id="overlay"></div>
 @endsection

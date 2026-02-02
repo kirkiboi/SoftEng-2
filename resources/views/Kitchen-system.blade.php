@@ -23,6 +23,49 @@
                     <div class="add-item-container">
                         <button class="add-item-button">+ Add Batch</button>
                     </div>
+                    <div class="add-batch-modal">
+                        <div class="add-batch-modal-wrapper">
+                            <div class="add-batch-span">
+                                <span>Search a batch</span>
+                            </div>
+                            <div class="add-batch-input">
+                                <input type="text" name="" id="" placeholder="Search Batch Name">
+                            </div>
+                            <div class="product-card-container">
+
+                            <div class="add-batch-results">
+                                <button class="scroll-btn left">‹</button>
+
+                                <div class="product-card-container">
+
+                                <div class="product-card">
+                                        <div class="product-name">Fried Chicken</div>
+                                        <div class="product-category">Meals</div>
+                                        <button class="add-batch-btn">Add Batch</button>
+                                    </div>
+
+                                    <div class="product-card">
+                                        <div class="product-name">Pork Adobo</div>
+                                        <div class="product-category">Meals</div>
+                                        <button class="add-batch-btn">Add Batch</button>
+                                    </div>
+
+                                    <div class="product-card">
+                                        <div class="product-name">Iced Tea</div>
+                                        <div class="product-category">Drinks</div>
+                                        <button class="add-batch-btn">Add Batch</button>
+                                    </div>
+                                    
+                                </div>
+
+                                <button class="scroll-btn right">›</button>
+                            </div>
+                            <div class="add-batch-controls">
+                                <button>Search</button>
+                                <button>Add batch</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="main-body-container">
                     <div class="queued-container">
