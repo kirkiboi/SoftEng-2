@@ -37,28 +37,23 @@
                                 <button class="scroll-btn left">‹</button>
 
                                 <div class="product-card-container">
-
-                                <div class="product-card">
-                                        <div class="product-name">Fried Chicken</div>
-                                        <div class="product-category">Meals</div>
-                                        <button class="add-batch-btn">Add Batch</button>
-                                    </div>
-
                                     <div class="product-card">
-                                        <div class="product-name">Pork Adobo</div>
-                                        <div class="product-category">Meals</div>
-                                        <button class="add-batch-btn">Add Batch</button>
+                                        <div class="product-name">
+                                            <span>
+                                                Fried Chicken
+                                            </span>
+                                        </div>
+                                        <div class="product-category">
+                                            <span>Meals</span>
+                                        </div>
+                                        <div class="div">
+                                            <button class="add-batch-btn">
+                                                <span>Add Batch</span>
+                                            </button>                                            
+                                        </div>
                                     </div>
-
-                                    <div class="product-card">
-                                        <div class="product-name">Iced Tea</div>
-                                        <div class="product-category">Drinks</div>
-                                        <button class="add-batch-btn">Add Batch</button>
-                                    </div>
-                                    
+                                    <button class="scroll-btn right">›</button>
                                 </div>
-
-                                <button class="scroll-btn right">›</button>
                             </div>
                             <div class="add-batch-controls">
                                 <button>Search</button>
