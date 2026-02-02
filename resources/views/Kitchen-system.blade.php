@@ -1,4 +1,4 @@
-    @extends('main')
+ @extends('main')
     @section('kitchen production', 'System 2')
     @section('content')
     @vite(['resources/css/kitchen-system.css'])
@@ -31,31 +31,26 @@
                             <div class="add-batch-input">
                                 <input type="text" name="" id="" placeholder="Search Batch Name">
                             </div>
-                            <div class="product-card-container">
-
+                            <div class="product-card-container"> 
                             <div class="add-batch-results">
                                 <button class="scroll-btn left">‹</button>
-
                                 <div class="product-card-container">
                                     <div class="product-card">
                                         <div class="product-name">
-                                            <span>
-                                                Fried Chicken
-                                            </span>
+                                            <span>Fried Chicken</span>
                                         </div>
                                         <div class="product-category">
                                             <span>Meals</span>
                                         </div>
-                                        <div class="div">
-                                            <button class="add-batch-btn">
-                                                <span>Add Batch</span>
-                                            </button>                                            
+                                        <div class="product-card-button">
+                                            <button class="add-batch-btn">Add Batch</button>
                                         </div>
                                     </div>
-                                    <button class="scroll-btn right">›</button>
+
                                 </div>
+                                <button class="scroll-btn right">›</button>
                             </div>
-                            <div class="add-batch-controls">
+                        <div class="add-batch-controls">
                                 <button>Search</button>
                                 <button>Add batch</button>
                             </div>
