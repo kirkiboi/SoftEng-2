@@ -8,6 +8,7 @@ body{
     background-repeat: no-repeat;
     margin: 0;
     padding: 0;
+    font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 .side-bar-container{
     border-top-right-radius: 1.5rem;
@@ -55,10 +56,13 @@ body{
     opacity: 1;
     transform: translateY(0);
 }
-.button-pos{
-    transition: transform 1s;
+
+/* arrow icon animation */
+.arrow-icon {
+    transition: transform 0.5s ease;
 }
-.button-pos.active{
+
+.arrow-icon.active {
     transform: rotate(90deg);
 }
 .drop-down-container-button,
@@ -117,6 +121,9 @@ i,
 .feature{
     padding: 0.5rem;
     border-radius: 4px;
+    padding-left: 3.5rem; /* indent */
+    display: flex;
+    align-items: center; 
 }
 .logout-button-wrapper{
     display: flex;
@@ -136,4 +143,49 @@ a{
 }
 .point-of-sales-container.active{
     border-bottom: 3px solid grey;
+}
+
+.feature .subsystem-span {
+    font-size: 1.1rem; /* Smaller than the main 1.5rem category */
+    opacity: 0.9;      /* Makes it slightly softer than the main heading */
+}
+
+.subsystem-span {
+    font-size: 1.2rem; /* Reduced from 1.5rem to look more professional */
+    font-weight: 500;   /* Makes it medium-thick */
+    letter-spacing: 0.5px; /* Adds a tiny bit of space between letters */
+    color: white;
+}
+
+/* The Yellow Highlight */
+.active-page {
+    background-color: #ffff00 !important; /* Bright Yellow */
+    border-radius: 50px !important;       /* Pill Shape */
+    color: black !important;             /* Dark Text */
+}
+
+/* Ensure icons also turn dark when highlighted */
+.active-page i, 
+.active-page .subsystem-span {
+    color: black !important;
+}
+
+/* Main Icon Styling */
+.subsystem i {
+    width: 30px; /* Keeps all text perfectly aligned vertically */
+    text-align: center;
+    font-size: 1.3rem;
+}
+
+/* Sub-category Icon Styling */
+.sub-icon {
+    font-size: 0.9rem !important; /* Slightly smaller for sub-items */
+    opacity: 0.8;
+    width: 20px;
+    text-align: center;
+}
+
+/* The arrow rotation logic you already have */
+.active .fa-angles-right {
+    transform: rotate(90deg);
 }
