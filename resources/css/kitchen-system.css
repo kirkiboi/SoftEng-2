@@ -36,6 +36,9 @@
     flex-direction: column;
     gap: 1rem;
 }
+.product-card-container{
+    display: flex;
+}
 .header-container button{
     background-color: red;
     color: white;

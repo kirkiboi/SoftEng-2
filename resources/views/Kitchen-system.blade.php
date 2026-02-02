@@ -1,4 +1,4 @@
-    @extends('main')
+    <!-- @extends('main')
     @section('kitchen production', 'System 2')
     @section('content')
     @vite(['resources/css/kitchen-system.css'])
@@ -35,29 +35,19 @@
 
                             <div class="add-batch-results">
                                 <button class="scroll-btn left">‹</button>
-
                                 <div class="product-card-container">
-
-                                <div class="product-card">
-                                        <div class="product-name">Fried Chicken</div>
-                                        <div class="product-category">Meals</div>
-                                        <button class="add-batch-btn">Add Batch</button>
-                                    </div>
-
                                     <div class="product-card">
-                                        <div class="product-name">Pork Adobo</div>
-                                        <div class="product-category">Meals</div>
-                                        <button class="add-batch-btn">Add Batch</button>
+                                        <div class="product-name">
+                                            <span>Fried Chicken</span>
+                                        </div>
+                                        <div class="product-category">
+                                            <span>Meals</span>
+                                        </div>
+                                        <div class="product-card-button">
+                                            <button class="add-batch-btn">Add Batch</button>
+                                        </div>
                                     </div>
-
-                                    <div class="product-card">
-                                        <div class="product-name">Iced Tea</div>
-                                        <div class="product-category">Drinks</div>
-                                        <button class="add-batch-btn">Add Batch</button>
-                                    </div>
-                                    
                                 </div>
-
                                 <button class="scroll-btn right">›</button>
                             </div>
                             <div class="add-batch-controls">
@@ -165,4 +155,4 @@
                 </div>
             </div>
         </div>
-    @endsection
+    @endsection -->
