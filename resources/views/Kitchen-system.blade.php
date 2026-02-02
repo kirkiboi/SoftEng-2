@@ -31,9 +31,9 @@
                             <div class="add-batch-input">
                                 <input type="text" name="" id="" placeholder="Search Batch Name">
                             </div>
-                            <div class="product-card-container">
+                            <div class="product-card-container"> -->
 
-                            <div class="add-batch-results">
+                            <!-- <div class="add-batch-results">
                                 <button class="scroll-btn left">‹</button>
                                 <div class="product-card-container">
                                     <div class="product-card">
@@ -47,10 +47,11 @@
                                             <button class="add-batch-btn">Add Batch</button>
                                         </div>
                                     </div>
+
                                 </div>
                                 <button class="scroll-btn right">›</button>
-                            </div>
-                            <div class="add-batch-controls">
+                            </div> -->
+                            <!-- <div class="add-batch-controls">
                                 <button>Search</button>
                                 <button>Add batch</button>
                             </div>
