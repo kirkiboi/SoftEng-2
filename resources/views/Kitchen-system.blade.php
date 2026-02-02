@@ -1,4 +1,4 @@
- <!-- @extends('main')
+ @extends('main')
     @section('kitchen production', 'System 2')
     @section('content')
     @vite(['resources/css/kitchen-system.css'])
@@ -155,4 +155,4 @@
                 </div>
             </div>
         </div>
-    @endsection -->
+    @endsection

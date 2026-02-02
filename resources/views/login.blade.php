@@ -12,7 +12,7 @@
         @vite(['resources/css/login.css'])
     </head>
     <body>
-        <div class="login-container">
+        <!-- <div class="login-container">
             <div class="design-container">
                 <div class="logo-with-dining-center-text">
                     <img src="{{ asset('photos/UMDiningcenter.png') }}" alt="UM Dining Center" class ="login-logoDiningCenter">
@@ -38,6 +38,6 @@
                     <button class="login-button">Login</button>
                 </form>
             </div>
-        </div>
+        </div> -->
     </body>
 </html>
