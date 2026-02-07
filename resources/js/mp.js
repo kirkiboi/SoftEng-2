@@ -12,50 +12,89 @@ document.addEventListener("DOMContentLoaded", () => {
     const overlay = document.getElementById("overlay");
     let currentForm = null;
     // FINALIZED FILTER FUNCTIONALITY
-if (filterButton && filterDropdown) {
-    const defaultIcon = filterButton.querySelector(".bi-funnel");
-    const activeIcon = filterButton.querySelector(".bi-x-lg");
+    if (filterButton && filterDropdown) {
+        const defaultIcon = filterButton.querySelector(".bi-funnel");
+        const activeIcon = filterButton.querySelector(".bi-x-lg");
 
-    filterButton.addEventListener("click", (e) => {
-        e.stopPropagation();
-        // Use getComputedStyle for accurate detection
-        const isDropdownOpen = window.getComputedStyle(filterDropdown).display === "block";
-        
-        filterDropdown.style.display = isDropdownOpen ? "none" : "block";
+        filterButton.addEventListener("click", (e) => {
+            e.stopPropagation();
+            // Use getComputedStyle for accurate detection
+            const isDropdownOpen =
+                window.getComputedStyle(filterDropdown).display === "block";
 
-        // Toggle Icons with force-display logic
-        if (!isDropdownOpen) {
-            if (defaultIcon) defaultIcon.setAttribute("style", "display: none !important");
-            if (activeIcon) activeIcon.setAttribute("style", "display: block !important");
-        } else {
-            if (defaultIcon) defaultIcon.setAttribute("style", "display: block !important");
-            if (activeIcon) activeIcon.setAttribute("style", "display: none !important");
-        }
-    });
+            filterDropdown.style.display = isDropdownOpen ? "none" : "block";
 
-    // Handle Category Filtering
-    filterDropdown.querySelectorAll(".filter-option").forEach((option) => {
-        option.addEventListener("click", () => {
-            const cat = option.dataset.category;
-            tableRows.forEach((row) => {
-                row.style.display = (cat === "all" || row.dataset.category === cat) ? "" : "none";
-            });
-            filterDropdown.style.display = "none";
-            // Reset icons after selection
-            if (defaultIcon) defaultIcon.setAttribute("style", "display: block !important");
-            if (activeIcon) activeIcon.setAttribute("style", "display: none !important");
+            // Toggle Icons with force-display logic
+            if (!isDropdownOpen) {
+                if (defaultIcon)
+                    defaultIcon.setAttribute(
+                        "style",
+                        "display: none !important",
+                    );
+                if (activeIcon)
+                    activeIcon.setAttribute(
+                        "style",
+                        "display: block !important",
+                    );
+            } else {
+                if (defaultIcon)
+                    defaultIcon.setAttribute(
+                        "style",
+                        "display: block !important",
+                    );
+                if (activeIcon)
+                    activeIcon.setAttribute(
+                        "style",
+                        "display: none !important",
+                    );
+            }
         });
-    });
 
-    // Close when clicking outside
-    document.addEventListener("click", (e) => {
-        if (!filterDropdown.contains(e.target) && !filterButton.contains(e.target)) {
-            filterDropdown.style.display = "none";
-            if (defaultIcon) defaultIcon.setAttribute("style", "display: block !important");
-            if (activeIcon) activeIcon.setAttribute("style", "display: none !important");
-        }
-    });
-}
+        // Handle Category Filtering
+        filterDropdown.querySelectorAll(".filter-option").forEach((option) => {
+            option.addEventListener("click", () => {
+                const cat = option.dataset.category;
+                tableRows.forEach((row) => {
+                    row.style.display =
+                        cat === "all" || row.dataset.category === cat
+                            ? ""
+                            : "none";
+                });
+                filterDropdown.style.display = "none";
+                // Reset icons after selection
+                if (defaultIcon)
+                    defaultIcon.setAttribute(
+                        "style",
+                        "display: block !important",
+                    );
+                if (activeIcon)
+                    activeIcon.setAttribute(
+                        "style",
+                        "display: none !important",
+                    );
+            });
+        });
+
+        // Close when clicking outside
+        document.addEventListener("click", (e) => {
+            if (
+                !filterDropdown.contains(e.target) &&
+                !filterButton.contains(e.target)
+            ) {
+                filterDropdown.style.display = "none";
+                if (defaultIcon)
+                    defaultIcon.setAttribute(
+                        "style",
+                        "display: block !important",
+                    );
+                if (activeIcon)
+                    activeIcon.setAttribute(
+                        "style",
+                        "display: none !important",
+                    );
+            }
+        });
+    }
     // ADD ITEM MODAL FUNCTIONALITY
     if (addItemBtn && addItemModal) {
         addItemBtn.addEventListener("click", () => {
@@ -123,4 +162,18 @@ if (filterButton && filterDropdown) {
         overlay.classList.remove("show");
         currentForm = null;
     });
+    // AUTO-HIDE ALERT NOTIFICATIONS
+    const alert = document.querySelector(".my-alert");
+    if (alert) {
+        // Wait 3 seconds, then fade out
+        setTimeout(() => {
+            alert.style.transition = "opacity 0.5s ease";
+            alert.style.opacity = "0";
+
+            // Completely remove from DOM after fade finishes
+            setTimeout(() => {
+                alert.remove();
+            }, 500);
+        }, 3000);
+    }
 });
