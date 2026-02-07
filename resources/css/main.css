@@ -2,7 +2,7 @@ body{
     overflow-y: hidden;
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    /* gap: 1rem; */
     background-image: url(/public/photos/DashboardBG.jpg);
     background-size: cover;
     background-repeat: no-repeat;
@@ -11,8 +11,6 @@ body{
     font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 .side-bar-container{
-    border-top-right-radius: 1.5rem;
-    border-bottom-right-radius: 1.5rem;
     height: 100vh;
     padding: 2rem;
     background: rgba(47, 47, 47, 0.491); 
