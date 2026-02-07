@@ -2,25 +2,30 @@
     width: 100%;
     max-width: 90rem;
     min-height: 45rem;
-    background: white;
+    background-color: #f4f7f6;
     padding: 1.9rem;
 }
 .header-container {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem; /* Adds space before the table starts */
+    padding: 0.5rem 0;
 }
 .controls-container {
     display: flex;
     align-items: center;
     width: 100%;
     justify-content: space-between;
+    gap: 1.5rem; /* Space between filter icon, search, and button */
 }
 .search-input {
-    border-radius: 0.5rem;
-    border: 1px solid grey;
-    width: 30rem;
-    padding: 0.3rem 0.6rem;
-    font-size: 1.2rem;
+    border-radius: 0.8rem;
+    border: 1px solid #e0e0e0;
+    background: #fcfcfc;
+    width: 25rem;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
 }
 
 .pagination-container p {
@@ -41,55 +46,163 @@
     border-color: #007bff;
 }
 .add-item-button{
-    border: none;
-    background: red;
+  border: none;
+    background: #ff0000; 
     color: white;
-    font-size: 1.4rem;
-    padding: 0 1rem;
-    border-radius: 10rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 10px 24px; /* Good horizontal padding for the pill look */
+    border-radius: 50px; /* This creates the perfect pill shape */
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+    transition: 0.3s;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-item-button:hover {
+    background-color: #d10000;
+    transform: translateY(-1px); /* Adds a nice little lift on hover */
 }
 .floating-add-item-options,
 .floating-edit-item-options{
     display: flex;
-    gap: 2rem;
-    padding-left: 40%;
+    gap: 1rem;
+    padding: 1.5rem 0 0 0; /* Resetting padding-left: 40% */
+    justify-content: flex-end; /* Align buttons to the right */
 }
+
+
 .cancel-button{
     background-color: rgb(246, 91, 91);
 }
-.cancel-button,
-.add-button,
+
+/* --- BUTTON THEME UPDATES --- */
+
+/* Add Button (Blue Pill) */
+.add-button {
+    background-color: #2975da; /* Professional Blue */
+    color: white;
+    font-weight: 700;
+    min-width: 7rem; /* Prevents text cutoff */
+    padding: 0.6rem 1.5rem; /* Spacious padding */
+    border-radius: 10rem; /* Pill Shape */
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.add-button:hover {
+    background-color: #1e5bb0; /* Darker blue on hover */
+}
+
+/* Save Button (Yellow Pill) */
 .save-button {
+    background-color: #f1c40f; /* Professional Yellow */
+    color: #2d3436; /* Dark text for better contrast on yellow */
+    font-weight: 700;
+    min-width: 7rem;
+    padding: 0.6rem 1.5rem;
+    border-radius: 10rem; /* Pill Shape */
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.save-button:hover {
+    background-color: #d4ac0d; /* Darker yellow on hover */
+}
+
+/* Cancel Button (Stay Grey Pill) */
+.cancel-button {
+    background-color: #f1f1f1;
+    color: #636e72;
+    min-width: 7rem;
+    padding: 0.6rem 1.5rem;
+    border-radius: 10rem; /* Pill Shape */
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* Clean Cancel Button Styling */
+.cancel-button {
+    background-color: #f1f1f1; /* Light neutral grey */
+    color: #636e72; /* Subtle dark text */
     min-width: 7rem;
     border: none;
     padding: 0.5rem 1rem;
-    border-radius: 10rem;
+    border-radius: 10rem; /* Pill shape consistency */
     cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
 }
-.add-button {
-    background-color: rgb(107, 107, 207);
-    color: black;
+
+.cancel-button:hover {
+    background-color: #e2e2e2; /* Slightly darker on hover */
+    color: #2d3436;
 }
-.save-button{
-    background-color: rgb(66, 194, 66);
-}
+
 table {
     width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
 }
+
+.table-container {
+    background: white;
+    width: 100%;
+    max-width: 90rem;
+    height: fit-content;
+    border-radius: 1.5rem; /* Clean rounded corners */
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); /* Soft shadow from Figma */
+}
+
+.th {
+    color: #a0a0a0; /* Subtle grey for headers */
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase; /* Keep it simple */
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 1rem;
+    text-align: left;
+    letter-spacing: 0.5px;
+}
+
 th, td {
-    padding: 1rem;
+    padding: 1.5rem 1rem; /* More height for each row */
     vertical-align: middle;
+    border: none; /* Remove all standard borders */
 }
 .tr {
-    border-top: 1px solid grey;
+    border-top: 1px solid #f1f1f1;
+    border-bottom: 1px solid #f1f1f1;
 }
+
+.tr td {
+    padding: 1.2rem 0; /* Vertical spacing like Figma */
+    border-bottom: 1px solid #f8f9fa; /* Very light dividers */
+}
+
+.tr td:first-child {
+    font-weight: 800; /* Extra bold for Item Names */
+    color: #2d3436;
+    font-size: 1.1rem;
+}
+
+th, td {
+    padding: 1.5rem 1rem; /* More vertical space between rows */
+    vertical-align: middle;
+}
+
 .product-image {
     width: 3.5rem;
     height: 3.5rem;
-    border-radius: 50%;
+    border-radius: 10px;
     object-fit: cover;
+    margin-right: 1rem;
 }
 .floating-edit-item-container,
 .POST-class{
@@ -104,10 +217,13 @@ th, td {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: #f9f9f9;
-    border-radius: 0.6rem;
+    background: white;
+    border-radius: 1.5rem;
     flex-direction: column;
     z-index: 1000;
+    width: 28rem;
+    box-shadow: 0  20px 50px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
 }
 .floating-add-item-container.show,
 .floating-edit-item-container.show,
@@ -117,56 +233,69 @@ th, td {
 .floating-add-item,
 .floating-edit-item{
     background-color: white;
-    border-top-right-radius: 0.6rem;
-    border-top-left-radius: 0.6rem;
     display: flex;
-    padding: 1rem 1.5rem;
+    padding: 1.5rem 2rem;
     align-items: center;
+    border-bottom: 1px solid #f0f0f0;
 }
 .floating-add-item span,
 .floating-edit-item span{
     font-size: 1.3rem;
+    font-weight: 800;
+    color: #2d3436;
 }
+
 .floating-add-item-category-container,
 .floating-edit-item-category-container{
     display: flex;
     gap: 0.3rem;
     flex-direction: column;
 }
+
+/* Form Body */
 .POST-class,
 .floating-edit-item-form {
-    padding: 1rem;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    background: #d5d3d3;
+    gap: 1.2rem;
+    background: #fdfdfd;
 }
 .input {
     width: 100%;
-    padding: 0.2rem 0.5rem;
-    border: 0.2px solid grey;
-    border-radius: 0.2rem;
+    padding: 0.8rem 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.8rem;
+    font-size: 1rem;
+    background: white;
 }
+
+/* Updated Category Toggle (Segmented look) */
 .category-input-wrapper {
-    display: inline-flex;
-    gap: 0.2rem;
-    width: 12.2rem;
-    background: #e6e6e6;
-    padding: 0.2rem;
-    border-radius: 0.2rem;
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+    background: #f1f1f1;
+    padding: 0.4rem;
+    border-radius: 0.8rem;
 }
+
 .category-input-wrapper input {
     display: none;
 }
 .category-input-wrapper input:checked + label {
-    background: #fafdff;
-    color: #2975da;
-    border-color: #007bff;
+    background: white;
+    color: #ff0000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 .category-input-wrapper label {
-    padding: 0.2rem 0.5rem;
-    border-radius: 0.2rem;
+    flex: 1;
+    padding: 0.6rem;
+    border-radius: 0.6rem;
     cursor: pointer;
+    text-align: center;
+    font-weight: 600;
+    transition: 0.2s;
 }
 .floating-add-item-image-container{
     display: flex;
@@ -297,4 +426,60 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
+}
+
+/* Makes the Item Name bold and dark like the Figma prototype */
+.product-name-and-image {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.product-name-and-image span {
+    font-weight: 800; /* This makes it look like the Figma bold text */
+    color: #2d3436;   /* A nice dark grey/black */
+    font-size: 1.1rem;
+}
+
+.filter-icon-container {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem; 
+    height: 2.5rem;
+    font-size: 1.2rem; 
+    color: #8e8e8e;
+    transition: all 0.2s ease;
+}
+
+
+.default-icon {
+    display: block !important;
+}
+
+/* This targets the Bootstrap Icons specifically */
+.filter-icon-container i {
+  font-size: 1.2rem; 
+}
+
+.filter-icon-container:hover {
+    color: #ff0000; /* UM Red hover effect */
+}
+
+.filter-icon-container {
+    cursor: pointer;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    z-index: 10;
+}
+
+/* This makes the icons dark and visible */
+.filter-icon-container i {
+    color: #333 !important;
+    font-size: 1.3rem !important;
+    font-style: normal;
 }
