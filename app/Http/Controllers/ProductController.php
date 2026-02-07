@@ -24,22 +24,18 @@ class ProductController extends Controller
             'price'    => 'required|numeric',
             'image'    => 'nullable|image|mimes:jpg,jpeg,png',
         ]);
-
         $old_name  = $product->name;
         $old_price = $product->price;
         $old_category = $product->category;
         $old_image = $product->image;
-
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('products', 'public');
             $product->image = $imagePath;
         }
-
         $product->name     = $request->name;
         $product->category = $request->category;
         $product->price    = $request->price;
         $product->save();
-
         ProductAuditLog::create([
             'product_id'   => $product->id,
             'product_name' => $product->name, 
@@ -48,7 +44,6 @@ class ProductController extends Controller
             'old_price'    => $old_price,
             'new_price'    => $product->price,
         ]);
-
         return redirect()->back()->with('success', 'Product updated successfully.');
     }
     public function destroy(Product $product)

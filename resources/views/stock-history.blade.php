@@ -38,6 +38,7 @@
                     </form>
                 </div>
             </div>
+            <!-- FILTER CONTAINER ENDS HERE + SEARCH CONTAINER STARTS HERE -->
             <div class="search-container">
                 <form method="GET" action="{{ route('stock-history') }}">
                     <input 
@@ -49,6 +50,7 @@
                     >
                 </form>
             </div>
+            <!-- SERACH CONTAINRE ENDS HERE + DATE CONTAINER STARTS HERE -->
             <div class="date-container">
                 <form method="GET" action="{{ route('stock-history') }}">
                     <input type="hidden" name="search" value="{{ request('search') }}">
@@ -60,16 +62,20 @@
                     />
                 </form>
             </div>
+            <!-- DATE CONTAINER ENDS HERE + PAGINATION CONTROLS STARTS HERE -->
             <div class="pagination-container">
                 {{ $logs->onEachSide(0)->links() }}
             </div>
+            <!-- PAGINATION CONTROL ENDS HERE + EXPORT SALES DATA NGA BUTTON IS HERE -->
             <div class="export-sales-data-container">
                 <button>
                     <i class="fa-solid fa-print"></i>
                     <span>Export Audit Log</span>
                 </button>
             </div>
+            <!-- EXPORT SALES DATA NGA BUTTON ENDS HERE -->
         </div>
+        <!-- HEADER CONTAINER ENDS HERE + TABLE STARTS HERE -->
         <div class="main-body-container">
             <table>
                 <colgroup>
@@ -90,21 +96,29 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- LOOP THROUGH THE LOGS SA INGREDIENT NGA CONTROLLER -->
                     @foreach($logs as $log)
                         <tr>
+                            <!-- LOGS SA CONTROLLER -->
                             <td>{{ $log->ingredient_name ?? 'Deleted Ingredient' }}</td>
+                            <!-- LOGS SA ACTION -->
                             <td>{{ ucfirst($log->action) }}</td>
+                            <!-- LOGS SA TIMESTAMPS -->
                             <td>{{ $log->created_at }}</td>
+                            <!-- LOGS SA USER -->
                             <td>
                                 {{ $log->user 
                                     ? $log->user->first_name . ' ' . $log->user->last_name 
                                     : 'System' 
                                 }}
                             </td>
+                            <!-- LOGS SA UNIT COST -->
                             <td>{{ $log->unit_cost }}</td>
+                            <!-- LOGS SA TOTAL COST -->
                             <td>{{ $log->total_cost }}</td>
                         </tr>
                     @endforeach
+                    <!-- END SA FOR EACH LOOP -->
                 </tbody>
             </table>
         </div>

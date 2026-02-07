@@ -4,7 +4,6 @@ use App\Models\Ingredient;
 use Illuminate\Http\Request;
 use App\Models\IngredientAuditLog;
 use Illuminate\Support\Facades\Auth;
-
 class IngredientController extends Controller
 {
     public function index(Request $request)
@@ -102,7 +101,6 @@ class IngredientController extends Controller
         }
         $logs = $query->latest()->simplePaginate(10)->withQueryString();
         $users = \App\Models\User::all(); // For the user filter dropdown
-
         return view('stock-history', compact('logs', 'users'));
     }
 }
