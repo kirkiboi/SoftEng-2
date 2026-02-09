@@ -1,42 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const filterButton = document.getElementById('filter-button');
-    const filterDropdown = document.getElementById('filterDropdown');
-    const overlay = document.getElementById('overlay');
+    // Removed Filter/Overlay logic here because mp.js handles it now.
+    // mp.js manages #filter-button, #filterDropdown, and #overlay.
+
+    // DATE FILTER LOGIC
     const dateBtn = document.getElementById('dateBtn');
     const dateInput = document.getElementById('dateInput');
 
-    // FILTER DROPDOWN
-    filterButton?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = filterDropdown.style.display === 'block';
-        filterDropdown.style.display = isOpen ? 'none' : 'block';
-        overlay.classList.toggle('show', !isOpen);
-    });
+    if (dateBtn && dateInput) {
+        dateBtn.addEventListener('click', () => {
+            if (dateInput.showPicker) {
+                dateInput.showPicker(); // opens native date picker
+            } else {
+                dateInput.click(); // Fallback
+            }
+        });
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-        if (
-            filterDropdown &&
-            !filterDropdown.contains(e.target) &&
-            e.target !== filterButton
-        ) {
-            filterDropdown.style.display = 'none';
-            overlay.classList.remove('show');
-        }
-    });
-
-    // Overlay click closes everything
-    overlay?.addEventListener('click', () => {
-        filterDropdown.style.display = 'none';
-        overlay.classList.remove('show');
-    });
-
-    // DATE FILTER
-    dateBtn?.addEventListener('click', () => {
-        dateInput.showPicker(); // opens native date picker
-    });
-
-    dateInput?.addEventListener('change', () => {
-        dateInput.closest('form').submit();
-    });
+        dateInput.addEventListener('change', () => {
+            dateInput.close && dateInput.close(); // Attempt to close if possible, though native pickers handle this
+            const form = dateInput.closest('form');
+            if (form) form.submit();
+        });
+    }
 });

@@ -656,3 +656,87 @@ input[type="number"]::-webkit-outer-spin-button {
     text-align: center;
     background: white;
 }
+
+/* --- PAGINATION STYLING --- */
+.pagination-container {
+    display: flex;
+    justify-content: center; /* Center the pagination */
+    margin-top: 1.5rem;
+}
+
+.pagination {
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.page-item {
+    display: flex;
+}
+
+.page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50px; /* Pill/Circle shape */
+    background-color: white;
+    color: #2d3436;
+    border: 1px solid #e0e0e0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.page-link:hover {
+    background-color: #f1f1f1;
+    color: #2975da;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.page-item.active .page-link {
+    background-color: #2975da;
+    color: white;
+    border-color: #2975da;
+}
+
+.page-item.disabled .page-link {
+    background-color: #f9f9f9;
+    color: #b2bec3;
+    cursor: not-allowed;
+    border-color: #eee;
+    box-shadow: none;
+}
+
+/* Customizing Previous/Next Text to Icons (if simple pagination text is used) */
+/* Note: Laravel simplePaginate output usually has "Previous" and "Next" text. 
+   We can use font-size: 0 to hide text and :before to add icons. */
+
+.page-item:first-child .page-link {
+    font-size: 0; /* Hide text */
+}
+
+.page-item:first-child .page-link::before {
+    content: "\f060"; /* FontAwesome Left Arrow */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 1rem;
+}
+
+.page-item:last-child .page-link {
+    font-size: 0; /* Hide text */
+}
+
+.page-item:last-child .page-link::before {
+    content: "\f061"; /* FontAwesome Right Arrow */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 1rem;
+}

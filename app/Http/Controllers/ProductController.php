@@ -12,7 +12,7 @@ class ProductController extends Controller
         $products = Product::when($search, function ($query, $search) {
             $query->where('name', 'LIKE', "%{$search}%");
         })
-        ->simplePaginate(6)
+        ->paginate(5)
         ->withQueryString(); 
         return view('Menu-Pricing', compact('products', 'search'));
     }

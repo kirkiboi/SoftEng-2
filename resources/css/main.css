@@ -13,7 +13,10 @@ body{
 .side-bar-container{
     height: 100vh;
     padding: 2rem;
-    background: rgba(47, 47, 47, 0.491); 
+    background: rgba(47, 47, 47, 0.4); 
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1); 
     width: 100%;
     max-width: 400px;
     display: flex;
