@@ -16,6 +16,7 @@
     <div class="logo-and-drop-down-container">
         <div class="logo-container">
             <img src="{{asset('photos/UMDiningcenter.png')}}" alt="UM Dining Center" class ="sidebar-container-logo">
+            <img src="{{asset('favicon.png')}}" alt="UM Dining Center" class ="sidebar-logo-collapsed">
         </div>
         <div class="drop-down-container">
             <i class="fa-solid fa-angles-left drop-down-container-button"></i>
@@ -131,9 +132,9 @@
     </div>
     <form action="{{ route('login') }}">
         <div class="logout-button-wrapper">
-            <button class="logout-button subsystem-span">
+            <button class="logout-button">
                 <i class="fa-solid fa-right-from-bracket me-3" style="color: red;"></i>
-                Logout
+                <span class="subsystem-span">Logout</span>
             </button>
         </div>
     </form>
