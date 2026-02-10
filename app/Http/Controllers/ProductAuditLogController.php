@@ -28,7 +28,7 @@ class ProductAuditLogController extends Controller
         }
 
         $users = User::orderBy('first_name')->get();
-        $logs = $query->simplePaginate(6)->withQueryString();
+        $logs = $query->paginate(10)->withQueryString();
         return view('pricing-history', compact('logs', 'users'));
     }
 }

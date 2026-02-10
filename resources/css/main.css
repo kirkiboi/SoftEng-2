@@ -13,7 +13,10 @@ body{
 .side-bar-container{
     height: 100vh;
     padding: 2rem;
-    background: rgba(47, 47, 47, 0.491); 
+    background: rgba(47, 47, 47, 0.4); 
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1); 
     width: 100%;
     max-width: 400px;
     display: flex;
@@ -23,7 +26,11 @@ body{
 }
 .side-bar-container.collapsed{
     width: 100%;
-    max-width: 250px;
+    max-width: 100px;
+    padding: 2rem 1rem;
+}
+.side-bar-container.collapsed .subsystem-drop-down {
+    display: none;
 }
 .logo-and-drop-down-container{
     width: 100%;
@@ -37,6 +44,23 @@ body{
     width: 100%;
     max-width: 100%;
     height: auto;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-logo-collapsed {
+    width: 50px; 
+    height: auto;
+    display: none;
+    transition: opacity 0.3s ease;
+}
+
+.side-bar-container.collapsed .sidebar-container-logo {
+    display: none;
+}
+
+.side-bar-container.collapsed .sidebar-logo-collapsed {
+    display: block;
+    margin: 0 auto; /* Center it */
 }
 
 .subsystem-feature {
@@ -73,10 +97,39 @@ body{
     transform: rotate(180deg);
     font-size: 1.2rem;
 }
-.subsystem-span.clicked,
-.logout-button.clicked{
-    font-size: 1.2rem;
+.subsystem-span {
+    transition: opacity 0.2s ease, max-width 0.3s ease; /* Use max-width for smooth transition from 'auto' */
+    white-space: nowrap; 
+    overflow: hidden;
+    opacity: 1;
+    display: inline-block; 
+    vertical-align: middle; 
+    max-width: 250px; /* Arbitrary large value to fit content */
 }
+
+.subsystem-span.clicked,
+.logout-button.clicked .subsystem-span { 
+    opacity: 0;
+    max-width: 0; /* Shrink to 0 */
+    margin-left: 0; /* remove any margin if present to avoid jump */
+    pointer-events: none; 
+}
+
+.side-bar-container.collapsed .feature {
+    padding-left: 0;
+    justify-content: center;
+}
+
+.side-bar-container.collapsed .subsystem {
+    justify-content: center;
+}
+
+.side-bar-container.collapsed .subsystem div:first-child { /* The wrapper around icon and text */
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
 .button.clicked{
     font-size: 1.2rem;
     transform: rotate(90deg);
@@ -114,7 +167,7 @@ i{
 i,
 .logout-button,
 .subsystem{
-    transition: color 0.5s, background-color 0.5s, font-size 1s;
+    transition: color 0.5s, background-color 0.5s; /* Removed font-size transition to avoid conflict */
 }
 .feature{
     padding: 0.5rem;
@@ -186,4 +239,8 @@ a{
 /* The arrow rotation logic you already have */
 .active .fa-angles-right {
     transform: rotate(90deg);
+}
+
+.side-bar-container.collapsed i {
+    margin-right: 0 !important;
 }
