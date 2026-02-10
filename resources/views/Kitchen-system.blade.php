@@ -21,7 +21,7 @@
                 <button class="add-item-button">+ Add Batch</button>
                 <button class="manage-recipe-button">Manage Recipes</button>
             </div>
-            <div class="recipe-manager-modal" style="display:none;">
+            <div class="recipe-manager-modal">
                 <div class="recipe-manager-modal-wrapper">
                     <div class="recipe-manager-header">
                         <h2>Recipe Manager</h2>

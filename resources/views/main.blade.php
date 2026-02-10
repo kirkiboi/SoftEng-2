@@ -71,7 +71,7 @@
             <a href="{{ route('im') }}">
                 <div class="new-transaction feature d-flex align-items-center">
                     <i class="fa-solid fa-list-check me-3 sub-icon"></i>
-                    <span class ="subsystem-span">Ingredient Master Listss</span>
+                    <span class ="subsystem-span">Ingredient Master Lists</span>
                 </div>
             </a>
             <a href="{{ route('stock-history') }}">
@@ -101,7 +101,7 @@
             <a href="{{ route('pricing-history') }}">
                 <div class="transaction-history feature d-flex align-items-center">
                     <i class="fa-solid fa-tag me-3 sub-icon"></i>
-                    <span class ="subsystem-span">Pricing History</span>                    
+                    <span class ="subsystem-span">Pricing Histories</span>                    
                 </div>
             </a>
         </div>
