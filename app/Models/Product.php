@@ -2,8 +2,6 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Recipe;
-use App\Models\Ingredient;
 class Product extends Model
 {
     use HasFactory;
@@ -17,10 +15,23 @@ class Product extends Model
     {
         return $this->hasMany(Recipe::class);
     }
+    public function batchSizes()
+    {
+        return $this->hasMany(BatchSize::class);
+    }
+    public function kitchenLogs()
+    {
+        return $this->hasMany(KitchenLog::class);
+    }
     public function ingredients()
     {
-        return $this->belongsToMany(Ingredient::class, 'recipes')
-                    ->withPivot('quantity')
-                    ->withTimestamps();
+        return $this->belongsToMany(
+            Ingredient::class,
+            'recipes',
+            'product_id',
+            'ingredient_id'
+        )
+        ->withPivot(['quantity', 'batch_sizes_id'])
+        ->withTimestamps();
     }
 }

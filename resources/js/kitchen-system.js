@@ -13,28 +13,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('overlay');
     const productSelect = document.getElementById('productSelect');
     const recipeList = document.querySelector('.recipe-list');
-
     let allIngredients = [];
-
     fetch('/ingredients/all')
         .then(res => res.json())
         .then(data => allIngredients = data);
-
-    manageBtn.addEventListener('click', () => recipeModal.style.display = 'block');
-    closeBtn.addEventListener('click', () => recipeModal.style.display = 'none');
-
+    manageBtn.addEventListener('click', () => {
+        recipeModal.classList.toggle('active');
+        overlay.classList.add('show');
+    });
+    closeBtn.addEventListener('click',()=>{
+        recipeModal.classList.toggle('active');
+        overlay.classList.remove('show');
+    });
     addItemButton.addEventListener('click', () => {
         addBatchModal.classList.add('active');
         overlay.classList.add('show');
         quantityInput.value = 1;
         timeInput.value = 30;
     });
-
     overlay.addEventListener('click', () => {
         addBatchModal.classList.remove('active');
+        recipeModal.classList.remove('active');
         overlay.classList.remove('show');
     });
-
     productSelect.addEventListener('change', async () => {
         const productId = productSelect.value;
         if (!productId) return;
@@ -52,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
             recipeList.appendChild(div);
         });
     });
-
     document.getElementById('addIngredientBtn').addEventListener('click', () => {
         const div = document.createElement('div');
         div.classList.add('recipe-item');
@@ -65,11 +65,9 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         recipeList.appendChild(div);
     });
-
     recipeList.addEventListener('click', e => {
         if(e.target.classList.contains('delete-recipe-btn')) e.target.parentElement.remove();
     });
-
     document.getElementById('saveRecipesBtn').addEventListener('click', async () => {
         const productId = productSelect.value;
         if(!productId) return alert('Select a product first');
@@ -89,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         alert('Recipes saved!');
     });
-
     productCardContainer.addEventListener('click', e => {
         if(!e.target.classList.contains('add-batch-btn')) return;
         const card = e.target.closest('.product-card');
@@ -111,7 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
         queuedContainer.appendChild(wrapper);
         quantityInput.value=1; timeInput.value=30;
     });
-
     queuedContainer.addEventListener('click', e => {
         const wrapper = e.target.closest('.wrapper');
         if(!wrapper) return;
@@ -121,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const batchText = wrapper.querySelector('.batch-amount span').textContent;
             const timeText = wrapper.querySelector('.time span').textContent;
             let timeMinutes = parseInt(timeText) || 0;
-
             const cookingWrapper = document.createElement('div');
             cookingWrapper.classList.add('wrapper');
             cookingWrapper.innerHTML = `
@@ -135,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             cookingContainer.appendChild(cookingWrapper);
             wrapper.remove();
-
             const timerSpan = cookingWrapper.querySelector('.timer');
             let totalSeconds = timeMinutes*60;
             const interval = setInterval(()=>{
@@ -162,5 +156,4 @@ document.addEventListener('DOMContentLoaded', () => {
             },1000);
         }
     });
-
 });

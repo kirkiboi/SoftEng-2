@@ -126,15 +126,19 @@
 .serve-button{
     background-color: rgb(77, 76, 76);
 }
-
-
-
-
-
-
-
-
-
+.recipe-manager-modal{
+    z-index: 1000;
+    border-radius: 0.5rem;
+    background-color: rgb(222, 222, 222);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+}
+.recipe-manager-modal.active{
+    display: flex;
+}
 .overlay {
     display: none;
     position: fixed;
