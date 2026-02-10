@@ -185,9 +185,7 @@
                 </div>
 
                 <!-- PAGINATION (In Controls) -->
-                <div class="pagination-container">
-                    {{ $logs->onEachSide(0)->links() }}
-                </div>
+
 
                 <!-- EXPORT BUTTON -->
                 <div class="export-sales-data-container">
@@ -252,6 +250,10 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+        <!-- PAGINATION (Moved outside table container) -->
+        <div class="pagination-container">
+            {{ $logs->onEachSide(0)->links() }}
         </div>
     </div>
     <div class="overlay" id="overlay"></div>

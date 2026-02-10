@@ -27,9 +27,7 @@
                     <input type="text" name="search" class="search-input" placeholder="Search"
                         value="{{ request('search') }}">
                 </form>
-                <div class="pagination-container">
-                    {{ $products->links() }}
-                </div>
+
                 <div class="add-item-container">
                     <button class="add-item-button">+ Add Item</button>
                 </div>
@@ -90,8 +88,11 @@
                     @endforelse
                 </tbody>
             </table>
-        </div>
     </div>
+    <div class="pagination-container">
+        {{ $products->links() }}
+    </div>
+</div>
     <!-- ADD ITEM MODAL STARTS HERE -->
     <div class="floating-add-item-container">
         <div class="floating-add-item">

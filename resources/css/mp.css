@@ -1,9 +1,14 @@
 .menu-pricing-parent-container {
     width: 100%;
-    max-width: 90rem;
-    min-height: 45rem;
-    background-color: #f4f7f6;
+    /* Keep max-width if desired, but ensure height covers content */
+    max-width: 90rem; 
+    min-height: 100%;
+    height: auto;
+    background-color: white;
     padding: 1.9rem;
+    box-sizing: border-box;
+    /* Ensure no margin causes gaps */
+    margin: 0;
 }
 .header-container {
     display: flex;
