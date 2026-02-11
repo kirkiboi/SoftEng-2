@@ -1,4 +1,4 @@
-/* POS History - Consistent with stock-history design */
+/* Kitchen Production Logs - Consistent with stock-history.css */
 
 .main-container {
     padding: 2rem;
@@ -19,6 +19,47 @@
     gap: 1rem;
     margin-bottom: 1.5rem;
     flex-wrap: wrap;
+}
+.filter-container { position: relative; }
+.filter-icon {
+    cursor: pointer;
+    padding: 0.5rem;
+    background: #f0f0f0;
+    border-radius: 8px;
+    transition: background 0.3s;
+}
+.filter-icon:hover { background: #e0e0e0; }
+
+.filter-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 100;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    padding: 1rem;
+    min-width: 200px;
+}
+.filter-dropdown.show { display: block; }
+.filter-dropdown select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+}
+.filter-dropdown button {
+    width: 100%;
+    padding: 0.5rem;
+    background: #8B0000;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
 }
 
 .search-container { flex: 1; }
@@ -42,22 +83,6 @@
 
 .pagination-container { margin-left: auto; font-size: 0.85rem; }
 
-.export-sales-data-container button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 1.2rem;
-    background: #2d2d2d;
-    color: white;
-    border: none;
-    border-radius: 50px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-.export-sales-data-container button:hover { background: #444; }
-
 /* Table */
 .main-body-container { overflow-x: auto; }
 table {
@@ -80,18 +105,29 @@ td {
     font-size: 0.85rem;
     color: #333;
     border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
 }
-.tr { transition: background 0.2s; }
 tr:hover td { background: #fafafa; }
 
-.amount-cell { font-weight: 700; color: #8B0000; }
-
-.payment-badge {
-    padding: 0.2rem 0.7rem;
+/* Status badges */
+.status-badge {
+    padding: 0.2rem 0.6rem;
     border-radius: 20px;
     font-size: 0.7rem;
     font-weight: 600;
     text-transform: uppercase;
 }
-.payment-cash { background: #d4edda; color: #155724; }
-.payment-gcash { background: #cce5ff; color: #004085; }
+.status-queued { background: #fff3cd; color: #856404; }
+.status-cooking { background: #ffe0cc; color: #c44900; }
+.status-done { background: #d4edda; color: #155724; }
+
+/* Deduction tags */
+.deduction-tag {
+    display: inline-block;
+    background: #f0f0f0;
+    padding: 0.15rem 0.5rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    color: #555;
+    margin: 0.1rem;
+}

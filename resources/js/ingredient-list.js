@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const recordStockInButton = document.querySelector('.record-stock-in-button');
     const recordStockInModal = document.querySelector('.record-stock-in-container');
 
+    const recordProductStockInButton = document.querySelector('.record-product-stock-in-button');
+    const recordProductStockInModal = document.querySelector('.record-product-stock-in-container');
+
     const editIngredientModal = document.querySelector('.floating-edit-ingredient-container');
     const editIngredientCancelButton = document.querySelector('.edit-cancel-button');
 
@@ -28,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         addIngredientModal?.classList.remove('active');
         editIngredientModal?.classList.remove('active');
         recordStockInModal?.classList.remove('active');
+        recordProductStockInModal?.classList.remove('active');
         deleteModal?.classList.remove('active');
 
         currentForm = null;
@@ -74,6 +78,14 @@ document.addEventListener('DOMContentLoaded', () => {
         closeAll();
         recordStockInModal.classList.add('active');
         openOverlay();
+        openOverlay();
+    });
+    // RECORD PRODUCT STOCK IN
+    recordProductStockInButton?.addEventListener('click', e => {
+        e.stopPropagation();
+        closeAll();
+        recordProductStockInModal.classList.add('active');
+        openOverlay();
     });
     // EDIT INGREDIENT
     document.querySelectorAll('.edit-ingredient-btn').forEach(btn => {
@@ -91,6 +103,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     editIngredientCancelButton?.addEventListener('click', closeAll);
+    // STOCK IN CANCEL
+    const stockInCancelButton = document.getElementById('stock-in-cancel-button');
+    stockInCancelButton?.addEventListener('click', closeAll);
+    // PRODUCT STOCK IN CANCEL
+    const productStockInCancelButton = document.getElementById('product-stock-in-cancel-button');
+    productStockInCancelButton?.addEventListener('click', closeAll);
     // OVERLAY CLICK
     overlay?.addEventListener('click', closeAll);
     addIngredientCancelButton.addEventListener("click",()=>{

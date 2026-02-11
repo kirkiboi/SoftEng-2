@@ -47,15 +47,30 @@
                 </div>
             </a>
         </div>
-        <!-- Kitchen production shit ni diri ha -->
-        <a href="{{ route('kp') }}">
-            <div class="kitchen-production-container subsystem {{ Request::is('kp*') ? 'active-page' : '' }}">
-                <div class="kitchen-production">
-                    <i class="fa-solid fa-utensils me-2"></i>
-                    <span class="subsystem-span">Kitchen Production</span>
-                </div>              
+        <!-- Kitchen Production -->
+        <div class="kitchen-production-container subsystem">
+            <div class="kitchen-production">
+                <i class="fa-solid fa-utensils me-2"></i>
+                <span class="subsystem-span">Kitchen Production</span>
             </div>
-        </a>
+            <div class="subsystem-drop-down">
+                <i class="fa-solid fa-angles-right arrow-icon button"></i>
+            </div>
+        </div>
+        <div class="subsystem-feature">
+            <a href="{{ route('kp') }}">
+                <div class="feature d-flex align-items-center">
+                    <i class="fa-solid fa-fire me-3 sub-icon"></i>
+                    <span class="subsystem-span">Kitchen Board</span>
+                </div>
+            </a>
+            <a href="{{ route('kitchen.logs') }}">
+                <div class="feature d-flex align-items-center">
+                    <i class="fa-solid fa-clipboard-list me-3 sub-icon"></i>
+                    <span class="subsystem-span">Production Logs</span>
+                </div>
+            </a>
+        </div>
         <!-- Inventory Manager shit ni -->
         <div class="inventory-management-container subsystem">
             <div class="inventory-management">
@@ -102,6 +117,30 @@
                 <div class="transaction-history feature d-flex align-items-center">
                     <i class="fa-solid fa-tag me-3 sub-icon"></i>
                     <span class ="subsystem-span">Pricing History</span>                    
+                </div>
+            </a>
+        </div>
+        <!-- Point of Sales -->
+        <div class="point-of-sales-container subsystem">
+            <div class="point-of-sales">
+                <i class="fa-solid fa-cash-register me-3"></i>
+                <span class ="subsystem-span">Point of Sales</span>
+            </div>
+            <div class="subsystem-drop-down">
+                <i class="fa-solid fa-angles-right arrow-icon button"></i>
+            </div>
+        </div>
+        <div class="subsystem-feature">
+            <a href="{{ route('pos') }}">
+                <div class="feature d-flex align-items-center">
+                    <i class="fa-solid fa-cart-shopping me-3 sub-icon"></i>
+                    <span class ="subsystem-span">New Transaction</span>
+                </div>
+            </a>
+            <a href="{{ route('POShistory') }}">
+                <div class="feature d-flex align-items-center">
+                    <i class="fa-solid fa-clock-rotate-left me-3 sub-icon"></i>
+                    <span class ="subsystem-span">Transaction History</span>
                 </div>
             </a>
         </div>

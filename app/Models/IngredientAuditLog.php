@@ -13,6 +13,10 @@ class IngredientAuditLog extends Model
         'unit_cost',
         'total_cost',
         'action',
+        'quantity_changed',
+        'old_stock',
+        'new_stock',
+        'supplier',
     ];
     public function ingredient()
     {

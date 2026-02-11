@@ -9,6 +9,7 @@ class Product extends Model
         'name',
         'category',
         'price',
+        'stock',
         'image',
     ];
     public function recipes()

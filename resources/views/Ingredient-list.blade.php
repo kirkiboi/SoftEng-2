@@ -54,6 +54,7 @@
                 <!--  SEARCH INPUT ENDS HERE + BUTTON CONTAINER DIRI TONG STOCK IN AND ADD INGREDIENTS-->
                 <div class="button-container">
                     <button class="record-stock-in-button">Record Stock In</button>
+                    <button class="record-product-stock-in-button" style="background-color: #4a90e2; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-right: 10px;">Product Stock In</button>
                     <button class="add-ingredient-button">Add Ingredient</button>
                 </div>
             </div>
@@ -221,43 +222,65 @@
     <!-- EDIT INGREDIENT MODAL ENDS HERE + RECORD STOCK IN MODAL STARTS HERE -->
     <div class="record-stock-in-container">
         <div class="record-stock-in-wrapper">
-            <div class="record-stock-in">
-                <h2>Record Stock In</h2>
+            <div class="floating-add-item">
+                <span>Record Stock In</span>
             </div>
-            <form action="">
-                <div class="ingredient-name-container">
-                    <span>ingredient name</span>
-                    <select name="ingredient-name" id="ingredient-name">
-                        <option value=""></option>
+            <form method="POST" action="{{ route('ingredients.stockIn') }}" class="floating-add-ingredient-form">
+                @csrf
+                <div class="floating-add-item-name-container">
+                    <label>Ingredient</label>
+                    <select name="ingredient_id" required class="input">
+                        <option value="">Select an ingredient</option>
+                        @foreach(\App\Models\Ingredient::all() as $ing)
+                            <option value="{{ $ing->id }}">{{ $ing->name }} ({{ $ing->stock }}{{ $ing->unit }} in stock)</option>
+                        @endforeach
                     </select>
                 </div>
-                <div class="quantity-received-wrapper">
-                    <span>Quantity Received</span>
-                    <input type="text">
+                <div class="floating-add-ingredient-cost-per-unit">
+                    <label>Quantity to add</label>
+                    <input type="number" step="0.01" min="0.01" name="quantity" class="input" placeholder="Enter quantity" required>
                 </div>
-                <div class="supplier-name-wrapper">
-                    <span>Supplier</span>
-                    <select name="" id=""></select>
+                <div class="floating-add-ingredient-cost-per-unit">
+                    <label>Supplier (optional)</label>
+                    <input type="text" name="supplier" class="input" placeholder="Enter supplier name">
                 </div>
-                <div class="cost-per-unit-wrapper">
-                    <input type="number">
-                </div>
-                <div class="delivery-date-wrapper">
-                    <button type="button" class="date-filter-button" id="dateBtn">
-                        <span>
-                            26/10/2026
-                        </span>
-                        <i class="fa-solid fa-calendar"></i>
-                    </button>
-                </div>
-                <div class="functionality-container">
-                    <button>cancel</button>
-                    <button>update stock</button>
+                <div class="floating-add-item-options">
+                    <button type="button" class="cancel-button" id="stock-in-cancel-button">Cancel</button>
+                    <button type="submit" class="add-button">Update Stock</button>
                 </div>
             </form>
         </div>
     </div>
-    <!-- RECORD STOCK IN MODAL ENDS HERE + DELETE INGREDIENT CONFIRMATION NGA MODAL -->
+    <!-- RECORD STOCK IN MODAL ENDS HERE + PRODUCT STOCK IN MODAL STARTS HERE -->
+    <div class="record-product-stock-in-container">
+        <div class="record-stock-in-wrapper">
+            <div class="floating-add-item">
+                <span>Product Stock In</span>
+            </div>
+            <form method="POST" action="{{ route('products.stockIn') }}" class="floating-add-ingredient-form">
+                @csrf
+                <div class="floating-add-item-name-container">
+                    <label>Product (Drinks/Snacks)</label>
+                    <select name="product_id" required class="input">
+                        <option value="">Select a product</option>
+                        @foreach($products as $product)
+                            <option value="{{ $product->id }}">{{ $product->name }} ({{ $product->stock }} in stock)</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="floating-add-ingredient-cost-per-unit">
+                    <label>Quantity to add</label>
+                    <input type="number" step="1" min="1" name="quantity" class="input" placeholder="Enter quantity" required>
+                </div>
+                <!-- Removed supplier because Product model doesn't track it on audit log yet, keeping it simple -->
+                <div class="floating-add-item-options">
+                    <button type="button" class="cancel-button" id="product-stock-in-cancel-button">Cancel</button>
+                    <button type="submit" class="add-button">Update Stock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- PRODUCT STOCK IN MODAL ENDS HERE + DELETE INGREDIENT CONFIRMATION NGA MODAL -->
     <div class="floating-delete-item-container" id="deleteModal" >
         <div class="floating-delete-item-container-wrapper">
             <div class="remove-item-header">

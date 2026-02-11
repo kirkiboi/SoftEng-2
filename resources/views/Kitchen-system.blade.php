@@ -1,91 +1,211 @@
 @extends('main')
-@section('kitchen production', 'System 2')
+@section('kitchen production', 'System 4')
 @section('content')
 @vite(['resources/css/kitchen-system.css'])
 @vite(['resources/js/kitchen-system.js'])
+
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<div class="kitchen-production-main-container">
-    <div class="kitchen-production-parent-container">
+
+<div class="main-container">
+    <div class="parent-container">
+        <!-- HEADER -->
         <div class="header-container">
-            <svg id="filter-button" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" class="filter-icon">
-                <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-            <div class="filter-dropdown" id="filterDropdown" style="display: none;">
-                <button class="filter-option" data-category="all">All</button>
-                <button class="filter-option" data-category="drinks">Drinks</button>
-                <button class="filter-option" data-category="snacks">Snacks</button>
-                <button class="filter-option" data-category="meals">Meals</button>
+            <div class="header-left">
+                <h2 class="page-title">Kitchen Production</h2>
             </div>
-            <input type="text" name="search" class="search-input" placeholder="Search">
-            <div class="add-item-container">
-                <button class="add-item-button">+ Add Batch</button>
-                <button class="manage-recipe-button">Manage Recipes</button>
-            </div>
-            <div class="recipe-manager-modal">
-                <div class="recipe-manager-modal-wrapper">
-                    <div class="recipe-manager-header">
-                        <h2>Recipe Manager</h2>
-                        <button id="closeRecipeModal">X</button>
-                    </div>
-                    <div class="recipe-manager-body">
-                        <select id="productSelect">
-                            <option value="">Select Product</option>
-                            @foreach($products as $product)
-                                <option value="{{ $product->id }}">{{ $product->name }}</option>
-                            @endforeach
-                        </select>
-                        <select id="ingredientSelect">
-                            <option value="">Select Ingredient</option>
-                            @foreach($ingredients as $ingredient)
-                                <option value="{{ $ingredient->id }}">
-                                    {{ $ingredient->name }} ({{ $ingredient->unit }})
-                                </option>
-                            @endforeach
-                        </select>
-                        <button id="addIngredientBtn">+ Add Ingredient</button>
-                        <div class="recipe-list"></div>
-                    </div>
-                    <button id="saveRecipesBtn">Save All</button>
-                </div>
-            </div>
-            <div class="add-batch-modal">
-                <div class="add-batch-modal-wrapper">
-                    <div class="add-batch-span"><span>Search a batch</span></div>
-                    <div class="add-batch-input">
-                        <input type="text" placeholder="Search Batch Name">
-                    </div>
-                    <div class="product-card-main-container"> 
-                        <div class="add-batch-results">
-                            <button class="scroll-btn left">‹</button>
-                            <div class="product-card-container">
-                                @foreach($products as $product)
-                                <div class="product-card">
-                                    <div class="product-name"><span>{{ $product->name }}</span></div>
-                                    <div class="product-category"><span>{{ $product->category }}</span></div>
-                                    <div class="product-card-button"><button class="add-batch-btn">Add Batch</button></div>
-                                </div>
-                                @endforeach
-                            </div>
-                            <button class="scroll-btn right">›</button>
-                        </div>
-                    </div>
-                    <div class="batch-quantity-container"><span>Quantity:</span><input type="number" min="1" value="1"></div>
-                    <div class="batch-time-container"><span>Estimated Time (minutes):</span><input type="number" min="1" value="30"></div>
-                </div>
+            <div class="header-right">
+                <button class="action-button recipe-manager-btn" id="openRecipeManager">
+                    <i class="fa-solid fa-book"></i>
+                    <span>Recipe Manager</span>
+                </button>
+                <button class="action-button add-batch-btn" id="openAddBatch">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Cook Batch</span>
+                </button>
             </div>
         </div>
-        <div class="main-body-container">
-            <div class="queued-container">
-                <div class="header-wrapper"><span class="queue-icon"></span><h1>Queue</h1></div>
+
+        <!-- SUCCESS/ERROR MESSAGES -->
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+
+        <!-- KANBAN BOARD -->
+        <div class="kanban-board">
+            <!-- QUEUED COLUMN -->
+            <div class="kanban-column" data-status="queued">
+                <div class="kanban-header queued-header">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>Queue</span>
+                    <span class="count-badge">{{ count($queued) }}</span>
+                </div>
+                <div class="kanban-cards">
+                    @forelse($queued as $log)
+                    <div class="production-card" data-id="{{ $log->id }}">
+                        <div class="card-header">
+                            <span class="product-name">{{ $log->product_name }}</span>
+                            <span class="badge badge-queued">Queued</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-detail"><i class="fa-solid fa-utensils"></i> {{ $log->times_cooked }}x cooked</div>
+                            <div class="card-detail"><i class="fa-solid fa-users"></i> {{ $log->total_servings }} servings</div>
+                        </div>
+                        <div class="card-ingredients">
+                            @foreach($log->deductions as $d)
+                                <span class="ingredient-tag">{{ $d->ingredient_name }}: -{{ $d->quantity_deducted }}{{ $d->unit }}</span>
+                            @endforeach
+                        </div>
+                        <div class="card-actions">
+                            <button class="status-btn move-to-cooking" data-id="{{ $log->id }}" data-status="cooking">
+                                <i class="fa-solid fa-fire"></i> Start Cooking
+                            </button>
+                        </div>
+                    </div>
+                    @empty
+                        <div class="empty-state"><i class="fa-solid fa-inbox"></i><p>No items in queue</p></div>
+                    @endforelse
+                </div>
             </div>
-            <div class="cooking-container">
-                <div class="header-wrapper"><span class="cooking-icon"></span><h1>Cooking</h1></div>
+
+            <!-- COOKING COLUMN -->
+            <div class="kanban-column" data-status="cooking">
+                <div class="kanban-header cooking-header">
+                    <i class="fa-solid fa-fire"></i>
+                    <span>Cooking</span>
+                    <span class="count-badge">{{ count($cooking) }}</span>
+                </div>
+                <div class="kanban-cards">
+                    @forelse($cooking as $log)
+                    <div class="production-card cooking-active" data-id="{{ $log->id }}">
+                        <div class="card-header">
+                            <span class="product-name">{{ $log->product_name }}</span>
+                            <span class="badge badge-cooking">Cooking</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-detail"><i class="fa-solid fa-utensils"></i> {{ $log->times_cooked }}x cooked</div>
+                            <div class="card-detail"><i class="fa-solid fa-users"></i> {{ $log->total_servings }} servings</div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="status-btn move-to-done" data-id="{{ $log->id }}" data-status="done">
+                                <i class="fa-solid fa-check"></i> Mark Done
+                            </button>
+                        </div>
+                    </div>
+                    @empty
+                        <div class="empty-state"><i class="fa-solid fa-fire"></i><p>Nothing cooking</p></div>
+                    @endforelse
+                </div>
             </div>
-            <div class="done-container">
-                <div class="header-wrapper"><span class="done-icon"></span><h1>Done</h1></div>
+
+            <!-- DONE COLUMN -->
+            <div class="kanban-column" data-status="done">
+                <div class="kanban-header done-header">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>Done</span>
+                    <span class="count-badge">{{ count($done) }}</span>
+                </div>
+                <div class="kanban-cards">
+                    @forelse($done as $log)
+                    <div class="production-card done-card" data-id="{{ $log->id }}">
+                        <div class="card-header">
+                            <span class="product-name">{{ $log->product_name }}</span>
+                            <span class="badge badge-done">Done</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-detail"><i class="fa-solid fa-utensils"></i> {{ $log->times_cooked }}x cooked</div>
+                            <div class="card-detail"><i class="fa-solid fa-users"></i> {{ $log->total_servings }} servings</div>
+                        </div>
+                        <div class="card-detail card-time"><i class="fa-solid fa-clock"></i> {{ $log->updated_at->diffForHumans() }}</div>
+                    </div>
+                    @empty
+                        <div class="empty-state"><i class="fa-solid fa-check-circle"></i><p>No completed batches</p></div>
+                    @endforelse
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- RECIPE MANAGER MODAL -->
+<div class="modal-container" id="recipeManagerModal">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <span>Recipe Manager</span>
+            <button class="modal-close" id="closeRecipeManager">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="recipe-selector">
+                <label>Select Product</label>
+                <select id="recipeProductSelect" class="input">
+                    <option value="">Choose a product...</option>
+                    @foreach($products as $p)
+                        <option value="{{ $p->id }}">{{ $p->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="recipe-ingredients-section" id="recipeIngredientsSection" style="display:none;">
+                <h4>Current Recipe Ingredients</h4>
+                <div id="currentRecipeList" class="recipe-list"></div>
+                <hr>
+                <h4>Add Ingredient to Recipe</h4>
+                <form id="addRecipeIngredientForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ingredient</label>
+                            <select id="recipeIngredientSelect" class="input">
+                                <option value="">Choose...</option>
+                                @foreach(\App\Models\Ingredient::all() as $ing)
+                                    <option value="{{ $ing->id }}">{{ $ing->name }} ({{ $ing->unit }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantity</label>
+                            <input type="number" step="0.01" min="0.01" id="recipeQuantity" class="input" placeholder="Amount needed">
+                        </div>
+                        <div class="form-group form-group-btn">
+                            <button type="submit" class="add-button">Add</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- COOK BATCH MODAL -->
+<div class="modal-container" id="addBatchModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span>Cook New Batch</span>
+            <button class="modal-close" id="closeAddBatch">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Select Product</label>
+                <select id="batchProductSelect" class="input">
+                    <option value="">Choose a product...</option>
+                    @foreach($products as $p)
+                        <option value="{{ $p->id }}">{{ $p->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Times to Cook</label>
+                <input type="number" id="batchTimesCooked" class="input" value="1" min="1">
+            </div>
+            <div id="batchIngredientPreview" class="ingredient-preview" style="display:none;">
+                <h4>Ingredients Required</h4>
+                <div id="batchIngredientList"></div>
+            </div>
+            <div id="batchError" class="alert alert-error" style="display:none;"></div>
+            <div class="form-actions">
+                <button type="button" class="cancel-button" id="cancelBatch">Cancel</button>
+                <button type="button" class="add-button" id="confirmBatch">Start Production</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="overlay" id="overlay"></div>
 @endsection
