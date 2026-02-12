@@ -9,7 +9,7 @@ return new class extends Migration
         Schema::create('ingredients', function (Blueprint $table) {
         $table->id();
         $table->string('name');
-        $table->enum('category', ['sweeteners','spices','oils','baking','herbs','acids','liquids','thickners','condiments']);
+        $table->enum('category', ['meat','produce','dairy','grains','canned_goods','sweeteners','spices','oils','baking','herbs','acids','liquids','thickeners','condiments','others']);
         $table->enum('unit', ['kg','g','ml','pcs']);
         $table->decimal('cost_per_unit', 10,2)->default(0);
         $table->decimal('stock', 10,2)->default(0);

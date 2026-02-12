@@ -1,10 +1,9 @@
 @extends('main')
-@section('product audit log', 'System 4')
+@section('waste logs', 'System 4')
 @section('content')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     @vite(['resources/css/mp.css'])
     @vite(['resources/js/mp.js'])
-    @vite(['resources/js/productAuditLog.js'])
 
     <style>
         /* Custom styles for the filter form within the dropdown */
@@ -112,16 +111,15 @@
             min-width: 80px;
             text-align: center;
         }
-        .badge-added { background-color: #e6fffa; color: #00b894; }
-        .badge-edited { background-color: #fff8e1; color: #f1c40f; }
-        .badge-deleted { background-color: #ffebee; color: #d63031; }
+        .badge-wasted { background-color: #ffebee; color: #d63031; }
 
     </style>
 
     <div class="menu-pricing-parent-container">
         <!-- HEADER / CONTROLS LAYER -->
         <div class="header-container">
-            <div class="controls-container">
+            <h2 style="font-weight: 800; color: #2d3436; margin: 0;">Waste Logs</h2>
+            <div class="controls-container" style="justify-content: flex-end;">
                 <!-- FILTER BUTTON & DROPDOWN -->
                 <div style="position: relative;">
                     <div id="filter-button" class="filter-icon-container">
@@ -130,17 +128,7 @@
                     </div>
                     
                     <div class="filter-dropdown" id="filterDropdown" style="display: none;">
-                        <form method="GET" action="{{ route('pricing-history') }}" class="filter-dropdown-form">
-                            {{-- Action filter --}}
-                            <div class="filter-group">
-                                <label>Action</label>
-                                <select name="action">
-                                    <option value="">All Actions</option>
-                                    <option value="added" {{ request('action') === 'added' ? 'selected' : '' }}>Added</option>
-                                    <option value="edited" {{ request('action') === 'edited' ? 'selected' : '' }}>Edited</option>
-                                    <option value="deleted" {{ request('action') === 'deleted' ? 'selected' : '' }}>Deleted</option>
-                                </select>
-                            </div>
+                        <form method="GET" action="{{ route('waste.logs') }}" class="filter-dropdown-form">
                             {{-- User filter --}}
                             <div class="filter-group">
                                 <label>User</label>
@@ -160,14 +148,14 @@
                 </div>
 
                 <!-- SEARCH -->
-                <form method="GET" action="{{ route('pricing-history') }}">
-                    <input type="text" name="search" class="search-input" placeholder="Search by product name"
+                <form method="GET" action="{{ route('waste.logs') }}">
+                    <input type="text" name="search" class="search-input" placeholder="Search product..."
                         value="{{ request('search') }}">
                 </form>
 
                 <!-- DATE FILTER -->
                 <div class="date-container">
-                    <form method="GET" action="{{ route('pricing-history') }}">
+                    <form method="GET" action="{{ route('waste.logs') }}">
                         <input type="hidden" name="search" value="{{ request('search') }}">
                         <!-- Hidden actual date input -->
                         <input
@@ -183,17 +171,6 @@
                         </div>
                     </form>
                 </div>
-
-                <!-- PAGINATION (In Controls) -->
-
-
-                <!-- EXPORT BUTTON -->
-                <div class="export-sales-data-container">
-                    <button class="export-audit-log-button">
-                        <i class="fa-solid fa-print"></i>
-                        <span>Export Log</span>
-                    </button>
-                </div>
             </div>
         </div>
 
@@ -202,20 +179,16 @@
             <table>
                 <colgroup>
                     <col style="width: 25%">
-                    <col style="width: 14%">
+                    <col style="width: 15%">
+                    <col style="width: 40%">
                     <col style="width: 20%">
-                    <col style="width: 16%">
-                    <col style="width: 12%">
-                    <col style="width: 12%">
                 </colgroup>
                 <thead>
                     <tr class="tr">
                         <th class="th">Item Name</th>
-                        <th class="th">Action Type</th>
-                        <th class="th">Date & Time</th>
                         <th class="th">User</th>
-                        <th class="th">Previous</th>
-                        <th class="th">New Price</th>
+                        <th class="th">Waste Details</th>
+                        <th class="th">Date & Time</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -223,29 +196,19 @@
                         <tr class="tr">
                             <td style="font-weight: 800; color: #2d3436;">{{ $log->product_name }}</td>
                             <td>
-                                @php
-                                    $badgeClass = match($log->action) {
-                                        'added' => 'badge-added',
-                                        'edited' => 'badge-edited',
-                                        'deleted' => 'badge-deleted',
-                                        default => ''
-                                    };
-                                @endphp
-                                <span class="badge {{ $badgeClass }}">{{ ucfirst($log->action) }}</span>
-                            </td>
-                            <td>{{ $log->created_at->format('m/d/Y h:i A') }}</td>
-                            <td>
                                 {{ $log->user 
                                     ? $log->user->first_name . ' ' . $log->user->last_name 
                                     : 'System' 
                                 }}
                             </td>
-                            <td>{{ $log->old_price ? '₱ '.number_format($log->old_price,2) : '-' }}</td>
-                            <td>{{ $log->new_price ? '₱ '.number_format($log->new_price,2) : '-' }}</td>
+                            <td style="color: #d63031; font-weight: 500;">
+                                {{ $log->action }}
+                            </td>
+                            <td>{{ $log->created_at->format('m/d/Y h:i A') }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6">No audit logs found.</td>
+                            <td colspan="4">No waste logs found.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -257,4 +220,19 @@
         </div>
     </div>
     <div class="overlay" id="overlay"></div>
+    <script>
+        // Custom Date Picker Logic specifically for this page
+        document.addEventListener('DOMContentLoaded', () => {
+             const dateBtn = document.getElementById('dateBtn');
+             const dateInput = document.getElementById('dateInput');
+             if(dateBtn && dateInput) {
+                 dateBtn.addEventListener('click', () => {
+                     dateInput.showPicker(); // Modern browser API
+                 });
+                 dateInput.addEventListener('change', () => {
+                     dateInput.form.submit();
+                 });
+             }
+        });
+    </script>
 @endsection

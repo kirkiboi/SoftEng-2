@@ -25,8 +25,10 @@ class KitchenProductionController extends Controller
         $queued = $productionLogs->get('queued', collect());
         $cooking = $productionLogs->get('cooking', collect());
         $done = $productionLogs->get('done', collect())->take(10);
+        // Wasted items are not shown in the main Kanban columns anymore
+        $wasted = collect();
 
-        return view('Kitchen-system', compact('products', 'ingredients', 'queued', 'cooking', 'done'));
+        return view('Kitchen-system', compact('products', 'ingredients', 'queued', 'cooking', 'done', 'wasted'));
     }
 
     public function startProduction(Request $request)
@@ -114,23 +116,85 @@ class KitchenProductionController extends Controller
     {
         $log = KitchenProductionLog::findOrFail($id);
         $validated = $request->validate([
-            'status' => 'required|in:queued,cooking,done',
+            'status' => 'required|in:queued,cooking,done,wasted,served',
+            'waste_reason' => 'nullable|string|max:255',
         ]);
 
         // If newly marked as done, increment product stock
         if ($validated['status'] === 'done' && $log->status !== 'done') {
             $product = Product::find($log->product_id);
             if ($product) {
-                // Total servings = times_cooked (since batch_size usually implies 1 batch = X servings, 
-                // but here times_cooked seems to be the multiplier for the batch. 
-                // The log says 'total_servings' => $validated['times_cooked'].
-                // Let's assume total_servings is the quantity to add.
                 $product->increment('stock', $log->total_servings);
             }
         }
 
-        $log->update(['status' => $validated['status']]);
+        // Wasted: no stock increment — ingredients were already deducted
+        $updateData = ['status' => $validated['status']];
+        if ($validated['status'] === 'wasted' && !empty($validated['waste_reason'])) {
+            $updateData['waste_reason'] = $validated['waste_reason'];
+        }
+
+        $log->update($updateData);
         return response()->json(['success' => true, 'log' => $log]);
+    }
+
+    public function closeKitchen()
+    {
+        $updated = KitchenProductionLog::whereIn('status', ['queued', 'cooking'])
+            ->update([
+                'status' => 'wasted',
+                'waste_reason' => 'End of day — kitchen closed',
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => $updated . ' batch(es) marked as wasted.',
+            'count' => $updated,
+        ]);
+    }
+
+    public function cancelProduction($id)
+    {
+        $log = KitchenProductionLog::with('deductions')->findOrFail($id);
+
+        if ($log->status !== 'queued') {
+            return response()->json(['success' => false, 'message' => 'Only queued items can be cancelled.'], 400);
+        }
+
+        // Refund ingredients
+        DB::beginTransaction();
+        try {
+            foreach ($log->deductions as $deduction) {
+                $ingredient = Ingredient::find($deduction->ingredient_id);
+                if ($ingredient) {
+                    $ingredient->increment('stock', $deduction->quantity_deducted);
+                    
+                    // Log audit for refund
+                    IngredientAuditLog::create([
+                        'user_id' => Auth::id(),
+                        'ingredient_id' => $ingredient->id,
+                        'action' => 'stock_in', 
+                        'ingredient_name' => $ingredient->name,
+                        'unit_cost' => $ingredient->cost_per_unit,
+                        'total_cost' => $ingredient->cost_per_unit * $deduction->quantity_deducted,
+                        'quantity_changed' => $deduction->quantity_deducted,
+                        'old_stock' => $ingredient->stock - $deduction->quantity_deducted,
+                        'new_stock' => $ingredient->stock,
+                        'supplier' => 'Production Cancelled',
+                    ]);
+                }
+            }
+
+            // Delete deductions and log
+            $log->deductions()->delete();
+            $log->delete(); // Or soft delete if preferred, but user implies "cancel" = remove
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Batch cancelled and ingredients refunded.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Cancellation failed: ' . $e->getMessage()], 500);
+        }
     }
 
     public function getRecipes($productId)
@@ -155,7 +219,7 @@ class KitchenProductionController extends Controller
             $query->where('status', $request->status);
         }
 
-        $logs = $query->simplePaginate(10)->withQueryString();
+        $logs = $query->paginate(10)->withQueryString();
         return view('kitchen-production-logs', compact('logs'));
     }
 }

@@ -8,19 +8,51 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->query('search');
-        $products = Product::when($search, function ($query, $search) {
+        $search = trim($request->input('search'));
+        $category = trim($request->input('category'));
+
+        $query = Product::with('recipes');
+
+        if ($search) {
             $query->where('name', 'LIKE', "%{$search}%");
-        })
-        ->paginate(5)
-        ->withQueryString(); 
+        }
+
+        if ($category && strtolower($category) !== 'all') {
+            $query->where('category', $category);
+        }
+
+        $products = $query->paginate(5)->withQueryString();
+
         return view('Menu-Pricing', compact('products', 'search'));
+    }
+
+    public function waste(Request $request, Product $product)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+            'reason' => 'required|string|max:255',
+        ]);
+
+
+
+        $product->decrement('stock', $request->quantity);
+
+        ProductAuditLog::create([
+            'product_id'   => $product->id,
+            'product_name' => $product->name,
+            'user_id'      => Auth::id(),
+            'action'       => "Wasted {$request->quantity} units. Reason: {$request->reason}",
+            'old_price'    => $product->price,
+            'new_price'    => null,
+        ]);
+        
+        return redirect()->back()->with('success', 'Product stock marked as wasted.');
     }
     public function update(Request $request, Product $product)
     {
         $request->validate([
             'name'     => 'required|string',
-            'category' => 'required|in:drinks,snacks,meals',
+            'category' => 'required|in:drinks,snacks,meals,ready_made',
             'price'    => 'required|numeric',
             'image'    => 'nullable|image|mimes:jpg,jpeg,png',
         ]);
@@ -63,7 +95,7 @@ class ProductController extends Controller
     {
         $request->validate([
             'name'     => 'required|string',
-            'category' => 'required|in:drinks,snacks,meals',
+            'category' => 'required|in:drinks,snacks,meals,ready_made',
             'price'    => 'required|numeric',
             'image'    => 'required|image|mimes:jpg,jpeg,png',
         ]);

@@ -24,15 +24,19 @@
                             <div class="filter-drop-down-wrapper">
                                 <select name="filter-category">
                                     <option value="">All</option>
-                                    <option value="sweeteners">Sweeteners</option>
+                                    <option value="meat">Meat</option>
+                                    <option value="produce">Produce</option>
+                                    <option value="condiments">Condiments</option>
+                                    <option value="canned_goods">Canned Goods</option>
                                     <option value="spices">Spices</option>
+                                    <option value="sweeteners">Sweeteners</option>
                                     <option value="oils">Oils</option>
                                     <option value="baking">Baking</option>
-                                    <option value="herbs">Herbs</option>
-                                    <option value="acids">Acids</option>
-                                    <option value="liquids">Liquids</option>
-                                    <option value="thickners">Thickners</option>
-                                    <option value="condiments">Condiments</option>
+                                    <option value="thickeners">Thickeners</option>
+                                    <option value="herb">Herb</option>
+                                    <option value="dairy">Dairy</option>
+                                    <option value="grains">Grains</option>
+                                    <option value="others">Others</option>
                                 </select>
                                 <button class="apply-filter-button">Apply Filter</button>
                             </div>
@@ -126,7 +130,7 @@
             </div>
             <!-- PAGINATION CONTROL STARTS HERE -->
             <div class="pagination-container">
-                {{ $ingredients->links() }}
+                @include('components.pagination', ['paginator' => $ingredients])
             </div>
         </div>
     </div>
@@ -147,15 +151,19 @@
                 <div class="floating-add-item-category-container">
                     <label>Category</label>
                     <select name="category" required>
-                        <option value="sweeteners">sweeteners</option>
-                        <option value="spices">spices</option>
-                        <option value="oils">oils</option>
-                        <option value="baking">baking</option>
-                        <option value="herbs">herbs</option>
-                        <option value="acids">acids</option>
-                        <option value="liquids">liquids</option>
-                        <option value="thickners">thickners</option>
-                        <option value="condiments">condiments</option>
+                        <option value="meat">Meat</option>
+                        <option value="produce">Produce</option>
+                        <option value="condiments">Condiments</option>
+                        <option value="canned_goods">Canned Goods</option>
+                        <option value="spices">Spices</option>
+                        <option value="sweeteners">Sweeteners</option>
+                        <option value="oils">Oils</option>
+                        <option value="baking">Baking</option>
+                        <option value="thickeners">Thickeners</option>
+                        <option value="herb">Herb</option>
+                        <option value="dairy">Dairy</option>
+                        <option value="grains">Grains</option>
+                        <option value="others">Others</option>
                     </select>
                 </div>
                 <div class="floating-add-ingredient-unit">
@@ -202,15 +210,19 @@
                 <div class="floating-edit-item-category-container">
                     <label>Category</label>
                     <select name="category" required>
-                        <option value="sweeteners">sweeteners</option>
-                        <option value="spices">spices</option>
-                        <option value="oils">oils</option>
-                        <option value="baking">baking</option>
-                        <option value="herbs">herbs</option>
-                        <option value="acids">acids</option>
-                        <option value="liquids">liquids</option>
-                        <option value="thickners">thickners</option>
-                        <option value="condiments">condiments</option>
+                        <option value="meat">Meat</option>
+                        <option value="produce">Produce</option>
+                        <option value="condiments">Condiments</option>
+                        <option value="canned_goods">Canned Goods</option>
+                        <option value="spices">Spices</option>
+                        <option value="sweeteners">Sweeteners</option>
+                        <option value="oils">Oils</option>
+                        <option value="baking">Baking</option>
+                        <option value="thickeners">Thickeners</option>
+                        <option value="herb">Herb</option>
+                        <option value="dairy">Dairy</option>
+                        <option value="grains">Grains</option>
+                        <option value="others">Others</option>
                     </select>
                 </div>
                 <div class="floating-edit-ingredient-unit">

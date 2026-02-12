@@ -67,6 +67,15 @@
     transform: translateY(-1px);
 }
 
+.close-kitchen-btn {
+    background: #636e72;
+    color: white;
+}
+.close-kitchen-btn:hover {
+    background: #535c60;
+    transform: translateY(-1px);
+}
+
 /* ALERTS */
 .alert {
     padding: 0.75rem 1rem;
@@ -160,6 +169,29 @@
     opacity: 0.85;
 }
 
+/* Wasted Card */
+.wasted-card {
+    border-left-color: #dc3545;
+    background: #fff5f5;
+    opacity: 0.75;
+}
+.wasted-name {
+    text-decoration: line-through;
+    color: #999 !important;
+}
+.badge-wasted {
+    background: #f8d7da;
+    color: #721c24;
+}
+.waste-reason-display {
+    background: #fff3f3;
+    border-radius: 6px;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.75rem;
+    color: #dc3545;
+    margin-top: 0.25rem;
+}
+
 .card-header {
     display: flex;
     justify-content: space-between;
@@ -245,6 +277,20 @@
 }
 .move-to-done:hover { background: #218838; }
 
+.waste-btn {
+    background: #f8d7da;
+    color: #dc3545;
+    flex: 0 0 auto;
+    padding: 0.5rem 0.75rem;
+}
+.waste-btn:hover { background: #f5c6cb; color: #c82333; }
+
+.serve-btn {
+    background: #28a745;
+    color: white;
+}
+.serve-btn:hover { background: #218838; }
+
 .empty-state {
     text-align: center;
     padding: 2rem;
@@ -301,6 +347,10 @@
 
 .modal-body {
     padding: 1.5rem;
+}
+.modal-body-scroll {
+    max-height: 70vh;
+    overflow-y: auto;
 }
 
 .form-group {
@@ -383,16 +433,49 @@
     align-items: center;
     font-size: 0.85rem;
 }
-.recipe-item .remove-recipe {
-    background: #dc3545;
-    color: white;
+.recipe-item .remove-recipe,
+.recipe-delete-btn,
+.recipe-save-btn {
+    background: none;
     border: none;
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     font-size: 0.7rem;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.recipe-delete-btn {
+    color: #dc3545;
+}
+.recipe-delete-btn:hover {
+    background: #ffebee;
+    color: #c82333;
+}
+.recipe-save-btn {
+    color: #28a745;
+}
+.recipe-save-btn:hover {
+    background: #e6ffed;
+    color: #218838;
+}
+.recipe-item-actions {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+.recipe-qty {
+    cursor: text;
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+.recipe-qty:focus {
+    background: #fff8e1;
+    outline: 1px solid #ffc107;
 }
 .recipe-item .remove-recipe:hover { background: #c82333; }
 

@@ -126,7 +126,7 @@
         </div>
         <!-- PAGINATION CONTROLS STARTS HERE -->
         <div class="pagination-container">
-            {{ $logs->onEachSide(0)->links() }}
+            @include('components.pagination', ['paginator' => $logs])
         </div>
     </div>
 </div>

@@ -478,7 +478,7 @@ td {
     align-items: center;
 }
 
-.edit-button, .delete-button {
+.edit-button, .delete-button, .waste-button {
     margin: 0;
     padding: 0;
     border: none;
@@ -487,7 +487,8 @@ td {
 }
 
 .fa-pencil,
-.fa-trash {
+.fa-trash,
+.fa-ban {
     color: grey;
     font-size: 1rem;
     transition: color 0.2s ease; /* Smooth transition */

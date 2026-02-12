@@ -16,10 +16,10 @@ class IngredientController extends Controller
             $ingredients->where('category', $request->input('filter-category'));
         }
         $ingredients = $ingredients
-            ->simplePaginate(6)
+            ->paginate(6)
             ->withQueryString(); 
         
-        $products = \App\Models\Product::whereIn('category', ['drinks', 'snacks'])->orderBy('name')->get();
+        $products = \App\Models\Product::where('category', 'ready_made')->orderBy('name')->get();
 
         return view('ingredient-list', compact('ingredients', 'products'));
     }
@@ -125,7 +125,7 @@ class IngredientController extends Controller
         if ($request->filled('date')) {
             $query->whereDate('created_at', $request->date);
         }
-        $logs = $query->latest()->simplePaginate(10)->withQueryString();
+        $logs = $query->latest()->paginate(10)->withQueryString();
         $users = \App\Models\User::all(); // For the user filter dropdown
         return view('stock-history', compact('logs', 'users'));
     }

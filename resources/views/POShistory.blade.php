@@ -18,7 +18,7 @@
                 </form>
             </div>
             <div class="pagination-container">
-                {{ $transactions->onEachSide(0)->links() }}
+                @include('components.pagination', ['paginator' => $transactions])
             </div>
             <div class="export-sales-data-container">
                 <button>

@@ -36,20 +36,21 @@
                 </form>
             </div>
             <div class="pagination-container">
-                {{ $logs->onEachSide(0)->links() }}
+                @include('components.pagination', ['paginator' => $logs])
             </div>
         </div>
 
         <div class="main-body-container">
             <table>
                 <colgroup>
-                    <col style="width: 18%">
-                    <col style="width: 12%">
+                    <col style="width: 15%">
+                    <col style="width: 8%">
+                    <col style="width: 8%">
                     <col style="width: 10%">
-                    <col style="width: 12%">
                     <col style="width: 10%">
-                    <col style="width: 22%">
-                    <col style="width: 16%">
+                    <col style="width: 20%">
+                    <col style="width: 15%">
+                    <col style="width: 14%">
                 </colgroup>
                 <thead>
                     <tr class="tr">
@@ -59,6 +60,7 @@
                         <th class="th">Status</th>
                         <th class="th">User</th>
                         <th class="th">Ingredients Used</th>
+                        <th class="th">Waste Reason</th>
                         <th class="th">Date & Time</th>
                     </tr>
                 </thead>
@@ -78,6 +80,13 @@
                                 @foreach($log->deductions as $d)
                                     <span class="deduction-tag">{{ $d->ingredient_name }}: -{{ $d->quantity_deducted }}{{ $d->unit }}</span>
                                 @endforeach
+                            </td>
+                            <td>
+                                @if($log->status === 'wasted')
+                                    <span style="color: #dc3545; font-size: 0.9em;">{{ $log->waste_reason ?? 'N/A' }}</span>
+                                @else
+                                    <span style="color: #999;">-</span>
+                                @endif
                             </td>
                             <td>{{ $log->created_at->format('m/d/Y h:i A') }}</td>
                         </tr>

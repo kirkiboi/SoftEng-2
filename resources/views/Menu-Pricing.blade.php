@@ -18,12 +18,16 @@
                     <i class="bi bi-x-lg active-icon" style="display: none !important;"></i>
                 </div>
                 <div class="filter-dropdown" id="filterDropdown" style="display: none;">
-                    <button class="filter-option" data-category="all">All</button>
-                    <button class="filter-option" data-category="drinks">Drinks</button>
-                    <button class="filter-option" data-category="snacks">Snacks</button>
-                    <button class="filter-option" data-category="meals">Meals</button>
+                    <a href="{{ route('mp', ['category' => 'all', 'search' => request('search')]) }}" class="filter-option" style="display:block; text-decoration:none; color:inherit; width:100%;">All</a>
+                    <a href="{{ route('mp', ['category' => 'drinks', 'search' => request('search')]) }}" class="filter-option" style="display:block; text-decoration:none; color:inherit; width:100%;">Drinks</a>
+                    <a href="{{ route('mp', ['category' => 'snacks', 'search' => request('search')]) }}" class="filter-option" style="display:block; text-decoration:none; color:inherit; width:100%;">Snacks</a>
+                    <a href="{{ route('mp', ['category' => 'meals', 'search' => request('search')]) }}" class="filter-option" style="display:block; text-decoration:none; color:inherit; width:100%;">Meals</a>
+                    <a href="{{ route('mp', ['category' => 'ready_made', 'search' => request('search')]) }}" class="filter-option" style="display:block; text-decoration:none; color:inherit; width:100%;">Ready Made</a>
                 </div>
                 <form method="GET" action="{{ route('mp') }}">
+                    @if(request('category'))
+                        <input type="hidden" name="category" value="{{ request('category') }}">
+                    @endif
                     <input type="text" name="search" class="search-input" placeholder="Search"
                         value="{{ request('search') }}">
                 </form>
@@ -32,23 +36,26 @@
                     <button class="add-item-button">+ Add Item</button>
                 </div>
             </div>
+
         </div>
+
         <!-- WHERE CONTROLS LAYER ENDS AND MAIN TABLE STARTS-->
         <div class="table-container">
             <table>
                 <!-- TO ADJUST THE TABLE'S WIDTH DISTRIBUTION -->
                 <colgroup>
-                    <col style="width: 50%">
+                    <col style="width: 40%">
                     <col style="width: 15%">
                     <col style="width: 15%">
-                    <col style="width: 10%">
-                    <col style="width: 10%">
+                    <col style="width: 15%">
+                    <col style="width: 15%">
                 </colgroup>
                 <!-- TABLE HEADER -->
                 <thead>
                     <tr class="">
                         <th class="th">Item Name</th>
                         <th class="th">Category</th>
+                        <th class="th">Stock</th>
                         <th class="th">Price</th>
                         <th class="th">Actions</th>
                     </tr>
@@ -63,9 +70,16 @@
                                     <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
                                         class="product-image">
                                     <span>{{ $product->name }}</span>
+                                    @if($product->recipes->isNotEmpty())
+                                        <i class="bi bi-book" title="Is a cooked item (has recipe)" style="color: #6c5ce7; font-size: 0.9rem; margin-left: 0.5rem;"></i>
+                                    @endif
                                 </div>
                             </td>
+                            </td>
                             <td>{{ ucfirst($product->category) }}</td>
+                            <td style="font-weight: 700; color: {{ $product->stock <= 0 ? '#d63031' : ($product->stock <= 5 ? '#e17055' : '#2d3436') }}">
+                                {{ $product->stock }}
+                            </td>
                             <td>₱ {{ number_format($product->price, 2) }}</td>
                             <td class="td-actions">
                                 <button class="edit-button" data-id="{{ $product->id }}" data-name="{{ $product->name }}"
@@ -78,6 +92,9 @@
                                     @method('DELETE')
                                     <button type="submit" class="delete-button"><i class="fa-solid fa-trash"></i></button>
                                 </form>
+                                <button type="button" class="waste-button" data-id="{{ $product->id }}" data-name="{{ $product->name }}" title="Waste/Show Spoilage">
+                                    <i class="fa-solid fa-ban" style="color: #d63031;"></i>
+                                </button>
                             </td>
                         </tr>
                         <!-- INFORMATION DISPLAYED IF NO PRODUCT IS PRESENT E.G. ALL PRODUCTS WERE DELETED -->
@@ -90,7 +107,7 @@
             </table>
     </div>
     <div class="pagination-container">
-        {{ $products->links() }}
+        @include('components.pagination', ['paginator' => $products])
     </div>
 </div>
     <!-- ADD ITEM MODAL STARTS HERE -->
@@ -115,6 +132,8 @@
                     <label for="snacks">Snacks</label>
                     <input type="radio" id="meals" name="category" value="meals">
                     <label for="meals">Meals</label>
+                    <input type="radio" id="ready_made" name="category" value="ready_made">
+                    <label for="ready_made">Ready Made</label>
                 </div>
             </div>
             <!-- ADD ITEM PRICE INPUT -->
@@ -171,6 +190,8 @@
                     <label for="editSnacks">Snacks</label>
                     <input type="radio" id="editMeals" name="category" value="meals">
                     <label for="editMeals">Meals</label>
+                    <input type="radio" id="editReadyMade" name="category" value="ready_made">
+                    <label for="editReadyMade">Ready Made</label>
                 </div>
             </div>
             <!-- EDIT ITEM PRICE INPUT -->
@@ -221,4 +242,29 @@
     </div>
     <!-- DELETE PROMPT ENDS HERE -->
     <div class="overlay" id="overlay"></div>
+    <!-- WASTE STOCK MODAL -->
+    <div class="modal-container" id="wasteStockModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; justify-content: center; align-items: center;">
+        <div class="modal-content" style="background: white; padding: 2rem; border-radius: 10px; width: 400px; max-width: 90%; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span style="font-weight: bold; font-size: 1.2rem; color: #d63031;">Waste Stock</span>
+                <button class="modal-close" id="closeWasteStock" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <form id="wasteStockForm" method="POST">
+                @csrf
+                <p style="margin-bottom: 1rem;">Mark stock as wasted for <strong id="wasteStockName"></strong>?</p>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="display:block; margin-bottom:0.5rem;">Quantity to Waste</label>
+                    <input type="number" name="quantity" class="input" min="1" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 5px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="display:block; margin-bottom:0.5rem;">Reason</label>
+                    <textarea name="reason" class="input" rows="3" required placeholder="e.g. Expired, Spoiled..." style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 5px;"></textarea>
+                </div>
+                <div class="form-actions" style="display: flex; justify-content: flex-end; gap: 1rem;">
+                    <button type="button" class="cancel-button" id="cancelWasteStock" style="padding: 0.5rem 1rem; border: 1px solid #ccc; background: white; border-radius: 5px; cursor: pointer;">Cancel</button>
+                    <button type="submit" class="save-button" style="padding: 0.5rem 1rem; background: #d63031; color: white; border: none; border-radius: 5px; cursor: pointer;">Confirm Waste</button>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection

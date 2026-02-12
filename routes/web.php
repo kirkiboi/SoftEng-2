@@ -20,7 +20,11 @@ Route::post('/kitchen/start-production', [KitchenProductionController::class, 's
 Route::patch('/kitchen/update-status/{id}', [KitchenProductionController::class, 'updateStatus'])->name('kitchen.updateStatus')->middleware('auth');
 Route::get('/kitchen/recipes/{product}', [KitchenProductionController::class, 'getRecipes'])->name('kitchen.getRecipes')->middleware('auth');
 Route::get('/kitchenproductionlogs', [KitchenProductionController::class, 'logs'])->name('kitchen.logs')->middleware('auth');
+Route::post('/kitchen/close', [KitchenProductionController::class, 'closeKitchen'])->name('kitchen.close')->middleware('auth');
+Route::delete('/kitchen/cancel/{id}', [KitchenProductionController::class, 'cancelProduction'])->name('kitchen.cancel')->middleware('auth');
 Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
+Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
+Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
 Route::get('/recipes/{product}', [RecipeController::class, 'show'])->name('recipes.show');
 Route::get('/ingredients/all', function () {return \App\Models\Ingredient::select('id', 'name', 'unit')->get();})->middleware('auth');
 
@@ -47,5 +51,7 @@ Route::get('/menuandpricing', [ProductController::class, 'index'])->name('mp')->
 Route::get('/menuandpricing/{product}/edit', [ProductController::class, 'edit'])->name('editMP')->middleware('auth');; // Route pang edit sa product
 Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update')->middleware('auth');; // Route pang update sa product
 Route::post('/products', [ProductController::class, 'store'])->name('products.store')->middleware('auth');; // Roure pang add sa product
+Route::post('/products/{product}/waste', [ProductController::class, 'waste'])->name('products.waste')->middleware('auth');
 Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy')->middleware('auth');; // Route pang delete sa product
 Route::get('/pricinghistory', [ProductAuditLogController::class, 'index'])->name('pricing-history')->middleware('auth');; // Product audit trail view
+Route::get('/wastelogs', [ProductAuditLogController::class, 'wasteLogs'])->name('waste.logs')->middleware('auth'); // Waste Logs view

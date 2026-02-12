@@ -46,7 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ... (Category Filter and Search remain unchanged) ...
+    // ===== CLIENT-SIDE PAGINATION REMOVED (Now handled by Server) =====
+    // Cart and Checkout logic remains below.
 
     // ===== RENDER CART =====
     function renderCart() {

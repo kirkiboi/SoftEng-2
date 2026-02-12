@@ -14,6 +14,10 @@
                 <h2 class="page-title">Kitchen Production</h2>
             </div>
             <div class="header-right">
+                <button class="action-button close-kitchen-btn" id="openCloseKitchen">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>Close Kitchen</span>
+                </button>
                 <button class="action-button recipe-manager-btn" id="openRecipeManager">
                     <i class="fa-solid fa-book"></i>
                     <span>Recipe Manager</span>
@@ -59,6 +63,9 @@
                             <button class="status-btn move-to-cooking" data-id="{{ $log->id }}" data-status="cooking">
                                 <i class="fa-solid fa-fire"></i> Start Cooking
                             </button>
+                            <button class="status-btn cancel-btn" data-id="{{ $log->id }}">
+                                <i class="fa-solid fa-ban"></i> Cancel
+                            </button>
                         </div>
                     </div>
                     @empty
@@ -89,6 +96,9 @@
                             <button class="status-btn move-to-done" data-id="{{ $log->id }}" data-status="done">
                                 <i class="fa-solid fa-check"></i> Mark Done
                             </button>
+                            <button class="status-btn waste-btn" data-id="{{ $log->id }}" data-name="{{ $log->product_name }}">
+                                <i class="fa-solid fa-trash"></i> Waste
+                            </button>
                         </div>
                     </div>
                     @empty
@@ -115,11 +125,18 @@
                             <div class="card-detail"><i class="fa-solid fa-utensils"></i> {{ $log->times_cooked }}x cooked</div>
                             <div class="card-detail"><i class="fa-solid fa-users"></i> {{ $log->total_servings }} servings</div>
                         </div>
+                        <div class="card-actions">
+                            <button class="status-btn serve-btn" data-id="{{ $log->id }}" data-status="served">
+                                <i class="fa-solid fa-bell-concierge"></i> Served
+                            </button>
+                        </div>
                         <div class="card-detail card-time"><i class="fa-solid fa-clock"></i> {{ $log->updated_at->diffForHumans() }}</div>
                     </div>
                     @empty
                         <div class="empty-state"><i class="fa-solid fa-check-circle"></i><p>No completed batches</p></div>
                     @endforelse
+
+
                 </div>
             </div>
         </div>
@@ -133,13 +150,15 @@
             <span>Recipe Manager</span>
             <button class="modal-close" id="closeRecipeManager">&times;</button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body modal-body-scroll">
             <div class="recipe-selector">
                 <label>Select Product</label>
                 <select id="recipeProductSelect" class="input">
                     <option value="">Choose a product...</option>
                     @foreach($products as $p)
-                        <option value="{{ $p->id }}">{{ $p->name }}</option>
+                        @if($p->category !== 'ready_made')
+                            <option value="{{ $p->id }}">{{ $p->name }} ({{ ucfirst($p->category) }})</option>
+                        @endif
                     @endforeach
                 </select>
             </div>
@@ -180,13 +199,15 @@
             <span>Cook New Batch</span>
             <button class="modal-close" id="closeAddBatch">&times;</button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body modal-body-scroll">
             <div class="form-group">
                 <label>Select Product</label>
                 <select id="batchProductSelect" class="input">
                     <option value="">Choose a product...</option>
                     @foreach($products as $p)
-                        <option value="{{ $p->id }}">{{ $p->name }}</option>
+                        @if($p->category !== 'ready_made' && $p->recipes->count() > 0)
+                            <option value="{{ $p->id }}">{{ $p->name }}</option>
+                        @endif
                     @endforeach
                 </select>
             </div>
@@ -202,6 +223,50 @@
             <div class="form-actions">
                 <button type="button" class="cancel-button" id="cancelBatch">Cancel</button>
                 <button type="button" class="add-button" id="confirmBatch">Start Production</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- WASTE CONFIRMATION MODAL -->
+<div class="modal-container" id="wasteModal">
+    <div class="modal-content">
+        <div class="modal-header" style="background: #dc3545;">
+            <span>⚠ Mark as Wasted</span>
+            <button class="modal-close" id="closeWaste">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom:1rem; color:#666; font-size:0.9rem;">
+                Batch <strong id="wasteProductName"></strong> will be marked as wasted. 
+                Ingredients have already been deducted — no stock will be produced.
+            </p>
+            <div class="form-group">
+                <label>Reason for Waste</label>
+                <textarea id="wasteReason" class="input" rows="3" placeholder="e.g. Rejected batch, burnt, bad taste..."></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="cancel-button" id="cancelWaste">Cancel</button>
+                <button type="button" class="add-button" id="confirmWaste" style="background:#dc3545;">Confirm Waste</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CLOSE KITCHEN MODAL -->
+<div class="modal-container" id="closeKitchenModal">
+    <div class="modal-content">
+        <div class="modal-header" style="background: #636e72;">
+            <span>🔒 Close Kitchen</span>
+            <button class="modal-close" id="closeCloseKitchen">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom:1rem; color:#666; font-size:0.9rem;">
+                All remaining <strong>queued</strong> and <strong>cooking</strong> batches will be marked as <span style="color:#dc3545; font-weight:700;">WASTED</span> with reason "End of day".
+            </p>
+            <p style="color:#dc3545; font-size:0.85rem; font-weight:600;">⚠ This action cannot be undone.</p>
+            <div class="form-actions">
+                <button type="button" class="cancel-button" id="cancelCloseKitchen">Cancel</button>
+                <button type="button" class="add-button" id="confirmCloseKitchen" style="background:#636e72;">Close Kitchen</button>
             </div>
         </div>
     </div>

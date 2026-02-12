@@ -10,9 +10,23 @@ use Illuminate\Support\Facades\DB;
 
 class POSController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::orderBy('category')->orderBy('name')->get();
+        $category = $request->query('category');
+        $search = $request->query('search');
+
+        $products = Product::query()
+            ->when($category && $category !== 'all', function ($query) use ($category) {
+                $query->where('category', $category);
+            })
+            ->when($search, function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->orderBy('category')
+            ->orderBy('name')
+            ->paginate(12)
+            ->withQueryString();
+
         return view('POS', compact('products'));
     }
 
@@ -112,7 +126,7 @@ class POSController extends Controller
             $query->whereDate('created_at', $request->date);
         }
 
-        $transactions = $query->simplePaginate(10)->withQueryString();
+        $transactions = $query->paginate(10)->withQueryString();
         return view('POShistory', compact('transactions'));
     }
 }

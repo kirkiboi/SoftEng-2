@@ -14,6 +14,7 @@
     flex-direction: column;
     padding: 1.5rem;
     overflow: hidden;
+    background: #ffffff;
 }
 
 .pos-products-header {
@@ -23,9 +24,15 @@
     margin-bottom: 1rem;
 }
 .pos-title {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
     color: #1a1a1a;
+}
+.pos-subtitle {
+    font-size: 0.8rem;
+    color: #999;
+    font-weight: 400;
+    margin-top: 0.15rem;
 }
 .pos-search-container {
     position: relative;
@@ -77,24 +84,37 @@
 /* Products Grid */
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.85rem;
     overflow-y: auto;
     flex: 1;
     padding-right: 0.5rem;
     padding-bottom: 1rem;
+    align-content: start;
+}
+
+/* 5 columns when sidebar is collapsed */
+.side-bar-container.collapsed ~ .main-content .products-grid {
+    grid-template-columns: repeat(5, 1fr);
 }
 .products-grid::-webkit-scrollbar { width: 4px; }
 .products-grid::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
 
 .pos-product-card {
+    position: relative;
     background: white;
-    border-radius: 16px;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     cursor: pointer;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
+    transition: all 0.25s ease;
+    border: 2px solid #f0f0f0;
+    min-height: 170px;
+    display: flex;
+    flex-direction: column;
+}
+.pos-product-card.pos-hidden {
+    display: none !important;
 }
 .pos-product-card:hover {
     transform: translateY(-3px);
@@ -115,8 +135,19 @@
     width: 100%;
     height: 100px;
     overflow: hidden;
-    background: #f5f5f5;
-    position: relative;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+}
+.product-image-container.img-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.product-image-container.img-fallback::after {
+    content: attr(data-letter);
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #8B0000;
+    opacity: 0.3;
 }
 
 .product-stock-badge {
@@ -162,6 +193,44 @@
     font-size: 0.85rem;
     font-weight: 700;
     color: #8B0000;
+}
+
+/* POS Pagination */
+.pos-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0.75rem 0 0.25rem;
+    border-top: 1px solid #f0f0f0;
+}
+.pos-page-btn {
+    width: 32px;
+    height: 32px;
+    border: 2px solid #e0e0e0;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: #666;
+    transition: all 0.2s;
+}
+.pos-page-btn:hover:not(:disabled) {
+    border-color: #8B0000;
+    color: #8B0000;
+}
+.pos-page-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+.pos-page-info {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #666;
+    font-family: 'Inter', sans-serif;
 }
 
 /* ===== RIGHT PANEL: TRANSACTION ===== */
@@ -522,3 +591,46 @@
     backdrop-filter: blur(3px);
 }
 .overlay.show { display: block; }
+
+/* ===== PRINT STYLES ===== */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #receiptModal, #receiptModal * {
+        visibility: visible;
+    }
+    .modal-container {
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        transform: none !important;
+        max-width: none;
+        box-shadow: none;
+    }
+    .modal-content {
+        box-shadow: none;
+        border: none;
+        border-radius: 0;
+    }
+    .modal-close, .receipt-footer-section {
+        display: none !important;
+    }
+    /* Enhance Receipt Look on Paper */
+    .receipt-header-section {
+        background: white !important;
+        color: black !important;
+        border-bottom: 2px solid black;
+        padding-bottom: 5px;
+    }
+    .receipt-body {
+        color: black !important;
+    }
+    .receipt-total-row {
+        border-top: 2px solid black;
+    }
+}

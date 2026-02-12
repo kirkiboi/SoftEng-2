@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Dashboard</title>
-    @vite(['resources/css/main.css'])
+    @vite(['resources/css/main.css', 'resources/css/pagination.css'])
     @vite(['resources/js/main.js'])
 </head>
 <body>
@@ -117,6 +117,12 @@
                 <div class="transaction-history feature d-flex align-items-center">
                     <i class="fa-solid fa-tag me-3 sub-icon"></i>
                     <span class ="subsystem-span">Pricing History</span>                    
+                </div>
+            </a>
+            <a href="{{ route('waste.logs') }}">
+                <div class="transaction-history feature d-flex align-items-center">
+                    <i class="fa-solid fa-trash-can-arrow-up me-3 sub-icon"></i>
+                    <span class ="subsystem-span">Waste Logs</span>                    
                 </div>
             </a>
         </div>

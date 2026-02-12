@@ -12,6 +12,7 @@ class KitchenProductionLog extends Model
         'times_cooked',
         'total_servings',
         'status',
+        'waste_reason',
     ];
 
     public function user()

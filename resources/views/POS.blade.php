@@ -8,22 +8,30 @@
 
 <div class="pos-wrapper">
     <!-- LEFT: PRODUCT GRID -->
+    <!-- LEFT: PRODUCT GRID -->
     <div class="pos-products-panel">
         <div class="pos-products-header">
-            <h2 class="pos-title">Menu</h2>
+            <div>
+                <h2 class="pos-title">Point of Sale</h2>
+                <p class="pos-subtitle">Select items to add to cart</p>
+            </div>
             <div class="pos-search-container">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="posSearch" placeholder="Search items..." class="pos-search">
+                <form action="{{ route('pos') }}" method="GET" style="display:flex; align-items:center; width:100%;">
+                    <input type="hidden" name="category" value="{{ request('category', 'all') }}">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search items..." class="pos-search">
+                </form>
             </div>
         </div>
         <div class="category-tabs">
-            <button class="cat-tab active" data-category="all">All</button>
-            <button class="cat-tab" data-category="meals">Meals</button>
-            <button class="cat-tab" data-category="drinks">Drinks</button>
-            <button class="cat-tab" data-category="snacks">Snacks</button>
+            <a href="{{ route('pos', ['category' => 'all', 'search' => request('search')]) }}" class="cat-tab {{ request('category', 'all') == 'all' ? 'active' : '' }}">All</a>
+            <a href="{{ route('pos', ['category' => 'meals', 'search' => request('search')]) }}" class="cat-tab {{ request('category') == 'meals' ? 'active' : '' }}">Meals</a>
+            <a href="{{ route('pos', ['category' => 'drinks', 'search' => request('search')]) }}" class="cat-tab {{ request('category') == 'drinks' ? 'active' : '' }}">Drinks</a>
+            <a href="{{ route('pos', ['category' => 'snacks', 'search' => request('search')]) }}" class="cat-tab {{ request('category') == 'snacks' ? 'active' : '' }}">Snacks</a>
+            <a href="{{ route('pos', ['category' => 'ready_made', 'search' => request('search')]) }}" class="cat-tab {{ request('category') == 'ready_made' ? 'active' : '' }}">Ready Made</a>
         </div>
         <div class="products-grid" id="productsGrid">
-            @foreach($products as $product)
+            @forelse($products as $product)
                 <div class="pos-product-card {{ $product->stock <= 0 ? 'out-of-stock' : '' }}" 
                      data-id="{{ $product->id }}" 
                      data-name="{{ $product->name }}" 
@@ -36,14 +44,23 @@
                     </div>
 
                     <div class="product-image-container">
-                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" onerror="this.src='/public/photos/default-food.png'">
+                        <img src="{{ asset('storage/' . $product->image) }}" 
+                             alt="{{ $product->name }}" 
+                             onerror="this.style.display='none'; this.parentElement.classList.add('img-fallback'); this.parentElement.setAttribute('data-letter', '{{ substr($product->name, 0, 1) }}');">
                     </div>
                     <div class="product-info">
                         <span class="product-card-name">{{ $product->name }}</span>
                         <span class="product-card-price">₱{{ number_format($product->price, 2) }}</span>
                     </div>
                 </div>
-            @endforeach
+            @empty
+                <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                    <p>No products found.</p>
+                </div>
+            @endforelse
+        </div>
+        <div class="pos-pagination" id="posPagination">
+            {{ $products->links('components.pagination') }}
         </div>
     </div>
 
@@ -135,8 +152,9 @@
         <div class="receipt-body" id="receiptBody">
             <!-- Filled by JS -->
         </div>
-        <div class="receipt-footer-section">
-            <button class="add-button" id="closeReceipt" style="width:100%;">Done</button>
+        <div class="receipt-footer-section" style="display: flex; gap: 0.5rem;">
+            <button class="cancel-button" onclick="window.print()" style="flex:1; background-color: #636e72; color: white;"><i class="fa-solid fa-print"></i> Print</button>
+            <button class="add-button" id="closeReceipt" style="flex:1;">Done</button>
         </div>
     </div>
 </div>

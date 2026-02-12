@@ -12,87 +12,65 @@ document.addEventListener("DOMContentLoaded", () => {
     const overlay = document.getElementById("overlay");
     let currentForm = null;
     // FINALIZED FILTER FUNCTIONALITY
+    // SERVER-SIDE FILTERING (Links are used now, so JS filtering removed)
     if (filterButton && filterDropdown) {
         const defaultIcon = filterButton.querySelector(".bi-funnel");
         const activeIcon = filterButton.querySelector(".bi-x-lg");
 
         filterButton.addEventListener("click", (e) => {
             e.stopPropagation();
-            // Use getComputedStyle for accurate detection
-            const isDropdownOpen =
-                window.getComputedStyle(filterDropdown).display === "block";
-
+            const isDropdownOpen = window.getComputedStyle(filterDropdown).display === "block";
             filterDropdown.style.display = isDropdownOpen ? "none" : "block";
 
-            // Toggle Icons with force-display logic
             if (!isDropdownOpen) {
-                if (defaultIcon)
-                    defaultIcon.setAttribute(
-                        "style",
-                        "display: none !important",
-                    );
-                if (activeIcon)
-                    activeIcon.setAttribute(
-                        "style",
-                        "display: block !important",
-                    );
+                if (defaultIcon) defaultIcon.setAttribute("style", "display: none !important");
+                if (activeIcon) activeIcon.setAttribute("style", "display: block !important");
             } else {
-                if (defaultIcon)
-                    defaultIcon.setAttribute(
-                        "style",
-                        "display: block !important",
-                    );
-                if (activeIcon)
-                    activeIcon.setAttribute(
-                        "style",
-                        "display: none !important",
-                    );
+                if (defaultIcon) defaultIcon.setAttribute("style", "display: block !important");
+                if (activeIcon) activeIcon.setAttribute("style", "display: none !important");
             }
         });
 
-        // Handle Category Filtering
-        filterDropdown.querySelectorAll(".filter-option").forEach((option) => {
-            option.addEventListener("click", () => {
-                const cat = option.dataset.category;
-                tableRows.forEach((row) => {
-                    row.style.display =
-                        cat === "all" || row.dataset.category === cat
-                            ? ""
-                            : "none";
-                });
-                filterDropdown.style.display = "none";
-                // Reset icons after selection
-                if (defaultIcon)
-                    defaultIcon.setAttribute(
-                        "style",
-                        "display: block !important",
-                    );
-                if (activeIcon)
-                    activeIcon.setAttribute(
-                        "style",
-                        "display: none !important",
-                    );
-            });
-        });
-
-        // Close when clicking outside
         document.addEventListener("click", (e) => {
-            if (
-                !filterDropdown.contains(e.target) &&
-                !filterButton.contains(e.target)
-            ) {
+            if (!filterDropdown.contains(e.target) && !filterButton.contains(e.target)) {
                 filterDropdown.style.display = "none";
-                if (defaultIcon)
-                    defaultIcon.setAttribute(
-                        "style",
-                        "display: block !important",
-                    );
-                if (activeIcon)
-                    activeIcon.setAttribute(
-                        "style",
-                        "display: none !important",
-                    );
+                if (defaultIcon) defaultIcon.setAttribute("style", "display: block !important");
+                if (activeIcon) activeIcon.setAttribute("style", "display: none !important");
             }
+        });
+    }
+
+    // WASTE STOCK MODAL LOGIC
+    const wasteModal = document.getElementById('wasteStockModal');
+    const wasteForm = document.getElementById('wasteStockForm');
+    const wasteName = document.getElementById('wasteStockName');
+    const overlayWaste = document.getElementById('overlay'); // Reuse existing overlay if possible, or use modal's own backdrop
+
+    document.querySelectorAll('.waste-button').forEach(btn => {
+        btn.addEventListener('click', () => {
+             const { id, name } = btn.dataset;
+             wasteForm.action = `/products/${id}/waste`;
+             wasteName.textContent = name;
+             wasteModal.style.display = 'flex';
+             // If overlay is separate from modal container:
+             if(overlay) overlay.classList.add('show');
+        });
+    });
+
+    document.getElementById('closeWasteStock')?.addEventListener('click', () => {
+        wasteModal.style.display = 'none';
+        if(overlay) overlay.classList.remove('show');
+    });
+
+    document.getElementById('cancelWasteStock')?.addEventListener('click', () => {
+        wasteModal.style.display = 'none';
+        if(overlay) overlay.classList.remove('show');
+    });
+
+    // Close waste modal on overlay click (if using shared overlay)
+    if(overlay) {
+        overlay.addEventListener('click', () => {
+            wasteModal.style.display = 'none';
         });
     }
     // ADD ITEM MODAL FUNCTIONALITY

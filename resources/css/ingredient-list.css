@@ -212,11 +212,7 @@ body {
     transform: translateY(-1px);
 }
 
-/* Allow overflow for the dropdown to be visible */
-.floating-add-ingredient-container,
-.record-stock-in-container {
-    overflow: visible !important; 
-}
+
 
 /* ===== TABLE SECTION ===== */
 .table-container {
@@ -323,6 +319,14 @@ td {
     margin-top: 1.5rem;
 }
 
+.pagination-container p {
+    margin-top: 0.8rem;
+    margin-right: 2rem;
+    color: #636e72;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
 .pagination {
     display: flex;
     gap: 0.5rem;
@@ -374,6 +378,26 @@ td {
     box-shadow: none;
 }
 
+/* Arrow icons for Previous/Next */
+.page-item:first-child .page-link {
+    font-size: 0;
+}
+.page-item:first-child .page-link::before {
+    content: "\f060";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 1rem;
+}
+.page-item:last-child .page-link {
+    font-size: 0;
+}
+.page-item:last-child .page-link::before {
+    content: "\f061";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 1rem;
+}
+
 /* ===== MODALS ===== */
 .overlay {
     display: none;
@@ -414,6 +438,17 @@ td {
 .record-stock-in-container.active,
 .record-product-stock-in-container.active {
     display: flex; /* Activate as flex container */
+}
+
+/* Modal Wrappers - must be flex column to enable form scrolling */
+.floating-add-ingredient-container-wrapper,
+.floating-edit-ingredient-container-wrapper,
+.record-stock-in-wrapper {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex: 1;
+    min-height: 0;
 }
 
 /* Modal Headers */

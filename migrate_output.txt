@@ -1,0 +1,33 @@
+﻿
+  Dropping all tables  131.08ms DONE
+
+   INFO  Preparing database.  
+
+  Creating migration table  13.56ms DONE
+
+   INFO  Running migrations.  
+
+  0001_01_01_000000_create_users_table  78.87ms DONE
+  0001_01_01_000001_create_cache_table  15.10ms DONE
+  0001_01_01_000002_create_jobs_table  58.81ms DONE
+  2026_01_18_171420_transaction  43.55ms DONE
+  2026_01_18_184157_product  8.00ms DONE
+  2026_01_28_074341_ingredient  7.12ms DONE
+  2026_01_28_114141_product_audit_trail  107.85ms DONE
+  2026_01_30_080034_ingredient_audit_log  84.93ms DONE
+  2026_02_07_191500_batch_sizes  43.11ms DONE
+  2026_02_07_191507_recipes  146.06ms DONE
+  2026_02_07_192025_kitchen_logs  101.88ms DONE
+  2026_02_07_192822_recipe_log  87.99ms DONE
+  2026_02_11_033155_add_action_column_to_ingredient_audit_logs_table  97.62ms DONE
+  2026_02_11_040000_create_transactions_table  56.93ms DONE
+  2026_02_11_040001_create_transaction_items_table  88.87ms DONE
+  2026_02_11_040002_create_kitchen_production_logs_table  87.40ms DONE
+  2026_02_11_040003_create_kitchen_stock_deductions_table  105.22ms DONE
+  2026_02_11_040004_add_stock_in_fields_to_ingredient_audit_logs  50.60ms DONE
+  2026_02_11_050000_add_stock_to_products_table  9.03ms DONE
+  2026_02_12_175457_add_waste_reason_to_kitchen_production_logs  7.39ms DONE
+
+
+   INFO  Seeding database.  
+
