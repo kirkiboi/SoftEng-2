@@ -120,30 +120,7 @@
                 </div>
             </a>
         </div>
-        <!-- Point of Sales -->
-        <div class="point-of-sales-container subsystem">
-            <div class="point-of-sales">
-                <i class="fa-solid fa-cash-register me-3"></i>
-                <span class ="subsystem-span">Point of Sales</span>
-            </div>
-            <div class="subsystem-drop-down">
-                <i class="fa-solid fa-angles-right arrow-icon button"></i>
-            </div>
-        </div>
-        <div class="subsystem-feature">
-            <a href="{{ route('pos') }}">
-                <div class="feature d-flex align-items-center">
-                    <i class="fa-solid fa-cart-shopping me-3 sub-icon"></i>
-                    <span class ="subsystem-span">New Transaction</span>
-                </div>
-            </a>
-            <a href="{{ route('POShistory') }}">
-                <div class="feature d-flex align-items-center">
-                    <i class="fa-solid fa-clock-rotate-left me-3 sub-icon"></i>
-                    <span class ="subsystem-span">Transaction History</span>
-                </div>
-            </a>
-        </div>
+
         <!-- CVAM ass shit ni diria -->
         <div class="analysis-and-reporting-container subsystem">
             <div class="analysis-and-reporting">

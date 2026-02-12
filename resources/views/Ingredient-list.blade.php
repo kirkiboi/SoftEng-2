@@ -47,11 +47,8 @@
                         >
                     </form>
                 </div>
-                <!-- SEARCH INPUT ENDS HERE + PAGINATION CONTROL STARTS HERE -->
-                <div class="pagination-container">
-                    {{ $ingredients->links() }}
                 </div>
-                <!--  SEARCH INPUT ENDS HERE + BUTTON CONTAINER DIRI TONG STOCK IN AND ADD INGREDIENTS-->
+                <!-- BUTTON CONTAINER DIRI TONG STOCK IN AND ADD INGREDIENTS-->
                 <div class="button-container">
                     <button class="record-stock-in-button">Record Stock In</button>
                     <button class="record-product-stock-in-button" style="background-color: #4a90e2; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-right: 10px;">Product Stock In</button>
@@ -59,25 +56,25 @@
                 </div>
             </div>
             <!-- BUTTONS ENDS HERE + MAIN BODY (TABLE) STARTS HERE -->
-            <div class="main-body-container">
+            <div class="table-container">
                 <table>
                     <colgroup>
-                        <col style="width: 19%">
-                        <col style="width: 12%">
-                        <col style="width: 22%">
+                        <col style="width: 25%">
                         <col style="width: 15%">
-                        <col style="width: 12%">
-                        <col style="width: 11%">
-                        <col style="width: 8%">
-                        <col style="width: 8%">
+                        <col style="width: 10%">
+                        <col style="width: 10%">
+                        <col style="width: 10%">
+                        <col style="width: 10%">
+                        <col style="width: 10%">
+                        <col style="width: 10%">
                     </colgroup>
                     <thead>
-                        <tr class="tr">
+                        <tr class="">
                             <th class="th">Ingredient Name</th>
                             <th class="th">Category</th>
-                            <th class="th">Unit of Measurement</th>
-                            <th class="th">Current Stock</th>
-                            <th class="th">Unit Cost</th>
+                            <th class="th">Unit</th>
+                            <th class="th">Stock</th>
+                            <th class="th">Cost</th>
                             <th class="th">Threshold</th>
                             <th class="th">Status</th>
                             <th class="th">Actions</th>
@@ -86,7 +83,11 @@
                     <tbody>
                         @foreach($ingredients as $ingredient)
                             <tr class="tr">
-                                <td>{{ $ingredient->name }}</td>
+                                <td>
+                                    <div class="product-name-and-image">
+                                        <span>{{ $ingredient->name }}</span>
+                                    </div>
+                                </td>
                                 <td>{{ $ingredient->category }}</td>
                                 <td>{{ $ingredient->unit }}</td>
                                 <td>{{ $ingredient->stock }}{{ $ingredient->unit }}</td>
@@ -120,6 +121,12 @@
                     </tbody>
                 </table>
             </div>
+            <!-- PAGINATION CONTROL STARTS HERE -->
+            <div class="pagination-container">
+                {{ $ingredients->links() }}
+            </div>
+        </div>
+    </div>
         </div>
     </div>
     <!-- TABLE ENDS HERE + ADD INGREDIENT MODAL STARTS HERE -->

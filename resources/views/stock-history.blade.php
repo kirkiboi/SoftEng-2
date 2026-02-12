@@ -62,11 +62,8 @@
                     />
                 </form>
             </div>
-            <!-- DATE CONTAINER ENDS HERE + PAGINATION CONTROLS STARTS HERE -->
-            <div class="pagination-container">
-                {{ $logs->onEachSide(0)->links() }}
-            </div>
-            <!-- PAGINATION CONTROL ENDS HERE + EXPORT SALES DATA NGA BUTTON IS HERE -->
+            <!-- DATE CONTAINER ENDS HERE -->
+             <!-- EXPORT SALES DATA NGA BUTTON IS HERE -->
             <div class="export-sales-data-container">
                 <button>
                     <i class="fa-solid fa-print"></i>
@@ -76,17 +73,18 @@
             <!-- EXPORT SALES DATA NGA BUTTON ENDS HERE -->
         </div>
         <!-- HEADER CONTAINER ENDS HERE + TABLE STARTS HERE -->
-        <div class="main-body-container">
+        <div class="table-container">
             <table>
                 <colgroup>
                     <col style="width: 20%">
+                    <col style="width: 15%">
                     <col style="width: 20%">
-                    <col style="width: 20%">
-                    <col style="width: 20%">
-                    <col style="width: 20%">
+                    <col style="width: 15%">
+                    <col style="width: 10%">
+                    <col style="width: 10%">
                 </colgroup>
                 <thead>
-                    <tr class="tr">
+                    <tr class="">
                         <th class="th">Item Name</th>
                         <th class="th">Action</th>
                         <th class="th">Date & Time</th>
@@ -98,9 +96,13 @@
                 <tbody>
                     <!-- LOOP THROUGH THE LOGS SA INGREDIENT NGA CONTROLLER -->
                     @foreach($logs as $log)
-                        <tr>
+                        <tr class="tr">
                             <!-- LOGS SA CONTROLLER -->
-                            <td>{{ $log->ingredient_name ?? 'Deleted Ingredient' }}</td>
+                            <td>
+                                <div class="product-name-and-image">
+                                    <span>{{ $log->ingredient_name ?? 'Deleted Ingredient' }}</span>
+                                </div>
+                            </td>
                             <!-- LOGS SA ACTION -->
                             <td>{{ ucfirst($log->action) }}</td>
                             <!-- LOGS SA TIMESTAMPS -->
@@ -121,6 +123,10 @@
                     <!-- END SA FOR EACH LOOP -->
                 </tbody>
             </table>
+        </div>
+        <!-- PAGINATION CONTROLS STARTS HERE -->
+        <div class="pagination-container">
+            {{ $logs->onEachSide(0)->links() }}
         </div>
     </div>
 </div>
