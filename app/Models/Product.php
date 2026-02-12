@@ -15,23 +15,12 @@ class Product extends Model
     {
         return $this->hasMany(Recipe::class);
     }
-    public function batchSizes()
-    {
-        return $this->hasMany(BatchSize::class);
-    }
     public function kitchenLogs()
     {
         return $this->hasMany(KitchenLog::class);
     }
-    public function ingredients()
+    public function auditLogs()
     {
-        return $this->belongsToMany(
-            Ingredient::class,
-            'recipes',
-            'product_id',
-            'ingredient_id'
-        )
-        ->withPivot(['quantity', 'batch_sizes_id'])
-        ->withTimestamps();
+        return $this->hasMany(ProductAuditLog::class);
     }
 }

@@ -8,7 +8,7 @@ class Recipe extends Model
     protected $fillable = [
         'product_id',
         'ingredient_id',
-        'batch_sizes_id',
+        'batch_size',
         'quantity',
     ];
     public function product()
@@ -18,13 +18,5 @@ class Recipe extends Model
     public function ingredient()
     {
         return $this->belongsTo(Ingredient::class);
-    }
-    public function batchSize()
-    {
-        return $this->belongsTo(BatchSize::class, 'batch_sizes_id');
-    }
-    public function logs()
-    {
-        return $this->hasMany(RecipeLog::class);
     }
 }

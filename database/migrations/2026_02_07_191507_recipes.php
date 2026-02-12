@@ -9,7 +9,7 @@ return new class extends Migration
         Schema::create('recipes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->foreignId('batch_sizes_id')->constrained()->onDelete('cascade');
+            $table->integer('batch_size'); // 10, 20, 30, 40, 50
             $table->foreignId('ingredient_id')->constrained()->onDelete('cascade');
             $table->decimal('quantity', 10, 2);
             $table->timestamps();
