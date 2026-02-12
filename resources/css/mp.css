@@ -490,6 +490,15 @@ td {
 .fa-trash {
     color: grey;
     font-size: 1rem;
+    transition: color 0.2s ease; /* Smooth transition */
+}
+
+/* Hover Effects for Actions */
+.edit-button:hover .fa-pencil {
+    color: #2975da !important; /* Blue on hover */
+}
+.delete-button:hover .fa-trash {
+    color: #d63031 !important; /* Red on hover */
 }
 .floating-delete-item-container-wrapper {
     display: flex;

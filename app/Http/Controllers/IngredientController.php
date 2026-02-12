@@ -24,7 +24,41 @@ class IngredientController extends Controller
         return view('ingredient-list', compact('ingredients', 'products'));
     }
 
-    // ... (destroy, update, store methods remain unchanged)
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
+            'unit' => 'required|string|max:50',
+            'cost_per_unit' => 'required|numeric|min:0',
+            'stock' => 'required|numeric|min:0',
+            'threshold' => 'required|numeric|min:0',
+        ]);
+
+        Ingredient::create($validated);
+
+        return redirect()->back()->with('success', 'Ingredient added successfully!');
+    }
+
+    public function update(Request $request, Ingredient $ingredient)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
+            'unit' => 'required|string|max:50',
+        ]);
+
+        $ingredient->update($validated);
+
+        return redirect()->back()->with('success', 'Ingredient updated successfully!');
+    }
+
+    public function destroy($id)
+    {
+        $ingredient = Ingredient::findOrFail($id);
+        $ingredient->delete();
+        return redirect()->back()->with('success', 'Ingredient deleted successfully!');
+    }
 
     public function stockIn(Request $request)
     {

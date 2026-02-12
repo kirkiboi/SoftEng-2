@@ -68,6 +68,8 @@ body {
 }
 .filter-icon i {
     font-size: 1.2rem;
+    color: #000000 !important; /* FORCE BLACK ICON */
+    font-weight: 900; /* Ensure icon is bold/solid */
 }
 .filter-icon:hover {
     background-color: #e0e0e0;
@@ -76,15 +78,26 @@ body {
 
 /* ... (lines 74-279 unchanged) ... */
 
+/* Actions */
+.td-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
 .edit-ingredient-btn, .delete-button {
     background: none;
     border: none;
     cursor: pointer;
     padding: 0;
     transition: transform 0.2s;
-    color: grey; /* Match Menu Pricing */
-    font-size: 1rem;
 }
+.edit-ingredient-btn i, 
+.delete-button i {
+    font-size: 0.85rem !important; /* Smaller icon size */
+    color: #636e72 !important; /* Visible Dark Grey */
+}
+.edit-ingredient-btn:hover i { color: #2975da !important; }
+.delete-button:hover i { color: #d63031 !important; }
 
 /* Filter Dropdown */
 .filter-drop-down-modal {
@@ -387,9 +400,9 @@ td {
     box-shadow: 0 20px 60px rgba(0,0,0,0.2);
     z-index: 1001;
     display: none;
-    overflow: hidden;
+    overflow-y: auto; /* Allow scrolling if content is too tall */
     width: 30rem;
-    max-height: 95vh;
+    max-height: 90vh; /* Prevent modal from exceeding screen height */
 }
 
 .floating-add-ingredient-container.active,
@@ -463,27 +476,69 @@ input:focus, select:focus {
 }
 
 /* Modal Buttons */
+/* Modal Buttons */
 .floating-add-item-options,
 .floating-edit-item-options,
 .floating-delete-item-options {
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
-    margin-top: 1rem;
+    margin-top: 1.5rem; /* Increased margin for cleaner look */
+    flex-wrap: wrap; /* Prevent overflow on small screens */
 }
 
-.add-button, .delete-confirm-button {
-    background-color: #f1c40f; /* Yellow Save/Add */
-    color: #2d3436;
+/* Common Button Styles */
+.add-button, 
+.delete-confirm-button,
+.cancel-button,
+.edit-cancel-button {
     padding: 0.6rem 1.5rem;
-    border-radius: 50px;
+    border-radius: 50px; /* Pill Shape */
     border: none;
     font-weight: 700;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.3s ease;
     min-width: 7rem;
+    font-family: var(--font-family);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-.add-button:hover { background-color: #d4ac0d; }
+
+/* Primary Actions (Add/Save) */
+.add-button {
+    background-color: #f1c40f; 
+    color: #2d3436;
+}
+.add-button:hover { 
+    background-color: #d4ac0d; 
+    transform: translateY(-1px);
+}
+
+/* Delete Action */
+.delete-confirm-button {
+    background-color: #d63031;
+    color: white;
+}
+.delete-confirm-button:hover {
+    background-color: #b71c1c;
+    transform: translateY(-1px);
+}
+
+/* Cancel Actions */
+.cancel-button,
+.edit-cancel-button {
+    background-color: #f1f1f1;
+    color: #636e72;
+    border: 1px solid #e0e0e0; /* Subtle border for definition */
+}
+.cancel-button:hover,
+.edit-cancel-button:hover {
+    background-color: #e2e2e2;
+    color: #2d3436;
+    transform: translateY(-1px);
+}
 
 .delete-confirm-button {
     background-color: #d63031; /* Red Delete */
