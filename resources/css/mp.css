@@ -495,10 +495,12 @@ td {
 
 /* Hover Effects for Actions */
 .edit-button:hover .fa-pencil {
-    color: #2975da !important; /* Blue on hover */
+    color: #2975da !important;
+    transform: scale(1.2); /* Zoom effect */
 }
 .delete-button:hover .fa-trash {
-    color: #d63031 !important; /* Red on hover */
+    color: #d63031 !important;
+    transform: scale(1.2); /* Zoom effect */
 }
 .floating-delete-item-container-wrapper {
     display: flex;

@@ -400,9 +400,12 @@ td {
     box-shadow: 0 20px 60px rgba(0,0,0,0.2);
     z-index: 1001;
     display: none;
-    overflow-y: auto; /* Allow scrolling if content is too tall */
+    /* REFRACTORED: Flex layout for proper scrolling and corner clipping */
+    display: none; /* Default state */
+    flex-direction: column;
     width: 30rem;
-    max-height: 90vh; /* Prevent modal from exceeding screen height */
+    max-height: 90vh;
+    overflow: hidden; /* Clips children to border-radius, fixing "rectangle" artifacts */
 }
 
 .floating-add-ingredient-container.active,
@@ -410,7 +413,7 @@ td {
 .floating-delete-item-container.active,
 .record-stock-in-container.active,
 .record-product-stock-in-container.active {
-    display: block;
+    display: flex; /* Activate as flex container */
 }
 
 /* Modal Headers */
@@ -421,6 +424,7 @@ td {
     color: #2d3436;
     padding: 1.5rem 2rem;
     border-bottom: 1px solid #f0f0f0;
+    flex-shrink: 0; /* Keep header fixed size */
 }
 .floating-add-item span,
 .floating-edit-item span,
@@ -429,14 +433,17 @@ td {
     font-weight: 800;
 }
 
-/* Modal Forms */
+/* Modal Forms - SCROLLABLE AREA */
 .floating-add-ingredient-form,
 .edit-ingredient-form,
 .floating-delete-item-container-wrapper {
     padding: 2rem;
+    padding-bottom: 2rem;
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
+    overflow-y: auto; /* Scroll only the form content */
+    flex-grow: 1; /* Take up remaining space */
 }
 
 /* Form Inputs */
