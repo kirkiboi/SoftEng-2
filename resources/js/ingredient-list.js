@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
         closeAll();
         filterDropdown.classList.add('show');
-        openOverlay();
+        // Do NOT open overlay for filter dropdown
     });
 
     // ADD INGREDIENT

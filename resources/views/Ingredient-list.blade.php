@@ -6,17 +6,19 @@
         {{ session('success') }}
     </div>
 @endif
-@vite(['resources/css/ingredient-list.css'])
-@vite(['resources/js/ingredient-list.js'])
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    @vite(['resources/css/ingredient-list.css'])
+    @vite(['resources/js/ingredient-list.js'])
     <div class="main-container">
         <div class="parent-container">
             <div class="header-container">
                 <div class="filter-and-search-container">
-                    <!-- FILTER ICON STARTS HERE -->
-                    <svg id="filter-button" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22" class="filter-icon">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                    <!-- FILTER ICON ENDS HERE + FILTER MODAL STARTS HERE -->
+                    <!-- FILTER ICON -->
+                    <div class="filter-icon">
+                        <i class="bi bi-funnel"></i>
+                    </div>
+                    
+                    <!-- FILTER MODAL -->
                     <form method="GET" action="{{ route('im') }}" class="filter-drop-down-modal">
                         <div class="filter-drop-down-modal-container">
                             <div class="filter-drop-down-wrapper">
@@ -36,7 +38,8 @@
                             </div>
                         </div>
                     </form>
-                    <!-- FILTER MODAL ENDS HERE + SEARCH INPUT STARTS HERE -->
+                    
+                    <!-- SEARCH INPUT -->
                     <form method="GET" action="{{ route('im') }}" class="search-form">
                         <input 
                             type="text"
@@ -47,11 +50,11 @@
                         >
                     </form>
                 </div>
-                </div>
-                <!-- BUTTON CONTAINER DIRI TONG STOCK IN AND ADD INGREDIENTS-->
+
+                <!-- BUTTON CONTAINER -->
                 <div class="button-container">
                     <button class="record-stock-in-button">Record Stock In</button>
-                    <button class="record-product-stock-in-button" style="background-color: #4a90e2; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-right: 10px;">Product Stock In</button>
+                    <button class="record-product-stock-in-button">Product Stock In</button>
                     <button class="add-ingredient-button">Add Ingredient</button>
                 </div>
             </div>

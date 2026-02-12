@@ -400,6 +400,8 @@ td {
     width: 2.8rem;
     height: 2.8rem;
     border-radius: 12px;
+    background-color: #f5f5f5; /* Added background */
+    color: #636e72; /* Added icon color */
     transition:
         background 0.2s,
         color 0.2s;
