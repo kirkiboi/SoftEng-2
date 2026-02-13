@@ -138,18 +138,24 @@
             </div>
         </div>
         <div class="subsystem-feature">
-            <div class="new-transaction feature d-flex align-items-center">
-                <i class="fa-solid fa-gauge-high me-3 sub-icon"></i>
-                <span class ="subsystem-span">Financial Dashboard</span>
-            </div>
-            <div class="transaction-history feature d-flex align-items-center">
-                <i class="fa-solid fa-file-invoice-dollar me-3 sub-icon"></i>
-                <span class ="subsystem-span">Cost & Variance Reports</span>                    
-            </div>
-            <div class="transaction-history feature d-flex align-items-center">
-                <i class="fa-solid fa-magnifying-glass-chart me-3 sub-icon"></i>
-                <span class ="subsystem-span">Yield & Forecasting Reports</span>                    
-            </div>
+            <a href="{{ route('reports.dashboard') }}">
+                <div class="new-transaction feature d-flex align-items-center">
+                    <i class="fa-solid fa-gauge-high me-3 sub-icon"></i>
+                    <span class ="subsystem-span">Financial Dashboard</span>
+                </div>
+            </a>
+            <a href="{{ route('reports.cost-variance') }}">
+                <div class="transaction-history feature d-flex align-items-center">
+                    <i class="fa-solid fa-file-invoice-dollar me-3 sub-icon"></i>
+                    <span class ="subsystem-span">Cost & Variance Reports</span>                    
+                </div>
+            </a>
+            <a href="{{ route('reports.yield') }}">
+                <div class="transaction-history feature d-flex align-items-center">
+                    <i class="fa-solid fa-magnifying-glass-chart me-3 sub-icon"></i>
+                    <span class ="subsystem-span">Yield & Forecasting Reports</span>                    
+                </div>
+            </a>
         </div>
     </div>
     <form action="{{ route('login') }}">

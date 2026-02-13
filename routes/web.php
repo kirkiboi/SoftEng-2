@@ -29,7 +29,11 @@ Route::get('/recipes/{product}', [RecipeController::class, 'show'])->name('recip
 Route::get('/ingredients/all', function () {return \App\Models\Ingredient::select('id', 'name', 'unit')->get();})->middleware('auth');
 
 // Analysis and Reporting Routes
-Route::get('/analysisandreporting', function () {return view('AR');})->name('ar')->middleware('auth');
+use App\Http\Controllers\ReportController;
+Route::get('/reports/dashboard', [ReportController::class, 'dashboard'])->name('reports.dashboard')->middleware('auth');
+Route::get('/reports/cost-variance', [ReportController::class, 'costVariance'])->name('reports.cost-variance')->middleware('auth');
+Route::get('/reports/yield-forecasting', [ReportController::class, 'yieldForecasting'])->name('reports.yield')->middleware('auth');
+Route::get('/analysisandreporting', function () {return redirect()->route('reports.dashboard');})->name('ar')->middleware('auth');
 
 // Point of Sales Routes
 use App\Http\Controllers\POSController;
