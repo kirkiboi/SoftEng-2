@@ -98,6 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
             form.querySelector('[name="name"]').value = btn.dataset.name;
             form.querySelector('[name="category"]').value = btn.dataset.category;
             form.querySelector('[name="unit"]').value = btn.dataset.unit;
+            form.querySelector('[name="cost_per_unit"]').value = btn.dataset.cost;
+            form.querySelector('[name="threshold"]').value = btn.dataset.threshold;
             editIngredientModal.classList.add('active');
             openOverlay();
         });

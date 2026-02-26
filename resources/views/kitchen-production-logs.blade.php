@@ -15,9 +15,8 @@
                         <div class="filter-group">
                             <select name="status">
                                 <option value="">All Status</option>
-                                <option value="queued" {{ request('status') === 'queued' ? 'selected' : '' }}>Queued</option>
-                                <option value="cooking" {{ request('status') === 'cooking' ? 'selected' : '' }}>Cooking</option>
-                                <option value="done" {{ request('status') === 'done' ? 'selected' : '' }}>Done</option>
+                                <option value="wasted" {{ request('status') === 'wasted' ? 'selected' : '' }}>Wasted</option>
+                                <option value="served" {{ request('status') === 'served' ? 'selected' : '' }}>Served</option>
                             </select>
                         </div>
                         <button type="submit">Apply filter</button>
@@ -34,6 +33,12 @@
                     <input type="hidden" name="search" value="{{ request('search') }}">
                     <input type="date" name="date" id="dateInput" value="{{ request('date') }}" onchange="this.form.submit()"/>
                 </form>
+            </div>
+            <div class="export-sales-data-container">
+                <button class="export-btn" id="exportBtn" data-export-name="kitchen-production-logs">
+                    <i class="fa-solid fa-print"></i>
+                    <span>Export Logs</span>
+                </button>
             </div>
             <div class="pagination-container">
                 @include('components.pagination', ['paginator' => $logs])

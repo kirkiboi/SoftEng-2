@@ -53,7 +53,7 @@ class ProductController extends Controller
         $request->validate([
             'name'     => 'required|string',
             'category' => 'required|in:drinks,snacks,meals,ready_made',
-            'price'    => 'required|numeric',
+            'price'    => 'required|numeric|min:0.01',
             'image'    => 'nullable|image|mimes:jpg,jpeg,png',
         ]);
         $old_name  = $product->name;
@@ -96,7 +96,7 @@ class ProductController extends Controller
         $request->validate([
             'name'     => 'required|string',
             'category' => 'required|in:drinks,snacks,meals,ready_made',
-            'price'    => 'required|numeric',
+            'price'    => 'required|numeric|min:0.01',
             'image'    => 'required|image|mimes:jpg,jpeg,png',
         ]);
         $imagePath = $request->file('image')->store('products', 'public');       

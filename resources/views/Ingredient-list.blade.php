@@ -177,15 +177,15 @@
                 </div>
                 <div class="floating-add-ingredient-cost-per-unit">
                     <label>Cost per unit</label>
-                    <input type="number" step="0.01" name="cost_per_unit" required>
+                    <input type="number" step="0.01" min="0.01" name="cost_per_unit" required oninput="this.setCustomValidity(this.value < 0.01 ? 'Cost must be greater than 0' : '')">
                 </div>
                 <div class="floating-add-ingredient-stock">
                     <label>Initial stock</label>
-                    <input type="number" step="0.01" name="stock" value="0" required>
+                    <input type="number" step="0.01" min="0" name="stock" value="0" required oninput="this.setCustomValidity(this.value < 0 ? 'Stock cannot be negative' : '')">
                 </div>
                 <div class="floating-add-ingredient-threshold">
                     <label>Threshold</label>
-                    <input type="number" step="0.01" name="threshold" value="0" required>
+                    <input type="number" step="0.01" min="0" name="threshold" value="0" required oninput="this.setCustomValidity(this.value < 0 ? 'Threshold cannot be negative' : '')">
                 </div>
                 <div class="floating-add-item-options">
                     <button type="button" class="cancel-button" id="add-ingredient-cancel-button">Cancel</button>
@@ -233,6 +233,14 @@
                         <option value="pcs">pcs</option>
                         <option value="ml">ml</option>
                     </select>
+                </div>
+                <div class="floating-add-ingredient-cost-per-unit">
+                    <label>Cost per unit</label>
+                    <input type="number" step="0.01" min="0.01" name="cost_per_unit" required oninput="this.setCustomValidity(this.value < 0.01 ? 'Cost must be greater than 0' : '')">
+                </div>
+                <div class="floating-add-ingredient-threshold">
+                    <label>Threshold</label>
+                    <input type="number" step="0.01" min="0" name="threshold" value="0" required oninput="this.setCustomValidity(this.value < 0 ? 'Threshold cannot be negative' : '')">
                 </div>
                 <div class="floating-add-item-options">
                     <button type="button" class="edit-cancel-button">Cancel</button>

@@ -23,8 +23,7 @@ class ReportController extends Controller
         $totalRevenue = Transaction::sum('total_amount');
         $todayRevenue = Transaction::whereDate('created_at', Carbon::today())->sum('total_amount');
         
-        // 2. Cost Analysis (Simplified estimation)
-        // Calculating total cost based on all deductions made so far
+        // 2. Cost Analysis
         $totalCost = KitchenStockDeduction::join('ingredients', 'kitchen_stock_deductions.ingredient_id', '=', 'ingredients.id')
             ->select(DB::raw('SUM(kitchen_stock_deductions.quantity_deducted * ingredients.cost_per_unit) as total_cost'))
             ->value('total_cost') ?? 0;
@@ -58,12 +57,11 @@ class ReportController extends Controller
 
     /**
      * Cost & Variance Report
+     * Compares theoretical usage (from recipes × times_cooked) vs actual usage (deductions)
      */
     public function costVariance()
     {
-        // Compare Theoretical Usage (Recipes) vs Actual Usage (Deductions)
-        // This is a complex query: We aggregate deductions by ingredient and compare to recipe expectations
-        
+        // Actual usage: total deducted per ingredient
         $variances = DB::table('kitchen_stock_deductions')
             ->join('ingredients', 'kitchen_stock_deductions.ingredient_id', '=', 'ingredients.id')
             ->select(
@@ -76,17 +74,17 @@ class ReportController extends Controller
             ->groupBy('kitchen_stock_deductions.ingredient_id', 'kitchen_stock_deductions.ingredient_name', 'ingredients.unit', 'ingredients.cost_per_unit')
             ->get();
 
-        // For each ingredient, we'd ideally calculate theoretical usage from finished production logs
-        // Theoretical = SUM(batch_size * recipe_qty)
+        // Theoretical usage: SUM(times_cooked * recipe.quantity) for completed batches
         foreach($variances as $v) {
             $theoretical = DB::table('kitchen_production_logs')
                 ->join('recipes', 'kitchen_production_logs.product_id', '=', 'recipes.product_id')
                 ->where('recipes.ingredient_id', $v->ingredient_id)
-                ->where('kitchen_production_logs.status', 'done')
-                ->select(DB::raw('SUM(kitchen_production_logs.total_servings * recipes.quantity / (SELECT servings FROM batch_sizes WHERE product_id = kitchen_production_logs.product_id LIMIT 1)) as theoretical_usage'))
+                ->whereIn('kitchen_production_logs.status', ['done', 'served'])
+                ->select(DB::raw('SUM(kitchen_production_logs.times_cooked * recipes.quantity) as theoretical_usage'))
                 ->value('theoretical_usage') ?? 0;
             
             $v->theoretical_usage = $theoretical;
+            // Positive variance = used less than expected (good), Negative = used more (bad)
             $v->variance = $v->theoretical_usage - $v->actual_usage;
             $v->variance_percent = $v->theoretical_usage > 0 ? ($v->variance / $v->theoretical_usage) * 100 : 0;
             $v->variance_cost = $v->variance * $v->cost_per_unit;
@@ -100,7 +98,7 @@ class ReportController extends Controller
      */
     public function yieldForecasting()
     {
-        // 1. Production Yield (Done vs Wasted)
+        // 1. Production Yield (batch outcome breakdown)
         $productionStats = DB::table('kitchen_production_logs')
             ->select(
                 'status',
@@ -110,17 +108,35 @@ class ReportController extends Controller
             ->groupBy('status')
             ->get();
 
-        // 2. Success Rate
-        $doneCount = $productionStats->where('status', 'done')->first()->count ?? 0;
+        // 2. Success Rate (done + served vs total)
+        $doneCount = $productionStats->whereIn('status', ['done', 'served'])->sum('count');
+        $wastedCount = $productionStats->where('status', 'wasted')->sum('count');
         $totalCount = $productionStats->sum('count');
         $yieldRate = $totalCount > 0 ? ($doneCount / $totalCount) * 100 : 0;
+        $wasteRate = $totalCount > 0 ? ($wastedCount / $totalCount) * 100 : 0;
 
-        // 3. Forecasting (Simple 7-day projection)
-        $avgDailySales = Transaction::where('created_at', '>=', Carbon::now()->subDays(7))
-            ->sum('total_amount') / 7;
-        
+        // 3. Forecasting (Simple 7-day projection with zero-division protection)
+        $last7DaysRevenue = Transaction::where('created_at', '>=', Carbon::now()->subDays(7))
+            ->sum('total_amount');
+        $avgDailySales = $last7DaysRevenue > 0 ? $last7DaysRevenue / 7 : 0;
         $projectedWeeklyRevenue = $avgDailySales * 7;
 
-        return view('yield-forecasting', compact('productionStats', 'yieldRate', 'avgDailySales', 'projectedWeeklyRevenue'));
+        // 4. Top produced products
+        $topProduced = DB::table('kitchen_production_logs')
+            ->select(
+                'product_name',
+                DB::raw('count(*) as batch_count'),
+                DB::raw('SUM(total_servings) as total_servings')
+            )
+            ->whereIn('status', ['done', 'served'])
+            ->groupBy('product_name')
+            ->orderBy('batch_count', 'desc')
+            ->limit(5)
+            ->get();
+
+        return view('yield-forecasting', compact(
+            'productionStats', 'yieldRate', 'wasteRate',
+            'avgDailySales', 'projectedWeeklyRevenue', 'topProduced'
+        ));
     }
 }

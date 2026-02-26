@@ -189,7 +189,7 @@
 
                 <!-- EXPORT BUTTON -->
                 <div class="export-sales-data-container">
-                    <button class="export-audit-log-button">
+                    <button class="export-audit-log-button" data-export-name="pricing-history">
                         <i class="fa-solid fa-print"></i>
                         <span>Export Log</span>
                     </button>

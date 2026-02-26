@@ -21,7 +21,7 @@
                 @include('components.pagination', ['paginator' => $transactions])
             </div>
             <div class="export-sales-data-container">
-                <button>
+                <button data-export-name="pos-transaction-history">
                     <i class="fa-solid fa-print"></i>
                     <span>Export Sales Data</span>
                 </button>

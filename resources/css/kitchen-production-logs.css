@@ -120,6 +120,8 @@ tr:hover td { background: #fafafa; }
 .status-queued { background: #fff3cd; color: #856404; }
 .status-cooking { background: #ffe0cc; color: #c44900; }
 .status-done { background: #d4edda; color: #155724; }
+.status-wasted { background: #ffebee; color: #d63031; }
+.status-served { background: #e3f2fd; color: #1565c0; }
 
 /* Deduction tags */
 .deduction-tag {
@@ -130,4 +132,25 @@ tr:hover td { background: #fafafa; }
     font-size: 0.7rem;
     color: #555;
     margin: 0.1rem;
+}
+
+/* Export button */
+.export-sales-data-container { margin-left: auto; }
+.export-btn {
+    border: none;
+    background: #8B0000;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 0.5rem 1.2rem;
+    border-radius: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: 0.3s;
+}
+.export-btn:hover {
+    background: #6b0000;
+    transform: translateY(-1px);
 }

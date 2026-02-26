@@ -139,7 +139,7 @@
             <!-- ADD ITEM PRICE INPUT -->
             <div class="floating-add-item-item-price-container">
                 <label for="price">Price</label>
-                <input type="number" name="price" class="input" placeholder="₱ 00.00" step="0.01">
+                <input type="number" name="price" class="input" placeholder="₱ 00.00" step="0.01" min="0.01" required oninput="this.setCustomValidity(this.value < 0.01 ? 'Price must be greater than 0' : '')">
             </div>
             <!-- ADD ITEM IMAGE UPLOADER -->
             <div class="floating-add-item-image-container">
@@ -197,7 +197,7 @@
             <!-- EDIT ITEM PRICE INPUT -->
             <div class="floating-edit-item-item-price-container">
                 <label for="price">Price</label>
-                <input type="number" name="price" class="input" id="editPrice" placeholder="₱ 00.00" step="0.01">
+                <input type="number" name="price" class="input" id="editPrice" placeholder="₱ 00.00" step="0.01" min="0.01" required oninput="this.setCustomValidity(this.value < 0.01 ? 'Price must be greater than 0' : '')">
             </div>
             <!-- EDIT ITEM IMAGE UPLOADER -->
             <div class="floating-add-item-image-container">
@@ -254,7 +254,7 @@
                 <p style="margin-bottom: 1rem;">Mark stock as wasted for <strong id="wasteStockName"></strong>?</p>
                 <div class="form-group" style="margin-bottom: 1rem;">
                     <label style="display:block; margin-bottom:0.5rem;">Quantity to Waste</label>
-                    <input type="number" name="quantity" class="input" min="1" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 5px;">
+                    <input type="number" name="quantity" class="input" min="1" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 5px;" oninput="this.setCustomValidity(this.value < 1 ? 'Quantity must be at least 1' : '')">
                 </div>
                 <div class="form-group" style="margin-bottom: 1rem;">
                     <label style="display:block; margin-bottom:0.5rem;">Reason</label>

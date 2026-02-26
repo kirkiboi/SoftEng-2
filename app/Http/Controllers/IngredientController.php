@@ -46,6 +46,8 @@ class IngredientController extends Controller
             'name' => 'required|string|max:255',
             'category' => 'required|string|max:255',
             'unit' => 'required|string|max:50',
+            'cost_per_unit' => 'required|numeric|min:0.01',
+            'threshold' => 'required|numeric|min:0',
         ]);
 
         $ingredient->update($validated);

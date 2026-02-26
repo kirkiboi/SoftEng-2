@@ -7,100 +7,103 @@
 @vite(['resources/css/reports.css'])
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="reports-container">
-    <div class="report-header">
-        <div class="report-title">
-            <h1>Financial Dashboard</h1>
-            <p class="text-muted">High-level performance overview and key metrics.</p>
-        </div>
-        <div class="report-actions">
-            <button class="btn btn-outline-secondary btn-sm" onclick="window.print()">
-                <i class="bi bi-printer me-2"></i> Print Report
-            </button>
-        </div>
-    </div>
-
-    <!-- KPI Grid -->
-    <div class="kpi-grid">
-        <div class="kpi-card">
-            <div class="kpi-label">
-                <i class="bi bi-currency-dollar text-primary"></i> Total Revenue
+<div class="main-container">
+    <div class="parent-container">
+        <div class="report-header">
+            <div class="report-title">
+                <h1>Financial Dashboard</h1>
+                <p class="text-muted">High-level performance overview and key metrics.</p>
             </div>
-            <div class="kpi-value">₱ {{ number_format($totalRevenue, 2) }}</div>
-            <div class="kpi-trend trend-up">
-                <i class="bi bi-graph-up"></i> Lifetime Earnings
+            <div class="report-actions">
+                <button class="export-btn" data-export-name="financial-dashboard" onclick="exportTableToCSV('financial-dashboard')">
+                    <i class="fa-solid fa-print"></i>
+                    <span>Export Report</span>
+                </button>
             </div>
         </div>
 
-        <div class="kpi-card">
-            <div class="kpi-label">
-                <i class="bi bi-calendar-check text-success"></i> Today's Revenue
+        <!-- KPI Grid -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">
+                    <i class="bi bi-currency-dollar text-primary"></i> Total Revenue
+                </div>
+                <div class="kpi-value">₱ {{ number_format($totalRevenue, 2) }}</div>
+                <div class="kpi-trend trend-up">
+                    <i class="bi bi-graph-up"></i> Lifetime Earnings
+                </div>
             </div>
-            <div class="kpi-value">₱ {{ number_format($todayRevenue, 2) }}</div>
-            <div class="kpi-trend">
-                Daily actual sales
+
+            <div class="kpi-card">
+                <div class="kpi-label">
+                    <i class="bi bi-calendar-check text-success"></i> Today's Revenue
+                </div>
+                <div class="kpi-value">₱ {{ number_format($todayRevenue, 2) }}</div>
+                <div class="kpi-trend">
+                    Daily actual sales
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">
+                    <i class="bi bi-cart-dash text-danger"></i> Est. Food Cost
+                </div>
+                <div class="kpi-value">₱ {{ number_format($totalCost, 2) }}</div>
+                <div class="kpi-trend">
+                    Based on ingredient usage
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">
+                    <i class="bi bi-pie-chart text-info"></i> Profit Margin
+                </div>
+                <div class="kpi-value">{{ number_format($profitMargin, 1) }}%</div>
+                <div class="kpi-trend {{ $profitMargin > 30 ? 'trend-up' : 'trend-down' }}">
+                    Goal: > 30%
+                </div>
             </div>
         </div>
 
-        <div class="kpi-card">
-            <div class="kpi-label">
-                <i class="bi bi-cart-dash text-danger"></i> Est. Food Cost
+        <!-- Charts and Top Products -->
+        <div class="report-grid">
+            <div class="chart-container">
+                <div class="card-title">
+                    <i class="bi bi-activity"></i> Revenue Trend (Past 7 Days)
+                </div>
+                <div style="height: 300px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
             </div>
-            <div class="kpi-value">₱ {{ number_format($totalCost, 2) }}</div>
-            <div class="kpi-trend">
-                Based on ingredient usage
-            </div>
-        </div>
 
-        <div class="kpi-card">
-            <div class="kpi-label">
-                <i class="bi bi-pie-chart text-info"></i> Profit Margin
+            <div class="data-table-card">
+                <div class="card-title">
+                    <i class="bi bi-trophy"></i> Top 5 Sellers
+                </div>
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th class="text-end">Sold</th>
+                            <th class="text-end">Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($topProducts as $index => $product)
+                        <tr>
+                            <td>
+                                <div class="product-row">
+                                    <span class="product-rank">{{ $index + 1 }}</span>
+                                    <strong>{{ $product->product_name }}</strong>
+                                </div>
+                            </td>
+                            <td class="text-end">{{ number_format($product->total_sold) }}</td>
+                            <td class="text-end">₱ {{ number_format($product->revenue, 2) }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
-            <div class="kpi-value">{{ number_format($profitMargin, 1) }}%</div>
-            <div class="kpi-trend {{ $profitMargin > 30 ? 'trend-up' : 'trend-down' }}">
-                Goal: > 30%
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts and Top Products -->
-    <div class="report-grid">
-        <div class="chart-container">
-            <div class="card-title">
-                <i class="bi bi-activity"></i> Revenue Trend (Past 7 Days)
-            </div>
-            <div style="height: 300px;">
-                <canvas id="revenueChart"></canvas>
-            </div>
-        </div>
-
-        <div class="data-table-card">
-            <div class="card-title">
-                <i class="bi bi-trophy"></i> Top 5 Sellers
-            </div>
-            <table class="report-table">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th class="text-end">Sold</th>
-                        <th class="text-end">Revenue</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($topProducts as $index => $product)
-                    <tr>
-                        <td>
-                            <div class="product-row">
-                                <span class="product-rank">{{ $index + 1 }}</span>
-                                <strong>{{ $product->product_name }}</strong>
-                            </div>
-                        </td>
-                        <td class="text-end">{{ number_format($product->total_sold) }}</td>
-                        <td class="text-end">₱ {{ number_format($product->revenue, 2) }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
         </div>
     </div>
 </div>
