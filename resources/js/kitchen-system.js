@@ -122,17 +122,39 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Auto-set unit when ingredient is selected
+    document.getElementById('recipeIngredientSelect')?.addEventListener('change', function() {
+        const sel = this;
+        const opt = sel.options[sel.selectedIndex];
+        const unit = opt?.dataset?.unit || 'kg';
+        const unitSelect = document.getElementById('recipeUnitSelect');
+        if (unitSelect) {
+            unitSelect.value = unit;
+        }
+    });
+
     // Add ingredient to recipe
     document.getElementById('addRecipeIngredientForm')?.addEventListener('submit', async function(e) {
         e.preventDefault();
         const productId = document.getElementById('recipeProductSelect').value;
         const ingredientId = document.getElementById('recipeIngredientSelect').value;
-        const quantity = document.getElementById('recipeQuantity').value;
+        let quantity = parseFloat(document.getElementById('recipeQuantity').value);
+        const selectedUnit = document.getElementById('recipeUnitSelect')?.value || 'kg';
 
         if (!productId || !ingredientId || !quantity) {
             alert('Please fill all fields.');
             return;
         }
+
+        // Get the ingredient's base unit from the option data attribute
+        const ingOpt = document.getElementById('recipeIngredientSelect').options[document.getElementById('recipeIngredientSelect').selectedIndex];
+        const baseUnit = ingOpt?.dataset?.unit || selectedUnit;
+
+        // Convert to base unit if different
+        if (selectedUnit === 'g' && baseUnit === 'kg') quantity = quantity / 1000;
+        if (selectedUnit === 'kg' && baseUnit === 'g') quantity = quantity * 1000;
+        if (selectedUnit === 'ml' && baseUnit === 'L') quantity = quantity / 1000;
+        if (selectedUnit === 'L' && baseUnit === 'ml') quantity = quantity * 1000;
 
         try {
             const res = await fetch('/recipes', {

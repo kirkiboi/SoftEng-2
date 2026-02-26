@@ -92,7 +92,7 @@
             <a href="{{ route('stock-history') }}">
                 <div class="transaction-history feature d-flex align-items-center">
                     <i class="fa-solid fa-truck-ramp-box me-3 sub-icon"></i>
-                    <span class ="subsystem-span">Stock-In History</span>                    
+                    <span class ="subsystem-span">Stock History</span>                    
                 </div>
             </a>
             <a href="{{ route('ingredient-history') }}">

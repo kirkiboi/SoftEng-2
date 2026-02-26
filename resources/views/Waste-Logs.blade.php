@@ -117,9 +117,8 @@
 
     <div class="menu-pricing-parent-container">
         <!-- HEADER / CONTROLS LAYER -->
-        <div class="header-container">
-            <h2 style="font-weight: 800; color: #2d3436; margin: 0;">Waste Logs</h2>
-            <div class="controls-container" style="justify-content: flex-end;">
+        <div class="header-container" style="flex-wrap: nowrap;">
+            <div class="controls-container" style="justify-content: flex-start; width: 100%;">
                 <!-- FILTER BUTTON & DROPDOWN -->
                 <div style="position: relative;">
                     <div id="filter-button" class="filter-icon-container">
@@ -157,7 +156,6 @@
                 <div class="date-container">
                     <form method="GET" action="{{ route('waste.logs') }}">
                         <input type="hidden" name="search" value="{{ request('search') }}">
-                        <!-- Hidden actual date input -->
                         <input
                             type="date"
                             name="date"
@@ -165,7 +163,6 @@
                             value="{{ request('date') }}"
                             style="position: absolute; visibility: hidden; pointer-events: none;"
                         />
-                        <!-- Visible button to trigger date picker -->
                         <div class="date-toggle-button" id="dateBtn" title="Filter by Date">
                             <i class="bi bi-calendar-event"></i>
                         </div>

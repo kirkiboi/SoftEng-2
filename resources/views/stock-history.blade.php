@@ -3,14 +3,15 @@
 @section('content')
 @vite(['resources/css/stock-history.css'])
 @vite(['resources/js/ingredientAuditLog.js'])
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <div class="main-container">
     <div class="parent-container">
         <div class="header-container">
             <div class="filter-container">
                 <!-- FILTER ICON -->
-                <svg id="filter-button" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" class="filter-icon">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
+                <div id="filter-button" class="filter-icon-container">
+                    <i class="bi bi-funnel"></i>
+                </div>
                 <!-- FILTER DROPDOWN -->
                 <div class="filter-dropdown" id="filterDropdown" >
                     <form method="GET" action="{{ route('stock-history') }}" class="filter-dropdown-form">
@@ -18,9 +19,8 @@
                         <div class="filter-group">
                             <select name="action">
                                 <option value="">All</option>
-                                <option value="created" {{ request('action') === 'created' ? 'selected' : '' }}>Added</option>
-                                <option value="updated" {{ request('action') === 'updated' ? 'selected' : '' }}>Updated</option>
-                                <option value="deleted" {{ request('action') === 'deleted' ? 'selected' : '' }}>Deleted</option>
+                                <option value="stock_in" {{ request('action') === 'stock_in' ? 'selected' : '' }}>Stock In</option>
+                                <option value="stock_out" {{ request('action') === 'stock_out' ? 'selected' : '' }}>Stock Out</option>
                             </select>
                         </div>
                         {{-- User filter --}}

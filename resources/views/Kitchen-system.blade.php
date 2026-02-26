@@ -157,9 +157,9 @@
         <div class="modal-body modal-body-scroll">
             <div class="recipe-selector">
                 <label>Select Product</label>
-                <select id="recipeProductSelect" class="input">
+                <select id="recipeProductSelect" class="input searchable-select">
                     <option value="">Choose a product...</option>
-                    @foreach($products as $p)
+                    @foreach($products->sortBy('name') as $p)
                         @if($p->category !== 'ready_made')
                             <option value="{{ $p->id }}">{{ $p->name }} ({{ ucfirst($p->category) }})</option>
                         @endif
@@ -175,16 +175,26 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Ingredient</label>
-                            <select id="recipeIngredientSelect" class="input">
+                            <select id="recipeIngredientSelect" class="input searchable-select">
                                 <option value="">Choose...</option>
-                                @foreach(\App\Models\Ingredient::all() as $ing)
-                                    <option value="{{ $ing->id }}">{{ $ing->name }} ({{ $ing->unit }})</option>
+                                @foreach(\App\Models\Ingredient::orderBy('name')->get() as $ing)
+                                    <option value="{{ $ing->id }}" data-unit="{{ $ing->unit }}">{{ $ing->name }} ({{ $ing->unit }})</option>
                                 @endforeach
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Quantity</label>
-                            <input type="number" step="0.01" min="0.01" id="recipeQuantity" class="input" placeholder="Amount needed">
+                        <div class="form-group" style="flex:0.5;">
+                            <label>Qty</label>
+                            <input type="number" step="0.01" min="0.01" id="recipeQuantity" class="input" placeholder="Amount">
+                        </div>
+                        <div class="form-group" style="flex:0.4;">
+                            <label>Unit</label>
+                            <select id="recipeUnitSelect" class="input">
+                                <option value="kg">kg</option>
+                                <option value="g">g</option>
+                                <option value="ml">ml</option>
+                                <option value="L">L</option>
+                                <option value="pcs">pcs</option>
+                            </select>
                         </div>
                         <div class="form-group form-group-btn">
                             <button type="submit" class="add-button">Add</button>
@@ -206,9 +216,9 @@
         <div class="modal-body modal-body-scroll">
             <div class="form-group">
                 <label>Select Product</label>
-                <select id="batchProductSelect" class="input">
+                <select id="batchProductSelect" class="input searchable-select">
                     <option value="">Choose a product...</option>
-                    @foreach($products as $p)
+                    @foreach($products->sortBy('name') as $p)
                         @if($p->category !== 'ready_made' && $p->recipes->count() > 0)
                             <option value="{{ $p->id }}">{{ $p->name }}</option>
                         @endif
@@ -269,9 +279,9 @@
             </p>
             <div id="shiftStockInRows">
                 <div class="shift-stock-row">
-                    <select class="input shift-ingredient-select">
+                    <select class="input shift-ingredient-select searchable-select">
                         <option value="">Select ingredient...</option>
-                        @foreach(\App\Models\Ingredient::all() as $ing)
+                        @foreach(\App\Models\Ingredient::orderBy('name')->get() as $ing)
                             <option value="{{ $ing->id }}">{{ $ing->name }} ({{ $ing->unit }})</option>
                         @endforeach
                     </select>
@@ -324,4 +334,132 @@
 </div>
 
 <div class="overlay" id="overlay"></div>
+
+<style>
+/* Searchable Dropdown */
+.searchable-dropdown { position: relative; width: 100%; }
+.searchable-dropdown .sd-display {
+    width: 100%; padding: 0.7rem 1rem; border: 1px solid #e0e0e0; border-radius: 0.8rem;
+    background: #fcfcfc; font-size: 0.95rem; cursor: pointer; display: flex;
+    justify-content: space-between; align-items: center; box-sizing: border-box;
+    color: #2d3436; font-family: 'Inter', sans-serif;
+}
+.searchable-dropdown .sd-display.placeholder { color: #999; }
+.searchable-dropdown .sd-display:hover { border-color: #b2bec3; }
+.searchable-dropdown .sd-panel {
+    position: absolute; top: 100%; left: 0; right: 0; z-index: 1100;
+    background: white; border: 1px solid #e0e0e0; border-radius: 0.8rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15); margin-top: 4px;
+    display: none !important;
+    max-height: 280px; overflow: hidden;
+}
+.searchable-dropdown .sd-panel.open { display: block !important; }
+.searchable-dropdown .sd-search {
+    width: 100%; padding: 0.6rem 1rem; border: none; border-bottom: 1px solid #f0f0f0;
+    font-size: 0.9rem; outline: none; box-sizing: border-box;
+}
+.searchable-dropdown .sd-options {
+    max-height: 220px; overflow-y: auto; padding: 0.3rem 0;
+}
+.searchable-dropdown .sd-option {
+    padding: 0.5rem 1rem; cursor: pointer; font-size: 0.9rem; color: #2d3436;
+    transition: background 0.15s;
+}
+.searchable-dropdown .sd-option:hover { background: #f0f4ff; }
+.searchable-dropdown .sd-option.selected { background: #e3f2fd; font-weight: 600; }
+.searchable-dropdown .sd-no-results {
+    padding: 1rem; text-align: center; color: #999; font-size: 0.85rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    function initSearchableSelects(container = document) {
+        container.querySelectorAll('select.searchable-select').forEach(sel => {
+            if (sel.dataset.sdInit) return; // already initialized
+            sel.dataset.sdInit = '1';
+            sel.style.display = 'none';
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'searchable-dropdown';
+
+            const display = document.createElement('div');
+            display.className = 'sd-display placeholder';
+            display.innerHTML = `<span>${sel.options[0]?.text || 'Select...'}</span><i class="fa-solid fa-chevron-down" style="font-size:0.7rem; color:#999;"></i>`;
+
+            const panel = document.createElement('div');
+            panel.className = 'sd-panel';
+
+            const search = document.createElement('input');
+            search.className = 'sd-search';
+            search.placeholder = 'Type to search...';
+
+            const optionsList = document.createElement('div');
+            optionsList.className = 'sd-options';
+
+            function buildOptions(filter = '') {
+                optionsList.innerHTML = '';
+                let count = 0;
+                Array.from(sel.options).forEach((opt, i) => {
+                    if (i === 0) return; // skip placeholder
+                    if (filter && !opt.text.toLowerCase().includes(filter.toLowerCase())) return;
+                    count++;
+                    const div = document.createElement('div');
+                    div.className = 'sd-option' + (sel.value === opt.value ? ' selected' : '');
+                    div.textContent = opt.text;
+                    div.addEventListener('click', () => {
+                        sel.value = opt.value;
+                        sel.dispatchEvent(new Event('change', { bubbles: true }));
+                        display.querySelector('span').textContent = opt.text;
+                        display.classList.remove('placeholder');
+                        panel.classList.remove('open');
+                        search.value = '';
+                    });
+                    optionsList.appendChild(div);
+                });
+                if (count === 0) {
+                    optionsList.innerHTML = '<div class="sd-no-results">No results found</div>';
+                }
+            }
+
+            search.addEventListener('input', () => buildOptions(search.value));
+
+            display.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // close other panels
+                document.querySelectorAll('.sd-panel.open').forEach(p => { if (p !== panel) p.classList.remove('open'); });
+                panel.classList.toggle('open');
+                if (panel.classList.contains('open')) {
+                    buildOptions();
+                    setTimeout(() => search.focus(), 50);
+                }
+            });
+
+            panel.appendChild(search);
+            panel.appendChild(optionsList);
+            wrapper.appendChild(display);
+            wrapper.appendChild(panel);
+            sel.parentNode.insertBefore(wrapper, sel);
+            wrapper.appendChild(sel); // move hidden select inside wrapper
+        });
+    }
+
+    initSearchableSelects();
+    // Close all panels on outside click
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.sd-panel.open').forEach(p => p.classList.remove('open'));
+    });
+
+    // Re-init when shift rows are dynamically added
+    const origAddRow = window.addShiftRow;
+    if (typeof origAddRow === 'function') {
+        window.addShiftRow = function() {
+            origAddRow();
+            setTimeout(() => initSearchableSelects(), 50);
+        };
+    }
+    // Also expose for manual re-init
+    window.initSearchableSelects = initSearchableSelects;
+});
+</script>
 @endsection

@@ -1,7 +1,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('overlay');
-    const filterButton = document.querySelector(".filter-icon");
+    const filterButton = document.querySelector(".filter-icon-container") || document.querySelector(".filter-icon");
     const filterModal = document.querySelector(".filter-dropdown");
     const dateInput = document.getElementById('dateInput');
 

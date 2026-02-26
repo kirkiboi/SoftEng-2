@@ -54,18 +54,22 @@ body {
     align-items: center;
 }
 
-.filter-icon {
+.filter-icon-container {
     cursor: pointer;
-    width: 2.8rem;
-    height: 2.8rem;
-    padding: 8px; /* Adjustment for svg sizing */
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 12px;
     transition: all 0.2s ease;
-    color: #8e8e8e;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    color: #636e72;
 }
-.filter-icon:hover {
+.filter-icon-container:hover {
     background-color: #f0f0f0;
-    color: #ff0000;
+    border-color: #b2bec3;
 }
 
 .filter-dropdown {

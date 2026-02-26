@@ -90,11 +90,21 @@
     display: flex;
     gap: 0.5rem;
     margin-bottom: 0.5rem;
-    align-items: center;
+    align-items: flex-start;
 }
+.shift-stock-row .searchable-dropdown { flex: 2; min-width: 0; }
 .shift-stock-row .shift-ingredient-select { flex: 2; }
-.shift-stock-row .shift-quantity { flex: 1; }
-.shift-stock-row .shift-supplier { flex: 1; }
+.shift-stock-row .shift-quantity,
+.shift-stock-row .shift-supplier {
+    flex: 1;
+    min-width: 80px;
+    max-width: 120px;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.8rem;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+}
 
 /* ALERTS */
 .alert {

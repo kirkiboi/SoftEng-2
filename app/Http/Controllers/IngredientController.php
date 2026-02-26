@@ -189,7 +189,8 @@ class IngredientController extends Controller
 
     public function auditLog(Request $request)
     {
-        $query = IngredientAuditLog::with('user');
+        $query = IngredientAuditLog::with('user')
+            ->whereIn('action', ['stock_in', 'stock_out']);
 
         if ($request->filled('action')) {
             $query->where('action', $request->action);
@@ -213,7 +214,8 @@ class IngredientController extends Controller
      */
     public function ingredientHistory(Request $request)
     {
-        $query = IngredientAuditLog::with('user');
+        $query = IngredientAuditLog::with('user')
+            ->whereIn('action', ['created', 'edited', 'deleted']);
 
         if ($request->filled('action')) {
             $query->where('action', $request->action);
