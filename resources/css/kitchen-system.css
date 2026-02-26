@@ -67,14 +67,34 @@
     transform: translateY(-1px);
 }
 
-.close-kitchen-btn {
+.start-shift-btn {
+    background: #28a745;
+    color: white;
+}
+.start-shift-btn:hover {
+    background: #218838;
+    transform: translateY(-1px);
+}
+
+.end-shift-btn {
     background: #636e72;
     color: white;
 }
-.close-kitchen-btn:hover {
+.end-shift-btn:hover {
     background: #535c60;
     transform: translateY(-1px);
 }
+
+/* Shift Stock-In Rows */
+.shift-stock-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
+}
+.shift-stock-row .shift-ingredient-select { flex: 2; }
+.shift-stock-row .shift-quantity { flex: 1; }
+.shift-stock-row .shift-supplier { flex: 1; }
 
 /* ALERTS */
 .alert {
@@ -437,11 +457,11 @@
 .recipe-delete-btn,
 .recipe-save-btn {
     background: none;
-    border: none;
+    border: 1px solid #e0e0e0;
     border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    font-size: 0.7rem;
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.2s ease;
     display: inline-flex;
@@ -450,21 +470,29 @@
 }
 .recipe-delete-btn {
     color: #dc3545;
+    border-color: #ffcdd2;
+    background: #fff5f5;
 }
 .recipe-delete-btn:hover {
-    background: #ffebee;
-    color: #c82333;
+    background: #dc3545;
+    color: white;
+    border-color: #dc3545;
+    transform: scale(1.1);
 }
 .recipe-save-btn {
     color: #28a745;
+    border-color: #c8e6c9;
+    background: #f1f8e9;
 }
 .recipe-save-btn:hover {
-    background: #e6ffed;
-    color: #218838;
+    background: #28a745;
+    color: white;
+    border-color: #28a745;
+    transform: scale(1.1);
 }
 .recipe-item-actions {
     display: flex;
-    gap: 0.25rem;
+    gap: 0.5rem;
     align-items: center;
 }
 .recipe-qty {

@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const recipeManagerModal = document.getElementById('recipeManagerModal');
     const addBatchModal = document.getElementById('addBatchModal');
     const wasteModal = document.getElementById('wasteModal');
-    const closeKitchenModal = document.getElementById('closeKitchenModal');
 
     // Helpers
     const openOverlay = () => overlay?.classList.add('show');
@@ -13,7 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
         recipeManagerModal?.classList.remove('active');
         addBatchModal?.classList.remove('active');
         wasteModal?.classList.remove('active');
-        closeKitchenModal?.classList.remove('active');
+        document.getElementById('startShiftModal')?.classList.remove('active');
+        document.getElementById('endShiftModal')?.classList.remove('active');
         closeOverlay();
     }
 
@@ -234,10 +234,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Confirm batch production
     document.getElementById('confirmBatch')?.addEventListener('click', async () => {
         const productId = batchProductSelect?.value;
-        const times = parseInt(batchTimesCooked?.value) || 1;
+        const rawValue = batchTimesCooked?.value;
         const errorDiv = document.getElementById('batchError');
 
         if (!productId) { alert('Please select a product.'); return; }
+
+        // Strict validation: must be a positive integer, reject '12-3', decimals, negatives
+        const times = parseInt(rawValue);
+        if (!rawValue || rawValue !== String(times) || times < 1 || !Number.isInteger(times)) {
+            errorDiv.textContent = 'Please enter a valid positive whole number for "Times to Cook" (e.g. 1, 2, 3).';
+            errorDiv.style.display = 'block';
+            return;
+        }
 
         errorDiv.style.display = 'none';
 
@@ -373,24 +381,57 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ===== CLOSE KITCHEN (End of Day) =====
-    document.getElementById('openCloseKitchen')?.addEventListener('click', () => {
+    // ===== START SHIFT (Bulk Stock-In) =====
+    const startShiftModal = document.getElementById('startShiftModal');
+    const endShiftModal = document.getElementById('endShiftModal');
+
+    document.getElementById('openStartShift')?.addEventListener('click', () => {
         closeAll();
-        closeKitchenModal.classList.add('active');
+        startShiftModal.classList.add('active');
         openOverlay();
     });
-    document.getElementById('closeCloseKitchen')?.addEventListener('click', closeAll);
-    document.getElementById('cancelCloseKitchen')?.addEventListener('click', closeAll);
+    document.getElementById('closeStartShift')?.addEventListener('click', closeAll);
+    document.getElementById('cancelStartShift')?.addEventListener('click', closeAll);
 
-    document.getElementById('confirmCloseKitchen')?.addEventListener('click', async () => {
+    // Add more ingredient rows
+    document.getElementById('addShiftRow')?.addEventListener('click', () => {
+        const container = document.getElementById('shiftStockInRows');
+        const firstRow = container.querySelector('.shift-stock-row');
+        const newRow = firstRow.cloneNode(true);
+        newRow.querySelector('.shift-ingredient-select').value = '';
+        newRow.querySelector('.shift-quantity').value = '';
+        newRow.querySelector('.shift-supplier').value = '';
+        container.appendChild(newRow);
+    });
+
+    // Confirm start shift stock-in
+    document.getElementById('confirmStartShift')?.addEventListener('click', async () => {
+        const rows = document.querySelectorAll('.shift-stock-row');
+        const errorDiv = document.getElementById('shiftError');
+        const items = [];
+
+        rows.forEach(row => {
+            const ingredientId = row.querySelector('.shift-ingredient-select').value;
+            const quantity = parseFloat(row.querySelector('.shift-quantity').value);
+            const supplier = row.querySelector('.shift-supplier').value.trim();
+            if (ingredientId && quantity > 0) {
+                items.push({ ingredient_id: ingredientId, quantity, supplier });
+            }
+        });
+
+        if (items.length === 0) {
+            errorDiv.textContent = 'Please add at least one ingredient with a valid quantity.';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        errorDiv.style.display = 'none';
+
         try {
-            const res = await fetch('/kitchen/close', {
+            const res = await fetch('/kitchen/start-shift', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json',
-                }
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                body: JSON.stringify({ items })
             });
 
             const data = await res.json();
@@ -398,7 +439,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 closeAll();
                 window.location.reload();
             } else {
-                alert(data.message || 'Failed to close kitchen.');
+                errorDiv.textContent = data.message || 'Failed to process stock-in.';
+                errorDiv.style.display = 'block';
+            }
+        } catch (err) {
+            errorDiv.textContent = 'Network error.';
+            errorDiv.style.display = 'block';
+        }
+    });
+
+    // ===== END SHIFT =====
+    document.getElementById('openEndShift')?.addEventListener('click', () => {
+        closeAll();
+        endShiftModal.classList.add('active');
+        openOverlay();
+    });
+    document.getElementById('closeEndShift')?.addEventListener('click', closeAll);
+    document.getElementById('cancelEndShift')?.addEventListener('click', closeAll);
+
+    document.getElementById('confirmEndShift')?.addEventListener('click', async () => {
+        try {
+            const res = await fetch('/kitchen/end-shift', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' }
+            });
+
+            const data = await res.json();
+            if (res.ok && data.success) {
+                closeAll();
+                window.location.reload();
+            } else {
+                alert(data.message || 'Failed to end shift.');
             }
         } catch (err) {
             alert('Network error.');
@@ -408,3 +479,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // Overlay click to close
     overlay?.addEventListener('click', closeAll);
 });
+

@@ -14,9 +14,13 @@
                 <h2 class="page-title">Kitchen Production</h2>
             </div>
             <div class="header-right">
-                <button class="action-button close-kitchen-btn" id="openCloseKitchen">
-                    <i class="fa-solid fa-lock"></i>
-                    <span>Close Kitchen</span>
+                <button class="action-button start-shift-btn" id="openStartShift">
+                    <i class="fa-solid fa-sun"></i>
+                    <span>Start Shift</span>
+                </button>
+                <button class="action-button end-shift-btn" id="openEndShift">
+                    <i class="fa-solid fa-moon"></i>
+                    <span>End Shift</span>
                 </button>
                 <button class="action-button recipe-manager-btn" id="openRecipeManager">
                     <i class="fa-solid fa-book"></i>
@@ -252,21 +256,68 @@
     </div>
 </div>
 
-<!-- CLOSE KITCHEN MODAL -->
-<div class="modal-container" id="closeKitchenModal">
+<!-- START SHIFT MODAL -->
+<div class="modal-container" id="startShiftModal">
+    <div class="modal-content modal-large">
+        <div class="modal-header" style="background: #28a745;">
+            <span>☀ Start Shift — Ingredient Stock-In</span>
+            <button class="modal-close" id="closeStartShift">&times;</button>
+        </div>
+        <div class="modal-body modal-body-scroll">
+            <p style="margin-bottom:1rem; color:#666; font-size:0.9rem;">
+                Record ingredients received at the start of today's shift. Select ingredients and enter quantities.
+            </p>
+            <div id="shiftStockInRows">
+                <div class="shift-stock-row">
+                    <select class="input shift-ingredient-select">
+                        <option value="">Select ingredient...</option>
+                        @foreach(\App\Models\Ingredient::all() as $ing)
+                            <option value="{{ $ing->id }}">{{ $ing->name }} ({{ $ing->unit }})</option>
+                        @endforeach
+                    </select>
+                    <input type="number" class="input shift-quantity" placeholder="Qty" min="0.01" step="0.01">
+                    <input type="text" class="input shift-supplier" placeholder="Supplier (optional)">
+                </div>
+            </div>
+            <button type="button" class="add-row-btn" id="addShiftRow" style="margin-top:0.5rem; background:none; border:1px dashed #ccc; border-radius:8px; padding:0.5rem 1rem; cursor:pointer; color:#666; font-size:0.85rem; width:100%;">
+                <i class="fa-solid fa-plus"></i> Add another ingredient
+            </button>
+            <div id="shiftError" class="alert alert-error" style="display:none; margin-top:1rem;"></div>
+            <div class="form-actions">
+                <button type="button" class="cancel-button" id="cancelStartShift">Cancel</button>
+                <button type="button" class="add-button" id="confirmStartShift" style="background:#28a745;">Confirm Stock-In</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- END SHIFT MODAL -->
+<div class="modal-container" id="endShiftModal">
     <div class="modal-content">
         <div class="modal-header" style="background: #636e72;">
-            <span>🔒 Close Kitchen</span>
-            <button class="modal-close" id="closeCloseKitchen">&times;</button>
+            <span>🌙 End Shift</span>
+            <button class="modal-close" id="closeEndShift">&times;</button>
         </div>
         <div class="modal-body">
             <p style="margin-bottom:1rem; color:#666; font-size:0.9rem;">
-                All remaining <strong>queued</strong> and <strong>cooking</strong> batches will be marked as <span style="color:#dc3545; font-weight:700;">WASTED</span> with reason "End of day".
+                Ending the shift will:
             </p>
+            <ul style="margin-bottom:1rem; color:#555; font-size:0.85rem; padding-left:1.5rem;">
+                <li>Mark all remaining <strong>queued</strong> and <strong>cooking</strong> batches as <span style="color:#dc3545; font-weight:700;">WASTED</span> (reason: "End of shift")</li>
+                <li>Log the shift end time</li>
+            </ul>
+            <div style="background:#f8f9fa; border-radius:10px; padding:1rem; margin-bottom:1rem;">
+                <div style="font-size:0.85rem; font-weight:700; margin-bottom:0.5rem;">Today's Summary</div>
+                <div style="font-size:0.8rem; color:#666;">
+                    <div>🟡 Queued: <strong>{{ count($queued) }}</strong></div>
+                    <div>🔥 Cooking: <strong>{{ count($cooking) }}</strong></div>
+                    <div>✅ Done/Served: <strong>{{ count($done) }}</strong></div>
+                </div>
+            </div>
             <p style="color:#dc3545; font-size:0.85rem; font-weight:600;">⚠ This action cannot be undone.</p>
             <div class="form-actions">
-                <button type="button" class="cancel-button" id="cancelCloseKitchen">Cancel</button>
-                <button type="button" class="add-button" id="confirmCloseKitchen" style="background:#636e72;">Close Kitchen</button>
+                <button type="button" class="cancel-button" id="cancelEndShift">Cancel</button>
+                <button type="button" class="add-button" id="confirmEndShift" style="background:#636e72;">End Shift</button>
             </div>
         </div>
     </div>

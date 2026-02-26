@@ -23,8 +23,17 @@ class ReportController extends Controller
         $totalRevenue = Transaction::sum('total_amount');
         $todayRevenue = Transaction::whereDate('created_at', Carbon::today())->sum('total_amount');
         
-        // 2. Cost Analysis
+        // 2. Cost Analysis — Only count ingredient costs from SERVED batches (realized cost)
         $totalCost = KitchenStockDeduction::join('ingredients', 'kitchen_stock_deductions.ingredient_id', '=', 'ingredients.id')
+            ->join('kitchen_production_logs', 'kitchen_stock_deductions.kitchen_production_log_id', '=', 'kitchen_production_logs.id')
+            ->whereIn('kitchen_production_logs.status', ['served', 'done'])
+            ->select(DB::raw('SUM(kitchen_stock_deductions.quantity_deducted * ingredients.cost_per_unit) as total_cost'))
+            ->value('total_cost') ?? 0;
+
+        // Wasted cost (for transparency)
+        $wasteCost = KitchenStockDeduction::join('ingredients', 'kitchen_stock_deductions.ingredient_id', '=', 'ingredients.id')
+            ->join('kitchen_production_logs', 'kitchen_stock_deductions.kitchen_production_log_id', '=', 'kitchen_production_logs.id')
+            ->where('kitchen_production_logs.status', 'wasted')
             ->select(DB::raw('SUM(kitchen_stock_deductions.quantity_deducted * ingredients.cost_per_unit) as total_cost'))
             ->value('total_cost') ?? 0;
 
@@ -50,7 +59,7 @@ class ReportController extends Controller
             ->get();
 
         return view('dashboard', compact(
-            'totalRevenue', 'todayRevenue', 'totalCost', 
+            'totalRevenue', 'todayRevenue', 'totalCost', 'wasteCost',
             'grossProfit', 'profitMargin', 'topProducts', 'salesTrend'
         ));
     }

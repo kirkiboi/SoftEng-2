@@ -58,6 +58,7 @@
                 <!-- BUTTON CONTAINER -->
                 <div class="button-container">
                     <button class="record-stock-in-button">Record Stock In</button>
+                    <button class="record-stock-out-button" id="openStockOut">Stock Out</button>
                     <button class="record-product-stock-in-button">Product Stock In</button>
                     <button class="add-ingredient-button">Add Ingredient</button>
                 </div>
@@ -323,6 +324,46 @@
                 <button type="button" id="cancelDelete" class="cancel-button">Cancel</button>
                 <button type="button" id="confirmDelete" class="delete-confirm-button">Delete</button>
             </div>
+        </div>
+    </div>
+    <!-- STOCK OUT MODAL -->
+    <div class="floating-stock-out-container" id="stockOutModal">
+        <div class="record-stock-in-wrapper">
+            <div class="floating-add-item" style="border-bottom: 3px solid #dc3545;">
+                <span>Stock Out</span>
+            </div>
+            <form method="POST" action="{{ route('ingredients.stockOut') }}" class="floating-add-ingredient-form">
+                @csrf
+                <div class="floating-add-item-name-container">
+                    <label>Ingredient</label>
+                    <select name="ingredient_id" required>
+                        <option value="">Select an ingredient</option>
+                        @foreach(\App\Models\Ingredient::orderBy('name')->get() as $ing)
+                            <option value="{{ $ing->id }}">{{ $ing->name }} ({{ $ing->stock }} {{ $ing->unit }} available)</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="floating-add-ingredient-stock">
+                    <label>Quantity to remove</label>
+                    <input type="number" step="0.01" min="0.01" name="quantity" placeholder="Enter quantity" required
+                        oninput="if(this.value < 0) this.value = '';">
+                </div>
+                <div class="floating-add-item-category-container">
+                    <label>Reason</label>
+                    <select name="reason" required>
+                        <option value="">Select reason...</option>
+                        <option value="Expired">Expired</option>
+                        <option value="Damaged">Damaged</option>
+                        <option value="Spilled">Spilled</option>
+                        <option value="Quality Issue">Quality Issue</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="floating-add-item-options">
+                    <button type="button" class="cancel-button" id="cancelStockOut">Cancel</button>
+                    <button type="submit" class="delete-confirm-button">Confirm Stock Out</button>
+                </div>
+            </form>
         </div>
     </div>
 <div class="overlay" id="overlay"></div>

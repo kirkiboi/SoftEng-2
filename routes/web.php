@@ -20,12 +20,13 @@ Route::post('/kitchen/start-production', [KitchenProductionController::class, 's
 Route::patch('/kitchen/update-status/{id}', [KitchenProductionController::class, 'updateStatus'])->name('kitchen.updateStatus')->middleware('auth');
 Route::get('/kitchen/recipes/{product}', [KitchenProductionController::class, 'getRecipes'])->name('kitchen.getRecipes')->middleware('auth');
 Route::get('/kitchenproductionlogs', [KitchenProductionController::class, 'logs'])->name('kitchen.logs')->middleware('auth');
-Route::post('/kitchen/close', [KitchenProductionController::class, 'closeKitchen'])->name('kitchen.close')->middleware('auth');
+Route::post('/kitchen/start-shift', [KitchenProductionController::class, 'startShift'])->name('kitchen.startShift')->middleware('auth');
+Route::post('/kitchen/end-shift', [KitchenProductionController::class, 'endShift'])->name('kitchen.endShift')->middleware('auth');
 Route::delete('/kitchen/cancel/{id}', [KitchenProductionController::class, 'cancelProduction'])->name('kitchen.cancel')->middleware('auth');
-Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
-Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
-Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
-Route::get('/recipes/{product}', [RecipeController::class, 'show'])->name('recipes.show');
+Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store')->middleware('auth');
+Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update')->middleware('auth');
+Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy')->middleware('auth');
+Route::get('/recipes/{product}', [RecipeController::class, 'show'])->name('recipes.show')->middleware('auth');
 Route::get('/ingredients/all', function () {return \App\Models\Ingredient::select('id', 'name', 'unit')->get();})->middleware('auth');
 
 // Analysis and Reporting Routes
@@ -47,7 +48,9 @@ Route::get('/inventorymanagement', [IngredientController::class, 'index'])->name
 Route::post('/ingredients', [IngredientController::class, 'store'])->name('ingredients.store')->middleware('auth');; // Route pag mag add item
 Route::delete('/ingredients/{ingredients}', [IngredientController::class, 'destroy'])->name('ingredients.destroy')->middleware('auth');; // Route pang delete sa ingredient
 Route::put('/ingredients/{ingredient}', [IngredientController::class, 'update'])->name('ingredients.update')->middleware('auth');; // ROUTE TO UPDATE INGREDIENT
-Route::post('/ingredients/stock-in', [IngredientController::class, 'stockIn'])->name('ingredients.stockIn')->middleware('auth'); // Stock-in route
+Route::post('/ingredients/stock-in', [IngredientController::class, 'stockIn'])->name('ingredients.stockIn')->middleware('auth');
+Route::post('/ingredients/stock-out', [IngredientController::class, 'stockOut'])->name('ingredients.stockOut')->middleware('auth');
+Route::get('/ingredient-history', [IngredientController::class, 'ingredientHistory'])->name('ingredient-history')->middleware('auth');
 Route::post('/products/stock-in', [IngredientController::class, 'stockInProduct'])->name('products.stockIn')->middleware('auth');
     
 // Menu & Pricing Routes

@@ -95,6 +95,12 @@
                     <span class ="subsystem-span">Stock-In History</span>                    
                 </div>
             </a>
+            <a href="{{ route('ingredient-history') }}">
+                <div class="feature d-flex align-items-center">
+                    <i class="fa-solid fa-clock-rotate-left me-3 sub-icon"></i>
+                    <span class="subsystem-span">Ingredient History</span>
+                </div>
+            </a>
         </div>
         <!-- Menu and Pricing shit ni diria -->
         <div class="menu-pricing-container subsystem">

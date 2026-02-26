@@ -138,12 +138,63 @@ class KitchenProductionController extends Controller
         return response()->json(['success' => true, 'log' => $log]);
     }
 
-    public function closeKitchen()
+    /**
+     * Start Shift — Bulk ingredient stock-in
+     */
+    public function startShift(Request $request)
+    {
+        $validated = $request->validate([
+            'items' => 'required|array|min:1',
+            'items.*.ingredient_id' => 'required|exists:ingredients,id',
+            'items.*.quantity' => 'required|numeric|min:0.01',
+            'items.*.supplier' => 'nullable|string|max:255',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $count = 0;
+            foreach ($validated['items'] as $item) {
+                $ingredient = Ingredient::findOrFail($item['ingredient_id']);
+                $oldStock = $ingredient->stock;
+                $newStock = $oldStock + $item['quantity'];
+
+                $ingredient->update(['stock' => $newStock]);
+
+                IngredientAuditLog::create([
+                    'user_id' => Auth::id(),
+                    'ingredient_id' => $ingredient->id,
+                    'action' => 'stock_in',
+                    'ingredient_name' => $ingredient->name,
+                    'unit_cost' => $ingredient->cost_per_unit,
+                    'total_cost' => $ingredient->cost_per_unit * $item['quantity'],
+                    'quantity_changed' => $item['quantity'],
+                    'old_stock' => $oldStock,
+                    'new_stock' => $newStock,
+                    'supplier' => $item['supplier'] ?? 'Start of Shift',
+                ]);
+                $count++;
+            }
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => $count . ' ingredient(s) stocked in for shift.',
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Stock-in failed: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * End Shift — Mark remaining batches as wasted
+     */
+    public function endShift()
     {
         $updated = KitchenProductionLog::whereIn('status', ['queued', 'cooking'])
             ->update([
                 'status' => 'wasted',
-                'waste_reason' => 'End of day — kitchen closed',
+                'waste_reason' => 'End of shift',
             ]);
 
         return response()->json([

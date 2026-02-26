@@ -35,7 +35,21 @@ class IngredientController extends Controller
             'threshold' => 'required|numeric|min:0',
         ]);
 
-        Ingredient::create($validated);
+        $ingredient = Ingredient::create($validated);
+
+        // Log ingredient creation
+        IngredientAuditLog::create([
+            'user_id' => Auth::id(),
+            'ingredient_id' => $ingredient->id,
+            'action' => 'created',
+            'ingredient_name' => $ingredient->name,
+            'unit_cost' => $ingredient->cost_per_unit,
+            'total_cost' => $ingredient->cost_per_unit * $ingredient->stock,
+            'quantity_changed' => $ingredient->stock,
+            'old_stock' => 0,
+            'new_stock' => $ingredient->stock,
+            'supplier' => 'Initial stock',
+        ]);
 
         return redirect()->back()->with('success', 'Ingredient added successfully!');
     }
@@ -50,7 +64,22 @@ class IngredientController extends Controller
             'threshold' => 'required|numeric|min:0',
         ]);
 
+        $oldName = $ingredient->name;
         $ingredient->update($validated);
+
+        // Log ingredient edit
+        IngredientAuditLog::create([
+            'user_id' => Auth::id(),
+            'ingredient_id' => $ingredient->id,
+            'action' => 'edited',
+            'ingredient_name' => $ingredient->name,
+            'unit_cost' => $ingredient->cost_per_unit,
+            'total_cost' => 0,
+            'quantity_changed' => 0,
+            'old_stock' => $ingredient->stock,
+            'new_stock' => $ingredient->stock,
+            'supplier' => 'Edited by ' . (Auth::user()->name ?? 'Admin'),
+        ]);
 
         return redirect()->back()->with('success', 'Ingredient updated successfully!');
     }
@@ -58,13 +87,27 @@ class IngredientController extends Controller
     public function destroy($id)
     {
         $ingredient = Ingredient::findOrFail($id);
+        
+        // Log ingredient deletion
+        IngredientAuditLog::create([
+            'user_id' => Auth::id(),
+            'ingredient_id' => $ingredient->id,
+            'action' => 'deleted',
+            'ingredient_name' => $ingredient->name,
+            'unit_cost' => $ingredient->cost_per_unit,
+            'total_cost' => 0,
+            'quantity_changed' => $ingredient->stock,
+            'old_stock' => $ingredient->stock,
+            'new_stock' => 0,
+            'supplier' => 'Deleted by ' . (Auth::user()->name ?? 'Admin'),
+        ]);
+
         $ingredient->delete();
         return redirect()->back()->with('success', 'Ingredient deleted successfully!');
     }
 
     public function stockIn(Request $request)
     {
-        // ... (existing stockIn for ingredients)
         $validated = $request->validate([
             'ingredient_id' => 'required|exists:ingredients,id',
             'quantity' => 'required|numeric|min:0.01',
@@ -93,6 +136,44 @@ class IngredientController extends Controller
         return redirect()->back()->with('success', 'Stock updated successfully! Added ' . $validated['quantity'] . ' ' . $ingredient->unit . ' of ' . $ingredient->name);
     }
 
+    /**
+     * Manual Stock-Out (Expired, Damaged, Spilled, etc.)
+     */
+    public function stockOut(Request $request)
+    {
+        $validated = $request->validate([
+            'ingredient_id' => 'required|exists:ingredients,id',
+            'quantity' => 'required|numeric|min:0.01',
+            'reason' => 'required|string|max:255',
+        ]);
+
+        $ingredient = Ingredient::findOrFail($validated['ingredient_id']);
+        
+        if ($ingredient->stock < $validated['quantity']) {
+            return redirect()->back()->withErrors(['quantity' => 'Cannot stock out more than available stock (' . $ingredient->stock . ' ' . $ingredient->unit . ').']);
+        }
+
+        $oldStock = $ingredient->stock;
+        $newStock = $oldStock - $validated['quantity'];
+
+        $ingredient->update(['stock' => $newStock]);
+
+        IngredientAuditLog::create([
+            'user_id' => Auth::id(),
+            'ingredient_id' => $ingredient->id,
+            'action' => 'stock_out',
+            'ingredient_name' => $ingredient->name,
+            'unit_cost' => $ingredient->cost_per_unit,
+            'total_cost' => $ingredient->cost_per_unit * $validated['quantity'],
+            'quantity_changed' => $validated['quantity'],
+            'old_stock' => $oldStock,
+            'new_stock' => $newStock,
+            'supplier' => $validated['reason'],
+        ]);
+
+        return redirect()->back()->with('success', 'Stock out recorded! Removed ' . $validated['quantity'] . ' ' . $ingredient->unit . ' of ' . $ingredient->name . ' (' . $validated['reason'] . ')');
+    }
+
     public function stockInProduct(Request $request)
     {
         $validated = $request->validate([
@@ -106,29 +187,45 @@ class IngredientController extends Controller
         return redirect()->back()->with('success', 'Product stock updated! Added ' . $validated['quantity'] . ' to ' . $product->name);
     }
 
-
     public function auditLog(Request $request)
     {
         $query = IngredientAuditLog::with('user');
 
-        // FILTER ROPDOWN PANG FILTER VIA ACTION TAKEN
         if ($request->filled('action')) {
             $query->where('action', $request->action);
         }
-        // FILTER DROPDOWN TONG PARA SA USER
         if ($request->filled('user_id')) {
             $query->where('user_id', $request->user_id);
         }
-        // SEARCH INPUT PANG SEARCH USING NAME SA INGREDIENT
         if ($request->filled('search')) {
             $query->where('ingredient_name', 'like', '%' . $request->search . '%');
         }
-        // FILTER BY DATE
         if ($request->filled('date')) {
             $query->whereDate('created_at', $request->date);
         }
         $logs = $query->latest()->paginate(10)->withQueryString();
-        $users = \App\Models\User::all(); // For the user filter dropdown
+        $users = \App\Models\User::all();
         return view('stock-history', compact('logs', 'users'));
+    }
+
+    /**
+     * Ingredient History — all actions (created, edited, deleted, stock_in, stock_out)
+     */
+    public function ingredientHistory(Request $request)
+    {
+        $query = IngredientAuditLog::with('user');
+
+        if ($request->filled('action')) {
+            $query->where('action', $request->action);
+        }
+        if ($request->filled('search')) {
+            $query->where('ingredient_name', 'like', '%' . $request->search . '%');
+        }
+        if ($request->filled('date')) {
+            $query->whereDate('created_at', $request->date);
+        }
+
+        $logs = $query->latest()->paginate(15)->withQueryString();
+        return view('ingredient-history', compact('logs'));
     }
 }

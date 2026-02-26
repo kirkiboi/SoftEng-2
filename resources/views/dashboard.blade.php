@@ -46,11 +46,11 @@
 
             <div class="kpi-card">
                 <div class="kpi-label">
-                    <i class="bi bi-cart-dash text-danger"></i> Est. Food Cost
+                    <i class="bi bi-cart-check text-success"></i> Realized Food Cost
                 </div>
                 <div class="kpi-value">₱ {{ number_format($totalCost, 2) }}</div>
                 <div class="kpi-trend">
-                    Based on ingredient usage
+                    Served batches only
                 </div>
             </div>
 
@@ -61,6 +61,16 @@
                 <div class="kpi-value">{{ number_format($profitMargin, 1) }}%</div>
                 <div class="kpi-trend {{ $profitMargin > 30 ? 'trend-up' : 'trend-down' }}">
                     Goal: > 30%
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">
+                    <i class="bi bi-trash text-danger"></i> Waste Cost
+                </div>
+                <div class="kpi-value" style="color: #dc3545;">₱ {{ number_format($wasteCost, 2) }}</div>
+                <div class="kpi-trend trend-down">
+                    Lost to wasted batches
                 </div>
             </div>
         </div>

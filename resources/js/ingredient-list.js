@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         recordStockInModal?.classList.remove('active');
         recordProductStockInModal?.classList.remove('active');
         deleteModal?.classList.remove('active');
+        document.getElementById('stockOutModal')?.classList.remove('active');
 
         currentForm = null;
         closeOverlay();
@@ -111,6 +112,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // PRODUCT STOCK IN CANCEL
     const productStockInCancelButton = document.getElementById('product-stock-in-cancel-button');
     productStockInCancelButton?.addEventListener('click', closeAll);
+    // STOCK OUT MODAL
+    document.getElementById('openStockOut')?.addEventListener('click', e => {
+        e.stopPropagation();
+        closeAll();
+        document.getElementById('stockOutModal').classList.add('active');
+        openOverlay();
+    });
+    document.getElementById('cancelStockOut')?.addEventListener('click', closeAll);
     // OVERLAY CLICK
     overlay?.addEventListener('click', closeAll);
     addIngredientCancelButton.addEventListener("click",()=>{
