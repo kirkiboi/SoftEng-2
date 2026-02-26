@@ -22,7 +22,7 @@
         </div>
 
         <!-- Summary KPI -->
-        <div class="kpi-grid">
+        <div class="kpi-grid kpi-grid-3">
             <div class="kpi-card kpi-card-accent-red">
                 <div class="kpi-label">Total Over-Usage Cost</div>
                 <div class="kpi-value text-danger">₱ {{ number_format(abs(collect($variances)->where('variance_cost', '<', 0)->sum('variance_cost')), 2) }}</div>
@@ -75,7 +75,7 @@
                             {{ number_format($v->variance, 2) }} {{ $v->unit }}
                         </td>
                         <td>
-                            <span class="badge {{ $v->variance_percent < -5 ? 'bg-danger' : ($v->variance_percent < 0 ? 'bg-warning' : 'bg-success') }}">
+                            <span class="variance-badge {{ $v->variance_percent < -5 ? 'vb-danger' : ($v->variance_percent < 0 ? 'vb-warning' : 'vb-success') }}">
                                 {{ number_format($v->variance_percent, 1) }}%
                             </span>
                         </td>

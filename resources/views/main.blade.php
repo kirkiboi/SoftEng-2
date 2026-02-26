@@ -18,7 +18,37 @@
             <img src="{{asset('photos/UMDiningcenter.png')}}" alt="UM Dining Center" class ="sidebar-container-logo">
             <img src="{{asset('favicon.png')}}" alt="UM Dining Center" class ="sidebar-logo-collapsed">
         </div>
-        <div class="drop-down-container">
+        <div class="drop-down-container" style="display: flex; align-items: center; gap: 0.5rem;">
+            @php
+                $lowStockIngredients = \App\Models\Ingredient::whereColumn('stock', '<=', 'threshold')->get();
+                $lowStockCount = $lowStockIngredients->count();
+            @endphp
+            @if($lowStockCount > 0)
+            <div class="low-stock-bell" id="lowStockBell" style="position: relative; cursor: pointer;">
+                <i class="fa-solid fa-bell" style="font-size: 1.1rem; color: #fdcb6e;"></i>
+                <span class="low-stock-badge">{{ $lowStockCount }}</span>
+                <div class="low-stock-popup" id="lowStockPopup">
+                    <div class="popup-title"><i class="fa-solid fa-triangle-exclamation"></i> Low Stock Alerts</div>
+                    @foreach($lowStockIngredients as $lsi)
+                    <div class="popup-item">
+                        <span>{{ $lsi->name }}</span>
+                        <span class="item-stock">{{ $lsi->stock }} {{ $lsi->unit }}</span>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const bell = document.getElementById('lowStockBell');
+                    const popup = document.getElementById('lowStockPopup');
+                    bell?.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        popup.classList.toggle('open');
+                    });
+                    document.addEventListener('click', () => popup?.classList.remove('open'));
+                });
+            </script>
+            @endif
             <i class="fa-solid fa-angles-left drop-down-container-button"></i>
         </div>
     </div>

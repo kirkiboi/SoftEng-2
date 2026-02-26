@@ -17,6 +17,13 @@ class IngredientAuditLog extends Model
         'old_stock',
         'new_stock',
         'supplier',
+        'old_values',
+        'new_values',
+    ];
+
+    protected $casts = [
+        'old_values' => 'array',
+        'new_values' => 'array',
     ];
     public function ingredient()
     {

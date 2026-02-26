@@ -37,7 +37,7 @@ class IngredientController extends Controller
 
         $ingredient = Ingredient::create($validated);
 
-        // Log ingredient creation
+        // Log ingredient creation with JSON values
         IngredientAuditLog::create([
             'user_id' => Auth::id(),
             'ingredient_id' => $ingredient->id,
@@ -49,6 +49,14 @@ class IngredientController extends Controller
             'old_stock' => 0,
             'new_stock' => $ingredient->stock,
             'supplier' => 'Initial stock',
+            'new_values' => [
+                'name' => $ingredient->name,
+                'category' => $ingredient->category,
+                'unit' => $ingredient->unit,
+                'cost_per_unit' => $ingredient->cost_per_unit,
+                'stock' => $ingredient->stock,
+                'threshold' => $ingredient->threshold,
+            ],
         ]);
 
         return redirect()->back()->with('success', 'Ingredient added successfully!');
@@ -64,10 +72,27 @@ class IngredientController extends Controller
             'threshold' => 'required|numeric|min:0',
         ]);
 
-        $oldName = $ingredient->name;
+        // Capture old values before update
+        $oldValues = [
+            'name' => $ingredient->name,
+            'category' => $ingredient->category,
+            'unit' => $ingredient->unit,
+            'cost_per_unit' => $ingredient->cost_per_unit,
+            'threshold' => $ingredient->threshold,
+        ];
+
+        // Build human-readable change summary
+        $changes = [];
+        if ($ingredient->name !== $validated['name']) $changes[] = 'name: ' . $ingredient->name . ' → ' . $validated['name'];
+        if ($ingredient->category !== $validated['category']) $changes[] = 'category: ' . $ingredient->category . ' → ' . $validated['category'];
+        if ($ingredient->unit !== $validated['unit']) $changes[] = 'unit: ' . $ingredient->unit . ' → ' . $validated['unit'];
+        if ((float)$ingredient->cost_per_unit !== (float)$validated['cost_per_unit']) $changes[] = 'cost: ₱' . number_format($ingredient->cost_per_unit, 2) . ' → ₱' . number_format($validated['cost_per_unit'], 2);
+        if ((float)$ingredient->threshold !== (float)$validated['threshold']) $changes[] = 'threshold: ' . $ingredient->threshold . ' → ' . $validated['threshold'];
+        $changeDetails = !empty($changes) ? implode(', ', $changes) : 'No changes detected';
+
         $ingredient->update($validated);
 
-        // Log ingredient edit
+        // Log with structured JSON old/new values
         IngredientAuditLog::create([
             'user_id' => Auth::id(),
             'ingredient_id' => $ingredient->id,
@@ -78,7 +103,15 @@ class IngredientController extends Controller
             'quantity_changed' => 0,
             'old_stock' => $ingredient->stock,
             'new_stock' => $ingredient->stock,
-            'supplier' => 'Edited by ' . (Auth::user()->name ?? 'Admin'),
+            'supplier' => $changeDetails,
+            'old_values' => $oldValues,
+            'new_values' => [
+                'name' => $validated['name'],
+                'category' => $validated['category'],
+                'unit' => $validated['unit'],
+                'cost_per_unit' => $validated['cost_per_unit'],
+                'threshold' => $validated['threshold'],
+            ],
         ]);
 
         return redirect()->back()->with('success', 'Ingredient updated successfully!');
@@ -88,7 +121,7 @@ class IngredientController extends Controller
     {
         $ingredient = Ingredient::findOrFail($id);
         
-        // Log ingredient deletion
+        // Log ingredient deletion with old values
         IngredientAuditLog::create([
             'user_id' => Auth::id(),
             'ingredient_id' => $ingredient->id,
@@ -100,6 +133,14 @@ class IngredientController extends Controller
             'old_stock' => $ingredient->stock,
             'new_stock' => 0,
             'supplier' => 'Deleted by ' . (Auth::user()->name ?? 'Admin'),
+            'old_values' => [
+                'name' => $ingredient->name,
+                'category' => $ingredient->category,
+                'unit' => $ingredient->unit,
+                'cost_per_unit' => $ingredient->cost_per_unit,
+                'stock' => $ingredient->stock,
+                'threshold' => $ingredient->threshold,
+            ],
         ]);
 
         $ingredient->delete();
@@ -229,5 +270,52 @@ class IngredientController extends Controller
 
         $logs = $query->latest()->paginate(15)->withQueryString();
         return view('ingredient-history', compact('logs'));
+    }
+
+    /**
+     * Stock Reconciliation — compares actual vs expected stock
+     */
+    public function reconcile()
+    {
+        $ingredients = Ingredient::all();
+        $discrepancies = [];
+
+        foreach ($ingredients as $ing) {
+            // Sum all stock-in quantities
+            $totalIn = IngredientAuditLog::where('ingredient_id', $ing->id)
+                ->where('action', 'stock_in')
+                ->sum('quantity_changed');
+
+            // Sum all stock-out quantities (manual + production)
+            $totalOut = IngredientAuditLog::where('ingredient_id', $ing->id)
+                ->where('action', 'stock_out')
+                ->sum('quantity_changed');
+
+            // Initial stock from creation
+            $initialStock = IngredientAuditLog::where('ingredient_id', $ing->id)
+                ->where('action', 'created')
+                ->sum('quantity_changed');
+
+            $expectedStock = $initialStock + $totalIn - $totalOut;
+            $actualStock = $ing->stock;
+            $difference = round($actualStock - $expectedStock, 4);
+
+            if (abs($difference) > 0.01) {
+                $discrepancies[] = [
+                    'ingredient' => $ing->name,
+                    'expected' => round($expectedStock, 4),
+                    'actual' => round($actualStock, 4),
+                    'difference' => $difference,
+                    'unit' => $ing->unit,
+                ];
+            }
+        }
+
+        return response()->json([
+            'total_ingredients' => $ingredients->count(),
+            'discrepancies_found' => count($discrepancies),
+            'discrepancies' => $discrepancies,
+            'status' => count($discrepancies) === 0 ? 'All stock values are consistent.' : 'Discrepancies detected.',
+        ]);
     }
 }

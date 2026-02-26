@@ -93,6 +93,9 @@
                                 $badgeClass = $badgeMap[$log->action] ?? '';
                             @endphp
                             <span class="action-badge {{ $badgeClass }}">{{ ucfirst($log->action) }}</span>
+                            @if($log->action === 'edited' && $log->supplier)
+                                <div style="font-size:0.7rem; color:#636e72; margin-top:0.3rem; line-height:1.3;">{{ $log->supplier }}</div>
+                            @endif
                         </td>
                         <td>{{ $log->created_at->format('m/d/Y h:i A') }}</td>
                         <td>

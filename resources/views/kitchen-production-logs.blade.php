@@ -2,14 +2,16 @@
 @section('kitchen production logs', 'System 4')
 @section('content')
 @vite(['resources/css/kitchen-production-logs.css'])
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <div class="main-container">
     <div class="parent-container">
         <div class="header-container">
             <div class="filter-container">
-                <svg id="filter-button" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" class="filter-icon">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
+                <!-- FILTER ICON (Bootstrap Icons funnel, matching stock-history) -->
+                <div id="filter-button" class="filter-icon-container">
+                    <i class="bi bi-funnel"></i>
+                </div>
                 <div class="filter-dropdown" id="filterDropdown">
                     <form method="GET" action="{{ route('kitchen.logs') }}" class="filter-dropdown-form">
                         <div class="filter-group">
@@ -40,22 +42,19 @@
                     <span>Export Logs</span>
                 </button>
             </div>
-            <div class="pagination-container">
-                @include('components.pagination', ['paginator' => $logs])
-            </div>
         </div>
 
         <div class="main-body-container">
             <table>
                 <colgroup>
-                    <col style="width: 15%">
-                    <col style="width: 8%">
-                    <col style="width: 8%">
-                    <col style="width: 10%">
-                    <col style="width: 10%">
-                    <col style="width: 20%">
-                    <col style="width: 15%">
                     <col style="width: 14%">
+                    <col style="width: 7%">
+                    <col style="width: 7%">
+                    <col style="width: 9%">
+                    <col style="width: 9%">
+                    <col style="width: 25%">
+                    <col style="width: 14%">
+                    <col style="width: 15%">
                 </colgroup>
                 <thead>
                     <tr class="tr">
@@ -72,7 +71,7 @@
                 <tbody>
                     @foreach($logs as $log)
                         <tr>
-                            <td>{{ $log->product_name }}</td>
+                            <td><strong>{{ $log->product_name }}</strong></td>
                             <td>{{ $log->times_cooked }}</td>
                             <td>{{ $log->total_servings }}</td>
                             <td>
@@ -82,13 +81,15 @@
                             </td>
                             <td>{{ $log->user ? $log->user->first_name : 'System' }}</td>
                             <td>
-                                @foreach($log->deductions as $d)
-                                    <span class="deduction-tag">{{ $d->ingredient_name }}: -{{ $d->quantity_deducted }}{{ $d->unit }}</span>
-                                @endforeach
+                                <div class="deduction-tags-wrap">
+                                    @foreach($log->deductions as $d)
+                                        <span class="deduction-tag">{{ $d->ingredient_name }}: -{{ number_format($d->quantity_deducted, 2) }}{{ $d->unit }}</span>
+                                    @endforeach
+                                </div>
                             </td>
                             <td>
                                 @if($log->status === 'wasted')
-                                    <span style="color: #dc3545; font-size: 0.9em;">{{ $log->waste_reason ?? 'N/A' }}</span>
+                                    <span style="color: #dc3545; font-size: 0.85em;">{{ $log->waste_reason ?? 'N/A' }}</span>
                                 @else
                                     <span style="color: #999;">-</span>
                                 @endif
@@ -99,15 +100,26 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- PAGINATION (moved to bottom) -->
+        <div class="pagination-container">
+            @include('components.pagination', ['paginator' => $logs])
+        </div>
     </div>
 </div>
 <div class="overlay" id="overlay"></div>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const filterBtn = document.querySelector('.filter-icon');
+        const filterBtn = document.getElementById('filter-button');
         const filterDropdown = document.getElementById('filterDropdown');
-        filterBtn?.addEventListener('click', () => filterDropdown?.classList.toggle('show'));
+        filterBtn?.addEventListener('click', () => {
+            filterDropdown.style.display = filterDropdown.style.display === 'block' ? 'none' : 'block';
+        });
+        const dateInput = document.getElementById('dateInput');
+        dateInput?.addEventListener('change', () => {
+            dateInput.form.submit();
+        });
     });
 </script>
 @endsection

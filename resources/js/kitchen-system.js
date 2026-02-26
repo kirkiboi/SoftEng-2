@@ -5,6 +5,52 @@ document.addEventListener('DOMContentLoaded', () => {
     const addBatchModal = document.getElementById('addBatchModal');
     const wasteModal = document.getElementById('wasteModal');
 
+    // ===== CUSTOM CONFIRM / TOAST (replaces browser confirm() and alert()) =====
+    function showToast(message, type = 'error') {
+        const toast = document.getElementById('kitchenToast');
+        const msgEl = document.getElementById('kitchenToastMessage');
+        if (!toast || !msgEl) return;
+        toast.className = 'kitchen-toast' + (type === 'success' ? ' toast-success' : ' toast-error');
+        msgEl.textContent = message;
+        toast.style.display = 'flex';
+        // Re-trigger animation
+        toast.style.animation = 'none';
+        toast.offsetHeight; // reflow
+        toast.style.animation = '';
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    }
+
+    function showConfirm(message, title = 'Confirm Action') {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('customConfirmModal');
+            const msgEl = document.getElementById('customConfirmMessage');
+            const titleEl = document.getElementById('customConfirmTitle');
+            const okBtn = document.getElementById('customConfirmOk');
+            const cancelBtn = document.getElementById('customConfirmCancel');
+            const closeBtn = document.getElementById('customConfirmClose');
+            if (!modal) { resolve(window.confirm(message)); return; }
+
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+            modal.classList.add('active');
+
+            function cleanup(result) {
+                modal.classList.remove('active');
+                okBtn.removeEventListener('click', onOk);
+                cancelBtn.removeEventListener('click', onCancel);
+                closeBtn.removeEventListener('click', onCancel);
+                resolve(result);
+            }
+            function onOk() { cleanup(true); }
+            function onCancel() { cleanup(false); }
+
+            okBtn.addEventListener('click', onOk);
+            cancelBtn.addEventListener('click', onCancel);
+            closeBtn.addEventListener('click', onCancel);
+        });
+    }
+
     // Helpers
     const openOverlay = () => overlay?.classList.add('show');
     const closeOverlay = () => overlay?.classList.remove('show');
@@ -14,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         wasteModal?.classList.remove('active');
         document.getElementById('startShiftModal')?.classList.remove('active');
         document.getElementById('endShiftModal')?.classList.remove('active');
+        document.getElementById('customConfirmModal')?.classList.remove('active');
         closeOverlay();
     }
 
@@ -81,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         let qty = parseFloat(item.querySelector('.recipe-qty').textContent.trim());
                         const isConverted = item.dataset.converted === 'true';
 
-                        if (isNaN(qty)) { alert('Invalid quantity'); return; }
+                        if (isNaN(qty)) { showToast('Invalid quantity.'); return; }
 
                         if (isConverted) {
                             qty = qty / 1000; // Convert back to kg
@@ -95,8 +142,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             });
                             if (res.ok) {
                                 document.getElementById('recipeProductSelect').dispatchEvent(new Event('change'));
-                            } else { alert('Failed to save.'); }
-                        } catch (err) { alert('Error saving.'); }
+                            } else { showToast('Failed to save.'); }
+                        } catch (err) { showToast('Error saving.'); }
                     });
                 });
 
@@ -104,7 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 list.querySelectorAll('.recipe-delete-btn').forEach(btn => {
                     btn.addEventListener('click', async function() {
                         const id = this.dataset.id;
-                        if (!confirm('Remove this ingredient from recipe?')) return;
+                        const confirmed = await showConfirm('Remove this ingredient from recipe?', 'Remove Ingredient');
+                        if (!confirmed) return;
                         try {
                             const res = await fetch(`/recipes/${id}`, {
                                 method: 'DELETE',
@@ -112,8 +160,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             });
                             if (res.ok) {
                                 document.getElementById('recipeProductSelect').dispatchEvent(new Event('change'));
-                            } else { alert('Failed to remove.'); }
-                        } catch (err) { alert('Error removing ingredient.'); }
+                            } else { showToast('Failed to remove.'); }
+                        } catch (err) { showToast('Error removing ingredient.'); }
                     });
                 });
             }
@@ -142,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedUnit = document.getElementById('recipeUnitSelect')?.value || 'kg';
 
         if (!productId || !ingredientId || !quantity) {
-            alert('Please fill all fields.');
+            showToast('Please fill all fields.');
             return;
         }
 
@@ -177,10 +225,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('recipeIngredientSelect').value = '';
             } else {
                 const data = await res.json();
-                alert(data.message || 'Failed to add ingredient.');
+                showToast(data.message || 'Failed to add ingredient.');
             }
         } catch (err) {
-            alert('Error adding ingredient.');
+            showToast('Error adding ingredient.');
         }
     });
 
@@ -227,8 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Convert to grams if unit is kg and needed amount < 1kg
                 if (unit === 'kg' && needed < 1) {
                     needed = needed * 1000;
-                    available = available * 1000; // Convert available too for comparison consistency logic (though display might be mixed if stock > 1kg? Let's keep simple)
-                    // Actually, if stock is 5kg, showing 5000g is fine.
+                    available = available * 1000;
                     unit = 'g';
                 }
 
@@ -236,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const neededStr = parseFloat(needed.toFixed(3));
                 const availableStr = parseFloat(available.toFixed(3));
 
-                const isInsufficient = available < needed; // Works because we converted both or neither
+                const isInsufficient = available < needed;
                 
                 return `
                     <div class="preview-item">
@@ -245,6 +292,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             }).join('');
+
+            // Calculate and display estimated cost
+            let totalCost = 0;
+            recipes.forEach(r => {
+                const qty = r.quantity * times;
+                const costPerUnit = parseFloat(r.ingredient?.cost_per_unit || 0);
+                totalCost += qty * costPerUnit;
+            });
+            const costValueEl = document.getElementById('batchCostValue');
+            if (costValueEl) {
+                costValueEl.textContent = '₱' + totalCost.toFixed(2);
+            }
         } catch (err) {
             list.innerHTML = '<p style="color:#dc3545;">Failed to load recipe.</p>';
         }
@@ -259,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rawValue = batchTimesCooked?.value;
         const errorDiv = document.getElementById('batchError');
 
-        if (!productId) { alert('Please select a product.'); return; }
+        if (!productId) { showToast('Please select a product.'); return; }
 
         // Strict validation: must be a positive integer, reject '12-3', decimals, negatives
         const times = parseInt(rawValue);
@@ -321,10 +380,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (res.ok) {
                     window.location.reload();
                 } else {
-                    alert('Failed to update status.');
+                    showToast('Failed to update status.');
                 }
             } catch (err) {
-                alert('Network error.');
+                showToast('Network error.');
             }
         });
     });
@@ -332,7 +391,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ===== CANCEL BATCH (Queue only) =====
     document.querySelectorAll('.cancel-btn').forEach(btn => {
         btn.addEventListener('click', async function() {
-            if (!confirm('Are you sure you want to cancel this batch? Ingredients will be refunded.')) return;
+            const confirmed = await showConfirm('Are you sure you want to cancel this batch? Ingredients will be refunded.', 'Cancel Batch');
+            if (!confirmed) return;
 
             const id = this.dataset.id;
             try {
@@ -349,10 +409,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (res.ok && data.success) {
                     window.location.reload();
                 } else {
-                    alert(data.message || 'Failed to cancel batch.');
+                    showToast(data.message || 'Failed to cancel batch.');
                 }
             } catch (err) {
-                alert('Network error.');
+                showToast('Network error.');
             }
         });
     });
@@ -396,10 +456,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 closeAll();
                 window.location.reload();
             } else {
-                alert('Failed to mark as wasted.');
+                showToast('Failed to mark as wasted.');
             }
         } catch (err) {
-            alert('Network error.');
+            showToast('Network error.');
         }
     });
 
@@ -491,14 +551,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 closeAll();
                 window.location.reload();
             } else {
-                alert(data.message || 'Failed to end shift.');
+                showToast(data.message || 'Failed to end shift.');
             }
         } catch (err) {
-            alert('Network error.');
+            showToast('Network error.');
         }
     });
 
     // Overlay click to close
     overlay?.addEventListener('click', closeAll);
 });
-

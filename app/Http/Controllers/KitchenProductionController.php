@@ -89,6 +89,7 @@ class KitchenProductionController extends Controller
                     'ingredient_name' => $ingredient->name,
                     'quantity_deducted' => $deductQty,
                     'unit' => $ingredient->unit,
+                    'cost_per_unit' => $ingredient->cost_per_unit,
                 ]);
 
                 IngredientAuditLog::create([

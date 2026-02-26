@@ -232,6 +232,12 @@
             <div id="batchIngredientPreview" class="ingredient-preview" style="display:none;">
                 <h4>Ingredients Required</h4>
                 <div id="batchIngredientList"></div>
+                <div id="batchCostEstimate" style="margin-top:0.75rem; padding:0.75rem 1rem; background:#f0f7ff; border-radius:0.8rem; border:1px solid #d0e3f7;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.85rem; color:#636e72; font-weight:600;"><i class="fa-solid fa-coins" style="margin-right:0.4rem;"></i>Estimated Batch Cost</span>
+                        <span id="batchCostValue" style="font-size:1.1rem; font-weight:700; color:#2d3436;">₱0.00</span>
+                    </div>
+                </div>
             </div>
             <div id="batchError" class="alert alert-error" style="display:none;"></div>
             <div class="form-actions">
@@ -335,7 +341,76 @@
 
 <div class="overlay" id="overlay"></div>
 
+<!-- CUSTOM CONFIRM MODAL (replaces browser confirm()) -->
+<div class="modal-container" id="customConfirmModal">
+    <div class="modal-content" style="max-width: 420px;">
+        <div class="modal-header" style="background: #2d3436;">
+            <span id="customConfirmTitle">Confirm Action</span>
+            <button class="modal-close" id="customConfirmClose">&times;</button>
+        </div>
+        <div class="modal-body" style="text-align:center; padding:2rem;">
+            <p id="customConfirmMessage" style="margin-bottom:1.5rem; color:#555; font-size:0.95rem; line-height:1.6;"></p>
+            <div class="form-actions" style="justify-content:center;">
+                <button type="button" class="cancel-button" id="customConfirmCancel">Cancel</button>
+                <button type="button" class="add-button" id="customConfirmOk" style="background:#2975da;">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST NOTIFICATION (replaces browser alert()) -->
+<div id="kitchenToast" class="kitchen-toast" style="display:none;">
+    <span class="kitchen-toast-icon"></span>
+    <span id="kitchenToastMessage"></span>
+</div>
+
 <style>
+/* Kitchen Toast Notification (matches .my-alert from mp.css) */
+.kitchen-toast {
+    position: fixed;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2d3436;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    z-index: 3000;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: ktSlideDown 0.4s ease-out;
+}
+.kitchen-toast.toast-error {
+    border-left: 4px solid #d63031;
+}
+.kitchen-toast.toast-success {
+    border-left: 4px solid #00b894;
+}
+.kitchen-toast-icon::before {
+    content: "⚠";
+    font-size: 1rem;
+}
+.kitchen-toast.toast-success .kitchen-toast-icon::before {
+    content: "✓";
+    background: #00b894;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.7rem;
+}
+@keyframes ktSlideDown {
+    from { top: -50px; opacity: 0; }
+    to { top: 2rem; opacity: 1; }
+}
+
 /* Searchable Dropdown */
 .searchable-dropdown { position: relative; width: 100%; }
 .searchable-dropdown .sd-display {

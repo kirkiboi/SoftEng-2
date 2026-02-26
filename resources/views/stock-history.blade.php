@@ -97,27 +97,29 @@
                     <!-- LOOP THROUGH THE LOGS SA INGREDIENT NGA CONTROLLER -->
                     @foreach($logs as $log)
                         <tr class="tr">
-                            <!-- LOGS SA CONTROLLER -->
                             <td>
                                 <div class="product-name-and-image">
                                     <span>{{ $log->ingredient_name ?? 'Deleted Ingredient' }}</span>
                                 </div>
                             </td>
-                            <!-- LOGS SA ACTION -->
-                            <td>{{ ucfirst($log->action) }}</td>
-                            <!-- LOGS SA TIMESTAMPS -->
-                            <td>{{ $log->created_at }}</td>
-                            <!-- LOGS SA USER -->
+                            <td>
+                                @if($log->action === 'stock_in')
+                                    <span class="action-badge badge-stock-in">Stock In</span>
+                                @elseif($log->action === 'stock_out')
+                                    <span class="action-badge badge-stock-out">Stock Out</span>
+                                @else
+                                    <span class="action-badge">{{ ucfirst($log->action) }}</span>
+                                @endif
+                            </td>
+                            <td>{{ $log->created_at->format('m/d/Y h:i A') }}</td>
                             <td>
                                 {{ $log->user 
                                     ? $log->user->first_name . ' ' . $log->user->last_name 
                                     : 'System' 
                                 }}
                             </td>
-                            <!-- LOGS SA UNIT COST -->
-                            <td>{{ $log->unit_cost }}</td>
-                            <!-- LOGS SA TOTAL COST -->
-                            <td>{{ $log->total_cost }}</td>
+                            <td>₱{{ number_format($log->unit_cost, 2) }}</td>
+                            <td>₱{{ number_format($log->total_cost, 2) }}</td>
                         </tr>
                     @endforeach
                     <!-- END SA FOR EACH LOOP -->
@@ -131,4 +133,17 @@
     </div>
 </div>
 <div class="overlay" id="overlay"></div>
+
+<style>
+.action-badge {
+    padding: 0.35rem 0.7rem;
+    border-radius: 2rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    display: inline-block;
+}
+.badge-stock-in { background: #d4edda; color: #155724; }
+.badge-stock-out { background: #fff3cd; color: #856404; }
+</style>
 @endsection

@@ -1,140 +1,121 @@
-/* Kitchen Production Logs - Consistent with stock-history.css */
+/* Kitchen Production Logs — Consistent with stock-history.css */
+
+:root {
+    --primary-color: #8B0000;
+    --font-family: 'Inter', sans-serif;
+}
 
 .main-container {
-    padding: 2rem;
-    min-height: 100vh;
+    width: 100%;
+    max-width: 90rem;
+    min-height: 100%;
+    height: auto;
+    background-color: white;
+    padding: 1.9rem;
+    box-sizing: border-box;
+    margin: 0;
 }
 .parent-container {
-    background: white;
-    border-radius: 20px;
-    padding: 2rem;
-    min-height: calc(100vh - 4rem);
-    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 }
 
 /* Header */
 .header-container {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    padding: 0.5rem 0;
+    gap: 1.5rem;
 }
-.filter-container { position: relative; }
-.filter-icon {
+
+/* Filter icon — matches stock-history */
+.filter-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.filter-icon-container {
     cursor: pointer;
-    padding: 0.5rem;
-    background: #f0f0f0;
-    border-radius: 8px;
-    transition: background 0.3s;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    color: #636e72;
+    font-size: 1.1rem;
 }
-.filter-icon:hover { background: #e0e0e0; }
+.filter-icon-container:hover {
+    background-color: #f0f0f0;
+    border-color: #b2bec3;
+}
 
 .filter-dropdown {
     display: none;
     position: absolute;
-    top: 100%;
+    top: 3.5rem;
     left: 0;
-    z-index: 100;
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-    padding: 1rem;
-    min-width: 200px;
+    padding: 0.6rem;
+    border-radius: 1.2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    z-index: 1000;
+    min-width: 180px;
 }
-.filter-dropdown.show { display: block; }
-.filter-dropdown select {
+.filter-dropdown-form select {
     width: 100%;
-    padding: 0.5rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 0.85rem;
+    padding: 0.8rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.8rem;
+    font-family: var(--font-family);
+    background: #f9f9f9;
     margin-bottom: 0.5rem;
 }
-.filter-dropdown button {
+.filter-dropdown-form button {
     width: 100%;
-    padding: 0.5rem;
-    background: #8B0000;
+    background-color: #2975da;
     color: white;
     border: none;
-    border-radius: 50px;
+    padding: 0.6rem;
+    border-radius: 0.8rem;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 700;
+    transition: background 0.3s;
+}
+.filter-dropdown-form button:hover {
+    background-color: #1e5bb0;
 }
 
-.search-container { flex: 1; }
+/* Search */
+.search-container { flex: 1; max-width: 25rem; }
 .search-input {
     width: 100%;
+    border-radius: 0.8rem;
+    border: 1px solid #e0e0e0;
+    background: #fcfcfc;
     padding: 0.6rem 1rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 50px;
-    font-size: 0.85rem;
-    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    box-sizing: border-box;
 }
-.search-input:focus { outline: none; border-color: #8B0000; }
 
-.date-container input[type="date"] {
-    padding: 0.5rem 1rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 50px;
-    font-size: 0.85rem;
+/* Date */
+.date-container input {
+    padding: 0.6rem 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.8rem;
+    background: #fcfcfc;
+    font-family: var(--font-family);
+    color: #555;
     cursor: pointer;
 }
 
-.pagination-container { margin-left: auto; font-size: 0.85rem; }
-
-/* Table */
-.main-body-container { overflow-x: auto; }
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-.th {
-    background: #f8f8f8;
-    padding: 0.75rem 1rem;
-    text-align: left;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #555;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 2px solid #eee;
-}
-td {
-    padding: 0.75rem 1rem;
-    font-size: 0.85rem;
-    color: #333;
-    border-bottom: 1px solid #f0f0f0;
-    vertical-align: middle;
-}
-tr:hover td { background: #fafafa; }
-
-/* Status badges */
-.status-badge {
-    padding: 0.2rem 0.6rem;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-.status-queued { background: #fff3cd; color: #856404; }
-.status-cooking { background: #ffe0cc; color: #c44900; }
-.status-done { background: #d4edda; color: #155724; }
-.status-wasted { background: #ffebee; color: #d63031; }
-.status-served { background: #e3f2fd; color: #1565c0; }
-
-/* Deduction tags */
-.deduction-tag {
-    display: inline-block;
-    background: #f0f0f0;
-    padding: 0.15rem 0.5rem;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    color: #555;
-    margin: 0.1rem;
-}
-
-/* Export button */
+/* Export */
 .export-sales-data-container { margin-left: auto; }
 .export-btn {
     border: none;
@@ -154,3 +135,142 @@ tr:hover td { background: #fafafa; }
     background: #6b0000;
     transform: translateY(-1px);
 }
+
+/* Table */
+.main-body-container { overflow-x: auto; }
+table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+.th {
+    color: #a0a0a0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 1rem;
+    text-align: left;
+    letter-spacing: 0.5px;
+}
+td {
+    padding: 0.9rem 1rem;
+    font-size: 0.85rem;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+tr:hover td { background: #fafafa; }
+
+/* Status badges */
+.status-badge {
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.status-queued { background: #fff3cd; color: #856404; }
+.status-cooking { background: #ffe0cc; color: #c44900; }
+.status-done { background: #d4edda; color: #155724; }
+.status-wasted { background: #ffebee; color: #d63031; }
+.status-served { background: #e3f2fd; color: #1565c0; }
+
+/* Deduction tags — improved spacing */
+.deduction-tags-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+.deduction-tag {
+    display: inline-block;
+    background: #f0f0f0;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    color: #444;
+    white-space: nowrap;
+    border: 1px solid #e0e0e0;
+}
+
+/* Pagination — matching stock-history */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+.pagination-container p {
+    margin-top: 0.8rem;
+    margin-right: 2rem;
+    color: #636e72;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.pagination {
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.page-item { display: flex; }
+.page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50px;
+    background-color: white;
+    color: #2d3436;
+    border: 1px solid #e0e0e0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.page-link:hover {
+    background-color: #f1f1f1;
+    color: #2975da;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.page-item.active .page-link {
+    background-color: #2975da;
+    color: white;
+    border-color: #2975da;
+}
+.page-item.disabled .page-link {
+    background-color: #f9f9f9;
+    color: #b2bec3;
+    cursor: not-allowed;
+    border-color: #eee;
+    box-shadow: none;
+}
+.page-item:first-child .page-link { font-size: 0; }
+.page-item:first-child .page-link::before {
+    content: "\f060";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 1rem;
+}
+.page-item:last-child .page-link { font-size: 0; }
+.page-item:last-child .page-link::before {
+    content: "\f061";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 1rem;
+}
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(2px);
+    z-index: 999;
+}
+.overlay.active { display: block; }

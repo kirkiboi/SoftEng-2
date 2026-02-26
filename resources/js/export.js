@@ -5,7 +5,16 @@
 function exportTableToCSV(filename) {
     const table = document.querySelector('table');
     if (!table) {
-        alert('No table found to export.');
+        // Show toast instead of browser alert
+        const toast = document.getElementById('kitchenToast') || document.querySelector('.my-alert');
+        if (toast) {
+            const msg = toast.querySelector('#kitchenToastMessage') || toast;
+            msg.textContent = 'No table found to export.';
+            toast.style.display = 'flex';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        } else {
+            console.warn('No table found to export.');
+        }
         return;
     }
 

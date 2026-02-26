@@ -86,6 +86,50 @@
                 </table>
             </div>
         </div>
+
+        <!-- Waste Analytics Section -->
+        <div class="report-grid" style="margin-top: 1.5rem;">
+            <div class="chart-container">
+                <div class="card-title">
+                    <i class="bi bi-exclamation-diamond"></i> Waste Reasons Breakdown
+                </div>
+                @if($wasteReasons->count() > 0)
+                <div style="height: 250px;">
+                    <canvas id="wasteReasonsChart"></canvas>
+                </div>
+                @else
+                <p style="text-align:center; padding:2rem; color:#999;">No waste data recorded yet.</p>
+                @endif
+            </div>
+
+            <div class="data-table-card">
+                <div class="card-title">
+                    <i class="bi bi-trash3"></i> Most Wasted Products
+                </div>
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th class="text-end">Times Wasted</th>
+                            <th class="text-end">Servings Lost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($mostWasted as $item)
+                        <tr>
+                            <td><strong>{{ $item->product_name }}</strong></td>
+                            <td class="text-end" style="color: #e74c3c; font-weight:700;">{{ $item->waste_count }}</td>
+                            <td class="text-end">{{ $item->wasted_servings }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="3" style="text-align:center; padding: 2rem; color: #999;">No wasted products yet.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -122,6 +166,39 @@
                 cutout: '70%'
             }
         });
+
+        // Waste Reasons Chart
+        const wasteReasonsData = @json($wasteReasons);
+        if (wasteReasonsData.length > 0) {
+            const wasteCtx = document.getElementById('wasteReasonsChart')?.getContext('2d');
+            if (wasteCtx) {
+                const wasteColors = ['#e74c3c', '#e67e22', '#f39c12', '#d63031', '#fd79a8', '#a29bfe'];
+                new Chart(wasteCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: wasteReasonsData.map(d => d.reason),
+                        datasets: [{
+                            label: 'Batches Wasted',
+                            data: wasteReasonsData.map(d => d.count),
+                            backgroundColor: wasteReasonsData.map((_, i) => wasteColors[i % wasteColors.length]),
+                            borderWidth: 0,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: { beginAtZero: true, ticks: { stepSize: 1 } }
+                        }
+                    }
+                });
+            }
+        }
     });
 </script>
 @endsection

@@ -10,6 +10,7 @@ class KitchenStockDeduction extends Model
         'ingredient_name',
         'quantity_deducted',
         'unit',
+        'cost_per_unit',
     ];
 
     public function productionLog()
