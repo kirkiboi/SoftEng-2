@@ -192,6 +192,12 @@
                     <span class ="subsystem-span">Yield & Forecasting Reports</span>                    
                 </div>
             </a>
+            <a href="{{ route('reports.end-of-day') }}">
+                <div class="feature d-flex align-items-center">
+                    <i class="fa-solid fa-calendar-day me-3 sub-icon"></i>
+                    <span class="subsystem-span">End of Day</span>
+                </div>
+            </a>
         </div>
     </div>
     <form action="{{ route('login') }}">

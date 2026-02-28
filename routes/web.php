@@ -42,6 +42,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/reports/dashboard', [ReportController::class, 'dashboard'])->name('reports.dashboard');
     Route::get('/reports/cost-variance', [ReportController::class, 'costVariance'])->name('reports.cost-variance');
     Route::get('/reports/yield-forecasting', [ReportController::class, 'yieldForecasting'])->name('reports.yield');
+    Route::get('/reports/end-of-day', [ReportController::class, 'endOfDay'])->name('reports.end-of-day');
 });
 Route::get('/analysisandreporting', function () {return redirect()->route('reports.dashboard');})->name('ar')->middleware(['auth', 'role:admin']);
 

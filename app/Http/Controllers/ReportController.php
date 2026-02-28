@@ -207,4 +207,85 @@ class ReportController extends Controller
             'wasteReasons', 'mostWasted'
         ));
     }
+
+    /**
+     * End of Day Report
+     */
+    public function endOfDay(Request $request)
+    {
+        $date = $request->input('date', Carbon::today()->toDateString());
+
+        // ── TAB 1: Point of Sales ──
+        $posSales = DB::table('transaction_items')
+            ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
+            ->whereDate('transactions.created_at', $date)
+            ->select(
+                'transaction_items.product_name',
+                DB::raw('SUM(transaction_items.quantity) as total_qty'),
+                DB::raw('SUM(transaction_items.subtotal) as total_sales')
+            )
+            ->groupBy('transaction_items.product_name')
+            ->orderBy('total_sales', 'desc')
+            ->get();
+
+        $posTotalQty = $posSales->sum('total_qty');
+        $posTotalRevenue = $posSales->sum('total_sales');
+
+        // ── TAB 2: Kitchen Production ──
+        $servedLogs = KitchenProductionLog::with('deductions')
+            ->whereDate('created_at', $date)
+            ->whereIn('status', ['served', 'done'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $wastedLogs = KitchenProductionLog::with('deductions')
+            ->whereDate('created_at', $date)
+            ->where('status', 'wasted')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // ── TAB 3: Inventory Management ──
+        $stockIns = DB::table('ingredient_audit_logs')
+            ->whereDate('created_at', $date)
+            ->where('action', 'stock_in')
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $stockOuts = DB::table('ingredient_audit_logs')
+            ->whereDate('created_at', $date)
+            ->where('action', 'stock_out')
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $totalStockInCost  = $stockIns->sum('total_cost');
+        $totalStockOutCost = $stockOuts->sum('total_cost');
+
+        // ── TAB 4: End of Day Sales ──
+        // Ingredient cost for SERVED/DONE batches
+        $dayIngredientCost = DB::table('kitchen_stock_deductions')
+            ->join('kitchen_production_logs', 'kitchen_stock_deductions.kitchen_production_log_id', '=', 'kitchen_production_logs.id')
+            ->whereDate('kitchen_production_logs.created_at', $date)
+            ->whereIn('kitchen_production_logs.status', ['served', 'done'])
+            ->select(DB::raw('SUM(kitchen_stock_deductions.quantity_deducted * COALESCE(NULLIF(kitchen_stock_deductions.cost_per_unit, 0), (SELECT cost_per_unit FROM ingredients WHERE ingredients.id = kitchen_stock_deductions.ingredient_id))) as total_cost'))
+            ->value('total_cost') ?? 0;
+
+        // Waste cost
+        $dayWasteCost = DB::table('kitchen_stock_deductions')
+            ->join('kitchen_production_logs', 'kitchen_stock_deductions.kitchen_production_log_id', '=', 'kitchen_production_logs.id')
+            ->whereDate('kitchen_production_logs.created_at', $date)
+            ->where('kitchen_production_logs.status', 'wasted')
+            ->select(DB::raw('SUM(kitchen_stock_deductions.quantity_deducted * COALESCE(NULLIF(kitchen_stock_deductions.cost_per_unit, 0), (SELECT cost_per_unit FROM ingredients WHERE ingredients.id = kitchen_stock_deductions.ingredient_id))) as total_cost'))
+            ->value('total_cost') ?? 0;
+
+        $dayTotalCosts = $dayIngredientCost + $dayWasteCost;
+        $dayNetProfit  = $posTotalRevenue - $dayTotalCosts;
+
+        return view('end-of-day', compact(
+            'date',
+            'posSales', 'posTotalQty', 'posTotalRevenue',
+            'servedLogs', 'wastedLogs',
+            'stockIns', 'stockOuts', 'totalStockInCost', 'totalStockOutCost',
+            'dayIngredientCost', 'dayWasteCost', 'dayTotalCosts', 'dayNetProfit'
+        ));
+    }
 }
