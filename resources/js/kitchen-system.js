@@ -5,7 +5,84 @@ document.addEventListener('DOMContentLoaded', () => {
     const addBatchModal = document.getElementById('addBatchModal');
     const wasteModal = document.getElementById('wasteModal');
 
-    // ===== CUSTOM CONFIRM / TOAST (replaces browser confirm() and alert()) =====
+    // ===== SEARCHABLE SELECTS =====
+    function initSearchableSelects(container = document) {
+        container.querySelectorAll('select.searchable-select').forEach(sel => {
+            if (sel.dataset.sdInit) return;
+            sel.dataset.sdInit = '1';
+            sel.style.display = 'none';
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'searchable-dropdown';
+
+            const display = document.createElement('div');
+            display.className = 'sd-display placeholder';
+            display.innerHTML = `<span>${sel.options[0]?.text || 'Select...'}</span><i class="fa-solid fa-chevron-down" style="font-size:0.7rem; color:#999;"></i>`;
+
+            const panel = document.createElement('div');
+            panel.className = 'sd-panel';
+
+            const search = document.createElement('input');
+            search.className = 'sd-search';
+            search.placeholder = 'Type to search...';
+
+            const optionsList = document.createElement('div');
+            optionsList.className = 'sd-options';
+
+            function buildOptions(filter = '') {
+                optionsList.innerHTML = '';
+                let count = 0;
+                Array.from(sel.options).forEach((opt, i) => {
+                    if (i === 0) return;
+                    if (filter && !opt.text.toLowerCase().includes(filter.toLowerCase())) return;
+                    count++;
+                    const div = document.createElement('div');
+                    div.className = 'sd-option' + (sel.value === opt.value ? ' selected' : '');
+                    div.textContent = opt.text;
+                    div.addEventListener('click', () => {
+                        sel.value = opt.value;
+                        sel.dispatchEvent(new Event('change', { bubbles: true }));
+                        display.querySelector('span').textContent = opt.text;
+                        display.classList.remove('placeholder');
+                        panel.classList.remove('open');
+                        search.value = '';
+                    });
+                    optionsList.appendChild(div);
+                });
+                if (count === 0) {
+                    optionsList.innerHTML = '<div class="sd-no-results">No results found</div>';
+                }
+            }
+
+            search.addEventListener('input', () => buildOptions(search.value));
+
+            display.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.sd-panel.open').forEach(p => { if (p !== panel) p.classList.remove('open'); });
+                panel.classList.toggle('open');
+                if (panel.classList.contains('open')) {
+                    buildOptions();
+                    setTimeout(() => search.focus(), 50);
+                }
+            });
+
+            panel.appendChild(search);
+            panel.appendChild(optionsList);
+            wrapper.appendChild(display);
+            wrapper.appendChild(panel);
+            sel.parentNode.insertBefore(wrapper, sel);
+            wrapper.appendChild(sel);
+        });
+    }
+
+    initSearchableSelects();
+
+    // Close all dropdown panels on outside click
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.sd-panel.open').forEach(p => p.classList.remove('open'));
+    });
+
+    // ===== CUSTOM TOAST =====
     function showToast(message, type = 'error') {
         const toast = document.getElementById('kitchenToast');
         const msgEl = document.getElementById('kitchenToastMessage');
@@ -13,14 +90,14 @@ document.addEventListener('DOMContentLoaded', () => {
         toast.className = 'kitchen-toast' + (type === 'success' ? ' toast-success' : ' toast-error');
         msgEl.textContent = message;
         toast.style.display = 'flex';
-        // Re-trigger animation
         toast.style.animation = 'none';
-        toast.offsetHeight; // reflow
+        toast.offsetHeight;
         toast.style.animation = '';
         clearTimeout(toast._timer);
         toast._timer = setTimeout(() => { toast.style.display = 'none'; }, 3500);
     }
 
+    // ===== CUSTOM CONFIRM =====
     function showConfirm(message, title = 'Confirm Action') {
         return new Promise((resolve) => {
             const modal = document.getElementById('customConfirmModal');
@@ -51,9 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Helpers
+    // ===== HELPERS =====
     const openOverlay = () => overlay?.classList.add('show');
     const closeOverlay = () => overlay?.classList.remove('show');
+
     function closeAll() {
         recipeManagerModal?.classList.remove('active');
         addBatchModal?.classList.remove('active');
@@ -72,7 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('closeRecipeManager')?.addEventListener('click', closeAll);
 
-    // Load recipes when product is selected
     document.getElementById('recipeProductSelect')?.addEventListener('change', async function() {
         const productId = this.value;
         const section = document.getElementById('recipeIngredientsSection');
@@ -112,7 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `}).join('');
 
-                // Show save button when quantity is edited
                 list.querySelectorAll('.recipe-qty').forEach(qty => {
                     qty.addEventListener('input', function() {
                         const saveBtn = this.closest('.recipe-item').querySelector('.recipe-save-btn');
@@ -120,7 +196,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 });
 
-                // Save edited quantity
                 list.querySelectorAll('.recipe-save-btn').forEach(btn => {
                     btn.addEventListener('click', async function() {
                         const id = this.dataset.id;
@@ -129,10 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const isConverted = item.dataset.converted === 'true';
 
                         if (isNaN(qty)) { showToast('Invalid quantity.'); return; }
-
-                        if (isConverted) {
-                            qty = qty / 1000; // Convert back to kg
-                        }
+                        if (isConverted) qty = qty / 1000;
 
                         try {
                             const res = await fetch(`/recipes/${id}`, {
@@ -147,7 +219,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 });
 
-                // Delete ingredient
                 list.querySelectorAll('.recipe-delete-btn').forEach(btn => {
                     btn.addEventListener('click', async function() {
                         const id = this.dataset.id;
@@ -170,18 +241,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Auto-set unit when ingredient is selected
     document.getElementById('recipeIngredientSelect')?.addEventListener('change', function() {
-        const sel = this;
-        const opt = sel.options[sel.selectedIndex];
+        const opt = this.options[this.selectedIndex];
         const unit = opt?.dataset?.unit || 'kg';
         const unitSelect = document.getElementById('recipeUnitSelect');
-        if (unitSelect) {
-            unitSelect.value = unit;
-        }
+        if (unitSelect) unitSelect.value = unit;
     });
 
-    // Add ingredient to recipe
     document.getElementById('addRecipeIngredientForm')?.addEventListener('submit', async function(e) {
         e.preventDefault();
         const productId = document.getElementById('recipeProductSelect').value;
@@ -189,16 +255,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let quantity = parseFloat(document.getElementById('recipeQuantity').value);
         const selectedUnit = document.getElementById('recipeUnitSelect')?.value || 'kg';
 
-        if (!productId || !ingredientId || !quantity) {
-            showToast('Please fill all fields.');
-            return;
-        }
+        if (!productId || !ingredientId || !quantity) { showToast('Please fill all fields.'); return; }
 
-        // Get the ingredient's base unit from the option data attribute
         const ingOpt = document.getElementById('recipeIngredientSelect').options[document.getElementById('recipeIngredientSelect').selectedIndex];
         const baseUnit = ingOpt?.dataset?.unit || selectedUnit;
 
-        // Convert to base unit if different
         if (selectedUnit === 'g' && baseUnit === 'kg') quantity = quantity / 1000;
         if (selectedUnit === 'kg' && baseUnit === 'g') quantity = quantity * 1000;
         if (selectedUnit === 'ml' && baseUnit === 'L') quantity = quantity / 1000;
@@ -207,16 +268,8 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch('/recipes', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    product_id: productId,
-                    ingredient_id: ingredientId,
-                    quantity: quantity
-                })
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                body: JSON.stringify({ product_id: productId, ingredient_id: ingredientId, quantity })
             });
 
             if (res.ok) {
@@ -227,9 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await res.json();
                 showToast(data.message || 'Failed to add ingredient.');
             }
-        } catch (err) {
-            showToast('Error adding ingredient.');
-        }
+        } catch (err) { showToast('Error adding ingredient.'); }
     });
 
     // ===== COOK BATCH =====
@@ -241,7 +292,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('closeAddBatch')?.addEventListener('click', closeAll);
     document.getElementById('cancelBatch')?.addEventListener('click', closeAll);
 
-    // Preview ingredients when product is selected for batch
     const batchProductSelect = document.getElementById('batchProductSelect');
     const batchTimesCooked = document.getElementById('batchTimesCooked');
 
@@ -271,20 +321,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 let needed = r.quantity * times;
                 let available = parseFloat(r.ingredient?.stock || 0);
                 let unit = r.ingredient?.unit || '';
-                
-                // Convert to grams if unit is kg and needed amount < 1kg
+
                 if (unit === 'kg' && needed < 1) {
                     needed = needed * 1000;
                     available = available * 1000;
                     unit = 'g';
                 }
 
-                // Format numbers
                 const neededStr = parseFloat(needed.toFixed(3));
                 const availableStr = parseFloat(available.toFixed(3));
-
                 const isInsufficient = available < needed;
-                
+
                 return `
                     <div class="preview-item">
                         <span>${r.ingredient?.name || 'Unknown'}</span>
@@ -293,17 +340,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             }).join('');
 
-            // Calculate and display estimated cost
             let totalCost = 0;
             recipes.forEach(r => {
-                const qty = r.quantity * times;
-                const costPerUnit = parseFloat(r.ingredient?.cost_per_unit || 0);
-                totalCost += qty * costPerUnit;
+                totalCost += (r.quantity * times) * parseFloat(r.ingredient?.cost_per_unit || 0);
             });
             const costValueEl = document.getElementById('batchCostValue');
-            if (costValueEl) {
-                costValueEl.textContent = '₱' + totalCost.toFixed(2);
-            }
+            if (costValueEl) costValueEl.textContent = '₱' + totalCost.toFixed(2);
+
         } catch (err) {
             list.innerHTML = '<p style="color:#dc3545;">Failed to load recipe.</p>';
         }
@@ -312,7 +355,6 @@ document.addEventListener('DOMContentLoaded', () => {
     batchProductSelect?.addEventListener('change', updateBatchPreview);
     batchTimesCooked?.addEventListener('input', updateBatchPreview);
 
-    // Confirm batch production
     document.getElementById('confirmBatch')?.addEventListener('click', async () => {
         const productId = batchProductSelect?.value;
         const rawValue = batchTimesCooked?.value;
@@ -320,7 +362,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!productId) { showToast('Please select a product.'); return; }
 
-        // Strict validation: must be a positive integer, reject '12-3', decimals, negatives
         const times = parseInt(rawValue);
         if (!rawValue || rawValue !== String(times) || times < 1 || !Number.isInteger(times)) {
             errorDiv.textContent = 'Please enter a valid positive whole number for "Times to Cook" (e.g. 1, 2, 3).';
@@ -333,19 +374,11 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch('/kitchen/start-production', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    product_id: productId,
-                    times_cooked: times,
-                })
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                body: JSON.stringify({ product_id: productId, times_cooked: times })
             });
 
             const data = await res.json();
-
             if (res.ok && data.success) {
                 closeAll();
                 window.location.reload();
@@ -359,36 +392,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ===== STATUS UPDATES (Start Cooking / Mark Done / Served) =====
+    // ===== STATUS UPDATES =====
     document.querySelectorAll('.status-btn:not(.waste-btn):not(.cancel-btn)').forEach(btn => {
         btn.addEventListener('click', async function() {
             const id = this.dataset.id;
             const status = this.dataset.status;
-            if (!status) return; // waste-btn has no data-status
+            if (!status) return;
 
             try {
                 const res = await fetch(`/kitchen/update-status/${id}`, {
                     method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
                     body: JSON.stringify({ status })
                 });
-
-                if (res.ok) {
-                    window.location.reload();
-                } else {
-                    showToast('Failed to update status.');
-                }
-            } catch (err) {
-                showToast('Network error.');
-            }
+                if (res.ok) { window.location.reload(); }
+                else { showToast('Failed to update status.'); }
+            } catch (err) { showToast('Network error.'); }
         });
     });
 
-    // ===== CANCEL BATCH (Queue only) =====
+    // ===== CANCEL BATCH =====
     document.querySelectorAll('.cancel-btn').forEach(btn => {
         btn.addEventListener('click', async function() {
             const confirmed = await showConfirm('Are you sure you want to cancel this batch? Ingredients will be refunded.', 'Cancel Batch');
@@ -398,22 +421,12 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const res = await fetch(`/kitchen/cancel/${id}`, {
                     method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json',
-                    }
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' }
                 });
-
                 const data = await res.json();
-                if (res.ok && data.success) {
-                    window.location.reload();
-                } else {
-                    showToast(data.message || 'Failed to cancel batch.');
-                }
-            } catch (err) {
-                showToast('Network error.');
-            }
+                if (res.ok && data.success) { window.location.reload(); }
+                else { showToast(data.message || 'Failed to cancel batch.'); }
+            } catch (err) { showToast('Network error.'); }
         });
     });
 
@@ -441,29 +454,15 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch(`/kitchen/update-status/${wasteTargetId}`, {
                 method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    status: 'wasted',
-                    waste_reason: reason || 'No reason provided'
-                })
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                body: JSON.stringify({ status: 'wasted', waste_reason: reason || 'No reason provided' })
             });
-
-            if (res.ok) {
-                closeAll();
-                window.location.reload();
-            } else {
-                showToast('Failed to mark as wasted.');
-            }
-        } catch (err) {
-            showToast('Network error.');
-        }
+            if (res.ok) { closeAll(); window.location.reload(); }
+            else { showToast('Failed to mark as wasted.'); }
+        } catch (err) { showToast('Network error.'); }
     });
 
-    // ===== START SHIFT (Bulk Stock-In) =====
+    // ===== START SHIFT =====
     const startShiftModal = document.getElementById('startShiftModal');
     const endShiftModal = document.getElementById('endShiftModal');
 
@@ -475,7 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('closeStartShift')?.addEventListener('click', closeAll);
     document.getElementById('cancelStartShift')?.addEventListener('click', closeAll);
 
-    // Add more ingredient rows
+    // Add more ingredient rows + re-init searchable selects on new row
     document.getElementById('addShiftRow')?.addEventListener('click', () => {
         const container = document.getElementById('shiftStockInRows');
         const firstRow = container.querySelector('.shift-stock-row');
@@ -484,9 +483,9 @@ document.addEventListener('DOMContentLoaded', () => {
         newRow.querySelector('.shift-quantity').value = '';
         newRow.querySelector('.shift-supplier').value = '';
         container.appendChild(newRow);
+        initSearchableSelects(container); // re-init for the new row's select
     });
 
-    // Confirm start shift stock-in
     document.getElementById('confirmStartShift')?.addEventListener('click', async () => {
         const rows = document.querySelectorAll('.shift-stock-row');
         const errorDiv = document.getElementById('shiftError');
@@ -515,12 +514,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
                 body: JSON.stringify({ items })
             });
-
             const data = await res.json();
-            if (res.ok && data.success) {
-                closeAll();
-                window.location.reload();
-            } else {
+            if (res.ok && data.success) { closeAll(); window.location.reload(); }
+            else {
                 errorDiv.textContent = data.message || 'Failed to process stock-in.';
                 errorDiv.style.display = 'block';
             }
@@ -545,19 +541,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' }
             });
-
             const data = await res.json();
-            if (res.ok && data.success) {
-                closeAll();
-                window.location.reload();
-            } else {
-                showToast(data.message || 'Failed to end shift.');
-            }
-        } catch (err) {
-            showToast('Network error.');
-        }
+            if (res.ok && data.success) { closeAll(); window.location.reload(); }
+            else { showToast(data.message || 'Failed to end shift.'); }
+        } catch (err) { showToast('Network error.'); }
     });
 
-    // Overlay click to close
+    // ===== OVERLAY =====
     overlay?.addEventListener('click', closeAll);
 });

@@ -109,5 +109,5 @@
 </div>
 <div class="overlay" id="overlay"></div>
 
-    @vite(['resources/js/kitchen-production-logs.js'])
+@vite(['resources/js/kitchen-production-logs.js'])
 @endsection
