@@ -21,8 +21,19 @@ Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('
 Route::post('/kitchen/produce', [RecipeController::class, 'produce'])->name('kitchen.produce')->middleware('auth');
 Route::get('/ingredients/all', function () {return \App\Models\Ingredient::select('id', 'name', 'unit')->get();})->middleware('auth');
 
+<<<<<<< Updated upstream
 // Analysis and Reporting Routes
 Route::get('/analysisandreporting', function () {return view('AR');})->name('ar')->middleware('auth');
+=======
+// === Analysis and Reporting (Admin only) ===
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/reports/dashboard', [ReportController::class, 'dashboard'])->name('reports.dashboard');
+    Route::get('/reports/cost-variance', [ReportController::class, 'costVariance'])->name('reports.cost-variance');
+    Route::get('/reports/yield-forecasting', [ReportController::class, 'yieldForecasting'])->name('reports.yield');
+    Route::get('/reports/end-of-day', [ReportController::class, 'endOfDay'])->name('reports.end-of-day');
+});
+Route::get('/analysisandreporting', function () {return redirect()->route('reports.dashboard');})->name('ar')->middleware(['auth', 'role:admin']);
+>>>>>>> Stashed changes
 
 // Point of Sales Routes
 Route::get('/pointofsales', function () {return view('POS');})->name('pos')->middleware('auth');
