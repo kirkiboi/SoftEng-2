@@ -3,6 +3,7 @@
 @section('content')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 @vite(['resources/css/reports.css', 'resources/css/end-of-day.css'])
+@vite(['resources/js/end-of-day.js'])
 
 <div class="main-container">
     <div class="parent-container">
@@ -14,7 +15,7 @@
             </div>
             <div class="report-actions">
                 <form method="GET" action="{{ route('reports.end-of-day') }}" class="eod-date-form">
-                    <input type="date" name="date" value="{{ $date }}" class="eod-date-input" onchange="this.form.submit()">
+                    <input type="date" name="date" value="{{ $date }}" class="eod-date-input">
                 </form>
             </div>
         </div>
@@ -364,19 +365,4 @@
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const tabs = document.querySelectorAll('.eod-tab');
-    const panels = document.querySelectorAll('.eod-panel');
-
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(t => t.classList.remove('active'));
-            panels.forEach(p => p.classList.remove('active'));
-            tab.classList.add('active');
-            document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
-        });
-    });
-});
-</script>
 @endsection

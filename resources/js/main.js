@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 2. SUBSYSTEM INTERACTION (HIGHLIGHTING & DROPDOWNS)
     document.querySelectorAll(".subsystem").forEach(subsystem => {
-        subsystem.addEventListener("click", function() {
+        subsystem.addEventListener("click", function () {
             // A. Handle Highlighting (Yellow Pill)
             // Remove highlight from all subsystems first
             document.querySelectorAll(".subsystem").forEach(s => s.classList.remove("active-page"));
@@ -23,14 +23,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // B. Handle Dropdown Menus (Features)
             const featureContainer = this.nextElementSibling;
-            
+
             // Look for the specific arrow icon inside this subsystem
-            const arrow = this.querySelector(".fa-angles-right"); 
+            const arrow = this.querySelector(".fa-angles-right");
 
             // Only try to toggle if there is actually a sub-menu (subsystem-feature)
             if (featureContainer && featureContainer.classList.contains('subsystem-feature')) {
                 featureContainer.classList.toggle("active");
-                
+
                 // Rotate the arrow icon if found
                 if (arrow) {
                     arrow.classList.toggle("active");
@@ -38,4 +38,15 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
+
+    // 3. LOW STOCK ALERT LOGIC
+    const bell = document.getElementById('lowStockBell');
+    const popup = document.getElementById('lowStockPopup');
+    if (bell && popup) {
+        bell.addEventListener('click', (e) => {
+            e.stopPropagation();
+            popup.classList.toggle('open');
+        });
+        document.addEventListener('click', () => popup.classList.remove('open'));
+    }
 });

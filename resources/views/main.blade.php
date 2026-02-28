@@ -37,17 +37,6 @@
                     @endforeach
                 </div>
             </div>
-            <script>
-                document.addEventListener('DOMContentLoaded', () => {
-                    const bell = document.getElementById('lowStockBell');
-                    const popup = document.getElementById('lowStockPopup');
-                    bell?.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        popup.classList.toggle('open');
-                    });
-                    document.addEventListener('click', () => popup?.classList.remove('open'));
-                });
-            </script>
             @endif
             <i class="fa-solid fa-angles-left drop-down-container-button"></i>
         </div>

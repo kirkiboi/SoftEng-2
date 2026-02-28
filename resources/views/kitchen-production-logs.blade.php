@@ -109,17 +109,5 @@
 </div>
 <div class="overlay" id="overlay"></div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const filterBtn = document.getElementById('filter-button');
-        const filterDropdown = document.getElementById('filterDropdown');
-        filterBtn?.addEventListener('click', () => {
-            filterDropdown.style.display = filterDropdown.style.display === 'block' ? 'none' : 'block';
-        });
-        const dateInput = document.getElementById('dateInput');
-        dateInput?.addEventListener('change', () => {
-            dateInput.form.submit();
-        });
-    });
-</script>
+    @vite(['resources/js/kitchen-production-logs.js'])
 @endsection

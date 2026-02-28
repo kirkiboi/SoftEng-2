@@ -1,3 +1,4 @@
+/* Custom styles for the filter form within the dropdown */
 .filter-dropdown-form {
     display: flex;
     flex-direction: column;
@@ -41,7 +42,7 @@
     background-color: #1e5bb0;
 }
 
-/* Date picker styling */
+/* Date picker styling to match controls */
 .date-container {
     display: flex;
     align-items: center;
@@ -61,10 +62,11 @@
     background: #f8f9fa;
 }
 
-/* Export button styling */
+/* Export button styling matching standard pill buttons */
 .export-audit-log-button {
     border: none;
     background: #d63031;
+    /* Red like 'Delete' or 'Add Item' accent */
     color: white;
     font-size: 0.9rem;
     font-weight: 700;
@@ -95,17 +97,7 @@
     text-align: center;
 }
 
-.badge-added {
-    background-color: #e6fffa;
-    color: #00b894;
-}
-
-.badge-edited {
-    background-color: #fff8e1;
-    color: #f1c40f;
-}
-
-.badge-deleted {
+.badge-wasted {
     background-color: #ffebee;
     color: #d63031;
 }
