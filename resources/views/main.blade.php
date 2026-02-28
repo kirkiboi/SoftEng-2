@@ -97,7 +97,7 @@
             <a href="{{ route('kitchen.logs') }}">
                 <div class="feature d-flex align-items-center">
                     <i class="fa-solid fa-clipboard-list me-3 sub-icon"></i>
-                    <span class="subsystem-span">Production Logs</span>
+                    <span class="subsystem-span">Production Log</span>
                 </div>
             </a>
         </div>
@@ -116,7 +116,7 @@
             <a href="{{ route('im') }}">
                 <div class="new-transaction feature d-flex align-items-center">
                     <i class="fa-solid fa-list-check me-3 sub-icon"></i>
-                    <span class ="subsystem-span">Ingredient Master Lists</span>
+                    <span class ="subsystem-span">Ingredient Master List</span>
                 </div>
             </a>
             <a href="{{ route('stock-history') }}">
@@ -146,19 +146,19 @@
             <a href="{{ route('mp') }}">
                 <div class="new-transaction feature d-flex align-items-center">
                     <i class="fa-solid fa-clipboard-list me-3 sub-icon"></i>
-                    <span class ="subsystem-span">Item Master List</span>
+                    <span class ="subsystem-span">Product Master List</span>
                 </div>
             </a>
             <a href="{{ route('pricing-history') }}">
                 <div class="transaction-history feature d-flex align-items-center">
                     <i class="fa-solid fa-tag me-3 sub-icon"></i>
-                    <span class ="subsystem-span">Pricing History</span>                    
+                    <span class ="subsystem-span">Product Audit Log</span>                    
                 </div>
             </a>
             <a href="{{ route('waste.logs') }}">
                 <div class="transaction-history feature d-flex align-items-center">
                     <i class="fa-solid fa-trash-can-arrow-up me-3 sub-icon"></i>
-                    <span class ="subsystem-span">Waste Logs</span>                    
+                    <span class ="subsystem-span">Waste Log</span>                    
                 </div>
             </a>
         </div>
@@ -183,19 +183,19 @@
             <a href="{{ route('reports.cost-variance') }}">
                 <div class="transaction-history feature d-flex align-items-center">
                     <i class="fa-solid fa-file-invoice-dollar me-3 sub-icon"></i>
-                    <span class ="subsystem-span">Cost & Variance Reports</span>                    
+                    <span class ="subsystem-span">Cost & Variance Report</span>                    
                 </div>
             </a>
             <a href="{{ route('reports.yield') }}">
                 <div class="transaction-history feature d-flex align-items-center">
                     <i class="fa-solid fa-magnifying-glass-chart me-3 sub-icon"></i>
-                    <span class ="subsystem-span">Yield & Forecasting Reports</span>                    
+                    <span class ="subsystem-span">Yield & Forecasting Report</span>                    
                 </div>
             </a>
             <a href="{{ route('reports.end-of-day') }}">
                 <div class="feature d-flex align-items-center">
                     <i class="fa-solid fa-calendar-day me-3 sub-icon"></i>
-                    <span class="subsystem-span">End of Day</span>
+                    <span class="subsystem-span">End of Day Report</span>
                 </div>
             </a>
         </div>

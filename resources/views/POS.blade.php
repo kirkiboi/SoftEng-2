@@ -19,7 +19,7 @@
                 <form action="{{ route('pos') }}" method="GET" style="display:flex; align-items:center; width:100%;">
                     <input type="hidden" name="category" value="{{ request('category', 'all') }}">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search items..." class="pos-search">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search products..." class="pos-search">
                 </form>
             </div>
         </div>
@@ -69,7 +69,7 @@
         <div class="transaction-header">
             <h2 class="transaction-title">New Transaction</h2>
             <button class="clear-cart-btn" id="clearCart">
-                <i class="fa-solid fa-trash"></i> Clear
+                <i class="fa-solid fa-trash"></i> Clear Cart
             </button>
         </div>
 

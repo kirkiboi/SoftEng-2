@@ -39,7 +39,7 @@
             <div class="export-sales-data-container">
                 <button class="export-btn" id="exportBtn" data-export-name="kitchen-production-logs">
                     <i class="fa-solid fa-print"></i>
-                    <span>Export Logs</span>
+                    <span>Export Production Logs</span>
                 </button>
             </div>
         </div>

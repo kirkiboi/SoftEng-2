@@ -277,7 +277,7 @@
                 </div>
                 <div class="floating-add-item-options">
                     <button type="button" class="cancel-button" id="stock-in-cancel-button">Cancel</button>
-                    <button type="submit" class="add-button">Update Stock</button>
+                    <button type="submit" class="add-button">Update Ingredient Stock</button>
                 </div>
             </form>
         </div>
@@ -306,7 +306,7 @@
                 <!-- Removed supplier because Product model doesn't track it on audit log yet, keeping it simple -->
                 <div class="floating-add-item-options">
                     <button type="button" class="cancel-button" id="product-stock-in-cancel-button">Cancel</button>
-                    <button type="submit" class="add-button">Update Stock</button>
+                    <button type="submit" class="add-button">Update Product Stock</button>
                 </div>
             </form>
         </div>

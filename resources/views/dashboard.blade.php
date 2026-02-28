@@ -17,7 +17,7 @@
             <div class="report-actions">
                 <button class="export-btn" data-export-name="financial-dashboard" onclick="exportTableToCSV('financial-dashboard')">
                     <i class="fa-solid fa-print"></i>
-                    <span>Export Report</span>
+                    <span>Export Financial Report</span>
                 </button>
             </div>
         </div>

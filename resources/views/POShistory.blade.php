@@ -8,7 +8,7 @@
         <div class="header-container">
             <div class="search-container">
                 <form method="GET" action="{{ route('POShistory') }}">
-                    <input type="text" name="search" class="search-input" placeholder="Search by Order ID" value="{{ request('search') }}">
+                    <input type="text" name="search" class="search-input" placeholder="Search by Transaction ID" value="{{ request('search') }}">
                 </form>
             </div>
             <div class="date-container">

@@ -16,7 +16,7 @@
             <div class="report-actions">
                 <button class="export-btn" data-export-name="cost-variance-report">
                     <i class="fa-solid fa-print"></i>
-                    <span>Export Report</span>
+                    <span>Export Cost & Variance Report</span>
                 </button>
             </div>
         </div>

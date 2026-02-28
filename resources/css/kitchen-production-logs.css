@@ -274,3 +274,7 @@ tr:hover td { background: #fafafa; }
     z-index: 999;
 }
 .overlay.active { display: block; }
+
+.bi-funnel{
+    color: black;
+}

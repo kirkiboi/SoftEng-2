@@ -17,7 +17,7 @@
             <div class="report-actions">
                 <button class="export-btn" data-export-name="yield-forecasting-report">
                     <i class="fa-solid fa-print"></i>
-                    <span>Export Report</span>
+                    <span>Export Yield & Forecasting Report</span>
                 </button>
             </div>
         </div>
