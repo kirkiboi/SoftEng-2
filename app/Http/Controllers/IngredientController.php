@@ -155,26 +155,33 @@ class IngredientController extends Controller
             'supplier' => 'nullable|string|max:255',
         ]);
 
-        $ingredient = Ingredient::findOrFail($validated['ingredient_id']);
-        $oldStock = $ingredient->stock;
-        $newStock = $oldStock + $validated['quantity'];
+        DB::beginTransaction();
+        try {
+            $ingredient = Ingredient::lockForUpdate()->findOrFail($validated['ingredient_id']);
+            $oldStock = $ingredient->stock;
+            $newStock = $oldStock + $validated['quantity'];
 
-        $ingredient->update(['stock' => $newStock]);
+            $ingredient->update(['stock' => $newStock]);
 
-        IngredientAuditLog::create([
-            'user_id' => Auth::id(),
-            'ingredient_id' => $ingredient->id,
-            'action' => 'stock_in',
-            'ingredient_name' => $ingredient->name,
-            'unit_cost' => $ingredient->cost_per_unit,
-            'total_cost' => $ingredient->cost_per_unit * $validated['quantity'],
-            'quantity_changed' => $validated['quantity'],
-            'old_stock' => $oldStock,
-            'new_stock' => $newStock,
-            'supplier' => $validated['supplier'] ?? null,
-        ]);
+            IngredientAuditLog::create([
+                'user_id' => Auth::id(),
+                'ingredient_id' => $ingredient->id,
+                'action' => 'stock_in',
+                'ingredient_name' => $ingredient->name,
+                'unit_cost' => $ingredient->cost_per_unit,
+                'total_cost' => $ingredient->cost_per_unit * $validated['quantity'],
+                'quantity_changed' => $validated['quantity'],
+                'old_stock' => $oldStock,
+                'new_stock' => $newStock,
+                'supplier' => $validated['supplier'] ?? null,
+            ]);
 
-        return redirect()->back()->with('success', 'Stock updated successfully! Added ' . $validated['quantity'] . ' ' . $ingredient->unit . ' of ' . $ingredient->name);
+            DB::commit();
+            return redirect()->back()->with('success', 'Stock updated successfully! Added ' . $validated['quantity'] . ' ' . $ingredient->unit . ' of ' . $ingredient->name);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Stock-in failed: ' . $e->getMessage()]);
+        }
     }
 
     /**
@@ -188,31 +195,38 @@ class IngredientController extends Controller
             'reason' => 'required|string|max:255',
         ]);
 
-        $ingredient = Ingredient::findOrFail($validated['ingredient_id']);
-        
-        if ($ingredient->stock < $validated['quantity']) {
-            return redirect()->back()->withErrors(['quantity' => 'Cannot stock out more than available stock (' . $ingredient->stock . ' ' . $ingredient->unit . ').']);
+        DB::beginTransaction();
+        try {
+            $ingredient = Ingredient::lockForUpdate()->findOrFail($validated['ingredient_id']);
+            
+            if ($ingredient->stock < $validated['quantity']) {
+                throw new \Exception('Cannot stock out more than available stock (' . $ingredient->stock . ' ' . $ingredient->unit . ').');
+            }
+
+            $oldStock = $ingredient->stock;
+            $newStock = $oldStock - $validated['quantity'];
+
+            $ingredient->update(['stock' => $newStock]);
+
+            IngredientAuditLog::create([
+                'user_id' => Auth::id(),
+                'ingredient_id' => $ingredient->id,
+                'action' => 'stock_out',
+                'ingredient_name' => $ingredient->name,
+                'unit_cost' => $ingredient->cost_per_unit,
+                'total_cost' => $ingredient->cost_per_unit * $validated['quantity'],
+                'quantity_changed' => $validated['quantity'],
+                'old_stock' => $oldStock,
+                'new_stock' => $newStock,
+                'supplier' => $validated['reason'],
+            ]);
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Stock out recorded! Removed ' . $validated['quantity'] . ' ' . $ingredient->unit . ' of ' . $ingredient->name . ' (' . $validated['reason'] . ')');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['quantity' => $e->getMessage()]);
         }
-
-        $oldStock = $ingredient->stock;
-        $newStock = $oldStock - $validated['quantity'];
-
-        $ingredient->update(['stock' => $newStock]);
-
-        IngredientAuditLog::create([
-            'user_id' => Auth::id(),
-            'ingredient_id' => $ingredient->id,
-            'action' => 'stock_out',
-            'ingredient_name' => $ingredient->name,
-            'unit_cost' => $ingredient->cost_per_unit,
-            'total_cost' => $ingredient->cost_per_unit * $validated['quantity'],
-            'quantity_changed' => $validated['quantity'],
-            'old_stock' => $oldStock,
-            'new_stock' => $newStock,
-            'supplier' => $validated['reason'],
-        ]);
-
-        return redirect()->back()->with('success', 'Stock out recorded! Removed ' . $validated['quantity'] . ' ' . $ingredient->unit . ' of ' . $ingredient->name . ' (' . $validated['reason'] . ')');
     }
 
     public function stockInProduct(Request $request)
@@ -222,10 +236,17 @@ class IngredientController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $product = \App\Models\Product::findOrFail($validated['product_id']);
-        $product->increment('stock', $validated['quantity']);
-        
-        return redirect()->back()->with('success', 'Product stock updated! Added ' . $validated['quantity'] . ' to ' . $product->name);
+        DB::beginTransaction();
+        try {
+            $product = \App\Models\Product::lockForUpdate()->findOrFail($validated['product_id']);
+            $product->increment('stock', $validated['quantity']);
+            DB::commit();
+            
+            return redirect()->back()->with('success', 'Product stock updated! Added ' . $validated['quantity'] . ' to ' . $product->name);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Product stock update failed.']);
+        }
     }
 
     public function auditLog(Request $request)
@@ -277,42 +298,37 @@ class IngredientController extends Controller
      */
     public function reconcile()
     {
-        $ingredients = Ingredient::all();
+        // Optimized: Single query for theoretical and actual usage across all ingredients
+        $reconciliationData = DB::table('ingredients')
+            ->select(
+                'ingredients.id',
+                'ingredients.name',
+                'ingredients.unit',
+                'ingredients.stock as actual_stock',
+                DB::raw('(SELECT SUM(quantity_changed) FROM ingredient_audit_logs WHERE ingredient_id = ingredients.id AND action = "stock_in") as total_in'),
+                DB::raw('(SELECT SUM(quantity_changed) FROM ingredient_audit_logs WHERE ingredient_id = ingredients.id AND action = "stock_out") as total_out'),
+                DB::raw('(SELECT SUM(quantity_changed) FROM ingredient_audit_logs WHERE ingredient_id = ingredients.id AND action = "created") as initial_stock')
+            )
+            ->get();
+
         $discrepancies = [];
-
-        foreach ($ingredients as $ing) {
-            // Sum all stock-in quantities
-            $totalIn = IngredientAuditLog::where('ingredient_id', $ing->id)
-                ->where('action', 'stock_in')
-                ->sum('quantity_changed');
-
-            // Sum all stock-out quantities (manual + production)
-            $totalOut = IngredientAuditLog::where('ingredient_id', $ing->id)
-                ->where('action', 'stock_out')
-                ->sum('quantity_changed');
-
-            // Initial stock from creation
-            $initialStock = IngredientAuditLog::where('ingredient_id', $ing->id)
-                ->where('action', 'created')
-                ->sum('quantity_changed');
-
-            $expectedStock = $initialStock + $totalIn - $totalOut;
-            $actualStock = $ing->stock;
-            $difference = round($actualStock - $expectedStock, 4);
+        foreach ($reconciliationData as $item) {
+            $expectedStock = ($item->initial_stock ?? 0) + ($item->total_in ?? 0) - ($item->total_out ?? 0);
+            $difference = round($item->actual_stock - $expectedStock, 4);
 
             if (abs($difference) > 0.01) {
                 $discrepancies[] = [
-                    'ingredient' => $ing->name,
+                    'ingredient' => $item->name,
                     'expected' => round($expectedStock, 4),
-                    'actual' => round($actualStock, 4),
+                    'actual' => round($item->actual_stock, 4),
                     'difference' => $difference,
-                    'unit' => $ing->unit,
+                    'unit' => $item->unit,
                 ];
             }
         }
 
         return response()->json([
-            'total_ingredients' => $ingredients->count(),
+            'total_ingredients' => $reconciliationData->count(),
             'discrepancies_found' => count($discrepancies),
             'discrepancies' => $discrepancies,
             'status' => count($discrepancies) === 0 ? 'All stock values are consistent.' : 'Discrepancies detected.',

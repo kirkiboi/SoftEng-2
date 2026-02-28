@@ -23,9 +23,22 @@ class ReportController extends Controller
         $totalRevenue = Transaction::sum('total_amount');
         $todayRevenue = Transaction::whereDate('created_at', Carbon::today())->sum('total_amount');
         
-        // 2. Cost Analysis — Only count costs for products actually SOLD via POS
-        // Calculate average cost-per-serving for each product from production data,
-        // then multiply by quantity sold via transactions.
+        // 2. Cost Analysis — Refactored to avoid N+1 issues
+        // We calculate the average cost per serving for each product across all valid production batches
+        // and then multiply by the total quantity sold for that product.
+        
+        $productCosts = DB::table('kitchen_production_logs')
+            ->join('kitchen_stock_deductions', 'kitchen_production_logs.id', '=', 'kitchen_stock_deductions.kitchen_production_log_id')
+            ->whereIn('kitchen_production_logs.status', ['served', 'done'])
+            ->select(
+                'kitchen_production_logs.product_id',
+                DB::raw('SUM(kitchen_production_logs.total_servings) as total_servings'),
+                DB::raw('SUM(kitchen_stock_deductions.quantity_deducted * COALESCE(NULLIF(kitchen_stock_deductions.cost_per_unit, 0), (SELECT cost_per_unit FROM ingredients WHERE ingredients.id = kitchen_stock_deductions.ingredient_id))) as total_production_cost')
+            )
+            ->groupBy('kitchen_production_logs.product_id')
+            ->get()
+            ->keyBy('product_id');
+
         $soldItems = DB::table('transaction_items')
             ->select('product_id', DB::raw('SUM(quantity) as total_sold'))
             ->groupBy('product_id')
@@ -33,33 +46,9 @@ class ReportController extends Controller
 
         $totalCost = 0;
         foreach ($soldItems as $item) {
-            // Get total cost and total servings for this product from served/done batches
-            $productionCost = DB::table('kitchen_stock_deductions')
-                ->join('kitchen_production_logs', 'kitchen_stock_deductions.kitchen_production_log_id', '=', 'kitchen_production_logs.id')
-                ->where('kitchen_production_logs.product_id', $item->product_id)
-                ->whereIn('kitchen_production_logs.status', ['served', 'done'])
-                ->select(DB::raw('SUM(kitchen_stock_deductions.quantity_deducted * COALESCE(kitchen_stock_deductions.cost_per_unit, 0)) as cost'))
-                ->value('cost') ?? 0;
-
-            // If snapshot costs are zero (legacy data), fall back to current ingredient prices
-            if ($productionCost == 0) {
-                $productionCost = DB::table('kitchen_stock_deductions')
-                    ->join('kitchen_production_logs', 'kitchen_stock_deductions.kitchen_production_log_id', '=', 'kitchen_production_logs.id')
-                    ->join('ingredients', 'kitchen_stock_deductions.ingredient_id', '=', 'ingredients.id')
-                    ->where('kitchen_production_logs.product_id', $item->product_id)
-                    ->whereIn('kitchen_production_logs.status', ['served', 'done'])
-                    ->select(DB::raw('SUM(kitchen_stock_deductions.quantity_deducted * ingredients.cost_per_unit) as cost'))
-                    ->value('cost') ?? 0;
-            }
-
-            $totalServings = DB::table('kitchen_production_logs')
-                ->where('product_id', $item->product_id)
-                ->whereIn('status', ['served', 'done'])
-                ->sum('total_servings');
-
-            // Average cost per serving × quantity sold
-            if ($totalServings > 0) {
-                $costPerServing = $productionCost / $totalServings;
+            $costData = $productCosts->get($item->product_id);
+            if ($costData && $costData->total_servings > 0) {
+                $costPerServing = $costData->total_production_cost / $costData->total_servings;
                 $totalCost += $costPerServing * $item->total_sold;
             }
         }
@@ -104,29 +93,50 @@ class ReportController extends Controller
      */
     public function costVariance()
     {
-        // Actual usage: total deducted per ingredient
-        $variances = DB::table('kitchen_stock_deductions')
-            ->join('ingredients', 'kitchen_stock_deductions.ingredient_id', '=', 'ingredients.id')
+        // Refactored to use a single query for theoretical and actual usage
+        $variances = DB::table('ingredients')
+            ->leftJoin('kitchen_stock_deductions', 'ingredients.id', '=', 'kitchen_stock_deductions.ingredient_id')
+            ->leftJoin('recipes', 'ingredients.id', '=', 'recipes.ingredient_id')
+            ->leftJoin('kitchen_production_logs', function($join) {
+                $join->on('recipes.product_id', '=', 'kitchen_production_logs.product_id')
+                     ->whereIn('kitchen_production_logs.status', ['done', 'served']);
+            })
             ->select(
-                'kitchen_stock_deductions.ingredient_id',
-                'kitchen_stock_deductions.ingredient_name',
+                'ingredients.id as ingredient_id',
+                'ingredients.name as ingredient_name',
                 'ingredients.unit',
                 'ingredients.cost_per_unit',
-                DB::raw('SUM(kitchen_stock_deductions.quantity_deducted) as actual_usage')
+                DB::raw('SUM(DISTINCT kitchen_stock_deductions.quantity_deducted) as actual_usage'),
+                DB::raw('SUM(kitchen_production_logs.times_cooked * recipes.quantity) as theoretical_usage')
             )
-            ->groupBy('kitchen_stock_deductions.ingredient_id', 'kitchen_stock_deductions.ingredient_name', 'ingredients.unit', 'ingredients.cost_per_unit')
+            ->groupBy('ingredients.id', 'ingredients.name', 'ingredients.unit', 'ingredients.cost_per_unit')
             ->get();
 
-        // Theoretical usage: SUM(times_cooked * recipe.quantity) for completed batches
         foreach($variances as $v) {
-            $theoretical = DB::table('kitchen_production_logs')
-                ->join('recipes', 'kitchen_production_logs.product_id', '=', 'recipes.product_id')
-                ->where('recipes.ingredient_id', $v->ingredient_id)
-                ->whereIn('kitchen_production_logs.status', ['done', 'served'])
-                ->select(DB::raw('SUM(kitchen_production_logs.times_cooked * recipes.quantity) as theoretical_usage'))
-                ->value('theoretical_usage') ?? 0;
-            
-            $v->theoretical_usage = $theoretical;
+            // Actual usage needs to be carefully summed because of joins. 
+            // Better to use subqueries or separate optimized queries if joins cause double-counting.
+            // Let's refine this to be safer.
+        }
+
+        // Safer approach using subqueries for precise aggregation
+        $variances = DB::table('ingredients')
+            ->select(
+                'ingredients.id as ingredient_id',
+                'ingredients.name as ingredient_name',
+                'ingredients.unit',
+                'ingredients.cost_per_unit',
+                DB::raw('(SELECT SUM(quantity_deducted) FROM kitchen_stock_deductions WHERE ingredient_id = ingredients.id) as actual_usage'),
+                DB::raw('(SELECT SUM(kpl.times_cooked * r.quantity) 
+                          FROM kitchen_production_logs kpl 
+                          JOIN recipes r ON kpl.product_id = r.product_id 
+                          WHERE r.ingredient_id = ingredients.id 
+                          AND kpl.status IN ("done", "served")) as theoretical_usage')
+            )
+            ->get();
+
+        foreach($variances as $v) {
+            $v->theoretical_usage = $v->theoretical_usage ?? 0;
+            $v->actual_usage = $v->actual_usage ?? 0;
             // Positive variance = used less than expected (good), Negative = used more (bad)
             $v->variance = $v->theoretical_usage - $v->actual_usage;
             $v->variance_percent = $v->theoretical_usage > 0 ? ($v->variance / $v->theoretical_usage) * 100 : 0;
@@ -232,6 +242,7 @@ class ReportController extends Controller
         $posTotalRevenue = $posSales->sum('total_sales');
 
         // ── TAB 2: Kitchen Production ──
+        // Optimization: Use with('deductions') only for specific date
         $servedLogs = KitchenProductionLog::with('deductions')
             ->whereDate('created_at', $date)
             ->whereIn('status', ['served', 'done'])
@@ -245,37 +256,33 @@ class ReportController extends Controller
             ->get();
 
         // ── TAB 3: Inventory Management ──
-        $stockIns = DB::table('ingredient_audit_logs')
+        $stockLogs = DB::table('ingredient_audit_logs')
             ->whereDate('created_at', $date)
-            ->where('action', 'stock_in')
+            ->whereIn('action', ['stock_in', 'stock_out'])
             ->orderBy('created_at', 'asc')
             ->get();
 
-        $stockOuts = DB::table('ingredient_audit_logs')
-            ->whereDate('created_at', $date)
-            ->where('action', 'stock_out')
-            ->orderBy('created_at', 'asc')
-            ->get();
+        $stockIns = $stockLogs->where('action', 'stock_in');
+        $stockOuts = $stockLogs->where('action', 'stock_out');
 
         $totalStockInCost  = $stockIns->sum('total_cost');
         $totalStockOutCost = $stockOuts->sum('total_cost');
 
         // ── TAB 4: End of Day Sales ──
-        // Ingredient cost for SERVED/DONE batches
-        $dayIngredientCost = DB::table('kitchen_stock_deductions')
+        // Optimization: Single query for both success and waste costs
+        $dayCosts = DB::table('kitchen_stock_deductions')
             ->join('kitchen_production_logs', 'kitchen_stock_deductions.kitchen_production_log_id', '=', 'kitchen_production_logs.id')
             ->whereDate('kitchen_production_logs.created_at', $date)
-            ->whereIn('kitchen_production_logs.status', ['served', 'done'])
-            ->select(DB::raw('SUM(kitchen_stock_deductions.quantity_deducted * COALESCE(NULLIF(kitchen_stock_deductions.cost_per_unit, 0), (SELECT cost_per_unit FROM ingredients WHERE ingredients.id = kitchen_stock_deductions.ingredient_id))) as total_cost'))
-            ->value('total_cost') ?? 0;
+            ->select(
+                'kitchen_production_logs.status',
+                DB::raw('SUM(kitchen_stock_deductions.quantity_deducted * COALESCE(NULLIF(kitchen_stock_deductions.cost_per_unit, 0), (SELECT cost_per_unit FROM ingredients WHERE ingredients.id = kitchen_stock_deductions.ingredient_id))) as total_cost')
+            )
+            ->groupBy('kitchen_production_logs.status')
+            ->get()
+            ->keyBy('status');
 
-        // Waste cost
-        $dayWasteCost = DB::table('kitchen_stock_deductions')
-            ->join('kitchen_production_logs', 'kitchen_stock_deductions.kitchen_production_log_id', '=', 'kitchen_production_logs.id')
-            ->whereDate('kitchen_production_logs.created_at', $date)
-            ->where('kitchen_production_logs.status', 'wasted')
-            ->select(DB::raw('SUM(kitchen_stock_deductions.quantity_deducted * COALESCE(NULLIF(kitchen_stock_deductions.cost_per_unit, 0), (SELECT cost_per_unit FROM ingredients WHERE ingredients.id = kitchen_stock_deductions.ingredient_id))) as total_cost'))
-            ->value('total_cost') ?? 0;
+        $dayIngredientCost = ($dayCosts->get('served')->total_cost ?? 0) + ($dayCosts->get('done')->total_cost ?? 0);
+        $dayWasteCost = $dayCosts->get('wasted')->total_cost ?? 0;
 
         $dayTotalCosts = $dayIngredientCost + $dayWasteCost;
         $dayNetProfit  = $posTotalRevenue - $dayTotalCosts;

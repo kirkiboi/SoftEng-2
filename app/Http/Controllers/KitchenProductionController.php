@@ -121,22 +121,30 @@ class KitchenProductionController extends Controller
             'waste_reason' => 'nullable|string|max:255',
         ]);
 
-        // If newly marked as done, increment product stock
-        if ($validated['status'] === 'done' && $log->status !== 'done') {
-            $product = Product::find($log->product_id);
-            if ($product) {
-                $product->increment('stock', $log->total_servings);
+        DB::beginTransaction();
+        try {
+            // If newly marked as done, increment product stock
+            if ($validated['status'] === 'done' && $log->status !== 'done') {
+                $product = Product::find($log->product_id);
+                if ($product) {
+                    $product->increment('stock', $log->total_servings);
+                }
             }
-        }
 
-        // Wasted: no stock increment — ingredients were already deducted
-        $updateData = ['status' => $validated['status']];
-        if ($validated['status'] === 'wasted' && !empty($validated['waste_reason'])) {
-            $updateData['waste_reason'] = $validated['waste_reason'];
-        }
+            // Wasted: no stock increment — ingredients were already deducted
+            $updateData = ['status' => $validated['status']];
+            if ($validated['status'] === 'wasted' && !empty($validated['waste_reason'])) {
+                $updateData['waste_reason'] = $validated['waste_reason'];
+            }
 
-        $log->update($updateData);
-        return response()->json(['success' => true, 'log' => $log]);
+            $log->update($updateData);
+            DB::commit();
+            
+            return response()->json(['success' => true, 'log' => $log]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Status update failed: ' . $e->getMessage()], 500);
+        }
     }
 
     /**

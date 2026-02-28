@@ -33,20 +33,25 @@ class ProductController extends Controller
             'reason' => 'required|string|max:255',
         ]);
 
+        DB::beginTransaction();
+        try {
+            $product->decrement('stock', $request->quantity);
 
-
-        $product->decrement('stock', $request->quantity);
-
-        ProductAuditLog::create([
-            'product_id'   => $product->id,
-            'product_name' => $product->name,
-            'user_id'      => Auth::id(),
-            'action'       => "Wasted {$request->quantity} units. Reason: {$request->reason}",
-            'old_price'    => $product->price,
-            'new_price'    => null,
-        ]);
-        
-        return redirect()->back()->with('success', 'Product stock marked as wasted.');
+            ProductAuditLog::create([
+                'product_id'   => $product->id,
+                'product_name' => $product->name,
+                'user_id'      => Auth::id(),
+                'action'       => "Wasted {$request->quantity} units. Reason: {$request->reason}",
+                'old_price'    => $product->price,
+                'new_price'    => null,
+            ]);
+            
+            DB::commit();
+            return redirect()->back()->with('success', 'Product stock marked as wasted.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Waste logging failed: ' . $e->getMessage()]);
+        }
     }
     public function update(Request $request, Product $product)
     {
