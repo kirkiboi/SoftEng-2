@@ -1,0 +1,342 @@
+/* end-of-day.css — End of Day Report Styles */
+
+/* ===== DATE PICKER ===== */
+.eod-date-form {
+    display: flex;
+    align-items: center;
+}
+
+.eod-date-input {
+    padding: 0.5rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #2d3436;
+    background: #fafafa;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.eod-date-input:focus {
+    outline: none;
+    border-color: #8B0000;
+}
+
+/* ===== TAB NAVIGATION ===== */
+.eod-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 0;
+}
+
+.eod-tab {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background: none;
+    color: #636e72;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: -2px;
+}
+
+.eod-tab:hover {
+    color: #2d3436;
+    background: #fafafa;
+    border-radius: 8px 8px 0 0;
+}
+
+.eod-tab.active {
+    color: #8B0000;
+    border-bottom-color: #8B0000;
+}
+
+.eod-tab i {
+    font-size: 0.9rem;
+}
+
+/* ===== PANELS ===== */
+.eod-panel {
+    display: none;
+    animation: eodFadeIn 0.3s ease;
+}
+
+.eod-panel.active {
+    display: block;
+}
+
+@keyframes eodFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== SECTION HEADER ===== */
+.eod-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.eod-section-header h2 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #2d3436;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+/* ===== PILLS ===== */
+.eod-summary-pills {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.pill {
+    padding: 0.35rem 0.85rem;
+    border-radius: 2rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.pill-blue {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.pill-green {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.pill-red {
+    background: #ffebee;
+    color: #c62828;
+}
+
+/* ===== TABLE WRAP ===== */
+.eod-table-wrap {
+    background: #fafafa;
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    overflow: hidden;
+}
+
+/* ===== TOTAL ROW ===== */
+.eod-total-row td {
+    background: #f5f5f5 !important;
+    border-top: 2px solid #e0e0e0;
+    font-size: 0.9rem;
+}
+
+/* ===== EMPTY STATE ===== */
+.eod-empty {
+    text-align: center;
+    padding: 2rem !important;
+    color: #999;
+    font-style: italic;
+}
+
+/* ===== DEDUCTION TAGS (matches kitchen-production-logs) ===== */
+.deduction-tags-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+
+.deduction-tag {
+    background: #fff3e0;
+    color: #e65100;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* ===== STATUS BADGES ===== */
+.status-badge {
+    padding: 0.3rem 0.7rem;
+    border-radius: 2rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.status-served {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-done {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-wasted {
+    background: #ffebee;
+    color: #c62828;
+}
+
+/* ===== SUMMARY GRID (Tab 4) ===== */
+.eod-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.eod-summary-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.5rem;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.eod-summary-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+}
+
+.eod-card-icon {
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+}
+
+.eod-card-revenue .eod-card-icon {
+    color: #00b894;
+}
+
+.eod-card-cost .eod-card-icon {
+    color: #e17055;
+}
+
+.eod-card-waste .eod-card-icon {
+    color: #d63031;
+}
+
+.eod-card-total-cost .eod-card-icon {
+    color: #6c5ce7;
+}
+
+.eod-card-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #636e72;
+    margin-bottom: 0.3rem;
+}
+
+.eod-card-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #2d3436;
+}
+
+.eod-card-sub {
+    font-size: 0.72rem;
+    color: #999;
+    margin-top: 0.25rem;
+}
+
+/* ===== PROFIT CARD ===== */
+.eod-profit-card {
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    border: 2px solid transparent;
+}
+
+.eod-profit-positive {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    border-color: #a5d6a7;
+}
+
+.eod-profit-negative {
+    background: linear-gradient(135deg, #ffebee, #ffcdd2);
+    border-color: #ef9a9a;
+}
+
+.eod-profit-header {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #636e72;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.eod-profit-positive .eod-profit-header {
+    color: #2e7d32;
+}
+
+.eod-profit-negative .eod-profit-header {
+    color: #c62828;
+}
+
+.eod-profit-value {
+    font-size: 2.5rem;
+    font-weight: 900;
+}
+
+.eod-profit-positive .eod-profit-value {
+    color: #1b5e20;
+}
+
+.eod-profit-negative .eod-profit-value {
+    color: #b71c1c;
+}
+
+.eod-profit-formula {
+    font-size: 0.8rem;
+    color: #636e72;
+    margin-top: 0.5rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+    .eod-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .eod-tabs {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 640px) {
+    .eod-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .eod-tab {
+        font-size: 0.78rem;
+        padding: 0.6rem 1rem;
+    }
+}

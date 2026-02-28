@@ -67,7 +67,7 @@
             <div class="export-sales-data-container">
                 <button data-export-name="stock-history">
                     <i class="fa-solid fa-print"></i>
-                    <span>Export Audit Log</span>
+                    <span>Export Stock History</span>
                 </button>
             </div>
             <!-- EXPORT SALES DATA NGA BUTTON ENDS HERE -->

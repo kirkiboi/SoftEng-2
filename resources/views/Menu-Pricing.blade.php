@@ -33,7 +33,7 @@
                 </form>
 
                 <div class="add-item-container">
-                    <button class="add-item-button">+ Add Item</button>
+                    <button class="add-item-button">+ Add Product</button>
                 </div>
             </div>
 
