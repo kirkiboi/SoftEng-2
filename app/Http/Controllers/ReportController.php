@@ -11,6 +11,7 @@ use App\Models\Recipe;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\IngredientAuditLog;
 
 class ReportController extends Controller
 {
@@ -256,8 +257,7 @@ class ReportController extends Controller
             ->get();
 
         // ── TAB 3: Inventory Management ──
-        $stockLogs = DB::table('ingredient_audit_logs')
-            ->whereDate('created_at', $date)
+        $stockLogs = IngredientAuditLog::whereDate('created_at', $date)
             ->whereIn('action', ['stock_in', 'stock_out'])
             ->orderBy('created_at', 'asc')
             ->get();

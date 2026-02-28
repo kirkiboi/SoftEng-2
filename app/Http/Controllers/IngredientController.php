@@ -4,6 +4,7 @@ use App\Models\Ingredient;
 use Illuminate\Http\Request;
 use App\Models\IngredientAuditLog;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 class IngredientController extends Controller
 {
     public function index(Request $request)

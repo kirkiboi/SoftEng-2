@@ -4,6 +4,7 @@ use App\Models\Product;
 use App\Models\ProductAuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 class ProductController extends Controller
 {
     public function index(Request $request)
