@@ -14,7 +14,6 @@ class POSController extends Controller
     {
         $category = $request->query('category');
         $search = $request->query('search');
-
         $products = Product::query()
             ->when($category && $category !== 'all', function ($query) use ($category) {
                 $query->where('category', $category);
@@ -26,7 +25,6 @@ class POSController extends Controller
             ->orderBy('name')
             ->paginate(12)
             ->withQueryString();
-
         return view('POS', compact('products'));
     }
 
@@ -55,7 +53,6 @@ class POSController extends Controller
                 $subtotal = $product->price * $item['quantity'];
                 $totalAmount += $subtotal;
                 
-                // Decrement Stock
                 $product->decrement('stock', $item['quantity']);
 
                 $itemsData[] = [
@@ -69,7 +66,6 @@ class POSController extends Controller
 
             $changeAmount = max(0, $validated['amount_paid'] - $totalAmount);
 
-            // Generate order ID: P-YYYYMMDD-NNNN
             $today = now()->format('Ymd');
             $lastOrder = Transaction::where('order_id', 'like', "P-{$today}-%")
                 ->orderBy('id', 'desc')

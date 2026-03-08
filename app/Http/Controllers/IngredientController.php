@@ -38,7 +38,6 @@ class IngredientController extends Controller
 
         $ingredient = Ingredient::create($validated);
 
-        // Log ingredient creation with JSON values
         IngredientAuditLog::create([
             'user_id' => Auth::id(),
             'ingredient_id' => $ingredient->id,
@@ -73,7 +72,6 @@ class IngredientController extends Controller
             'threshold' => 'required|numeric|min:0',
         ]);
 
-        // Capture old values before update
         $oldValues = [
             'name' => $ingredient->name,
             'category' => $ingredient->category,
@@ -82,7 +80,6 @@ class IngredientController extends Controller
             'threshold' => $ingredient->threshold,
         ];
 
-        // Build human-readable change summary
         $changes = [];
         if ($ingredient->name !== $validated['name']) $changes[] = 'name: ' . $ingredient->name . ' → ' . $validated['name'];
         if ($ingredient->category !== $validated['category']) $changes[] = 'category: ' . $ingredient->category . ' → ' . $validated['category'];
@@ -93,7 +90,6 @@ class IngredientController extends Controller
 
         $ingredient->update($validated);
 
-        // Log with structured JSON old/new values
         IngredientAuditLog::create([
             'user_id' => Auth::id(),
             'ingredient_id' => $ingredient->id,
@@ -122,7 +118,6 @@ class IngredientController extends Controller
     {
         $ingredient = Ingredient::findOrFail($id);
         
-        // Log ingredient deletion with old values
         IngredientAuditLog::create([
             'user_id' => Auth::id(),
             'ingredient_id' => $ingredient->id,
@@ -185,9 +180,6 @@ class IngredientController extends Controller
         }
     }
 
-    /**
-     * Manual Stock-Out (Expired, Damaged, Spilled, etc.)
-     */
     public function stockOut(Request $request)
     {
         $validated = $request->validate([
@@ -243,10 +235,9 @@ class IngredientController extends Controller
             $oldStock = $product->stock;
             $product->increment('stock', $validated['quantity']);
 
-            // ADD AUDIT LOG
             \App\Models\IngredientAuditLog::create([
                 'user_id' => \Illuminate\Support\Facades\Auth::id(),
-                'ingredient_id' => null, // It's a product
+                'ingredient_id' => null, 
                 'action' => 'stock_in',
                 'ingredient_name' => $product->name . ' (Product)',
                 'unit_cost' => $product->price,
@@ -288,9 +279,6 @@ class IngredientController extends Controller
         return view('stock-history', compact('logs', 'users'));
     }
 
-    /**
-     * Ingredient History — all actions (created, edited, deleted, stock_in, stock_out)
-     */
     public function ingredientHistory(Request $request)
     {
         $query = IngredientAuditLog::with('user')
@@ -310,12 +298,8 @@ class IngredientController extends Controller
         return view('ingredient-history', compact('logs'));
     }
 
-    /**
-     * Stock Reconciliation — compares actual vs expected stock
-     */
     public function reconcile()
     {
-        // Optimized: Single query for theoretical and actual usage across all ingredients
         $reconciliationData = DB::table('ingredients')
             ->select(
                 'ingredients.id',

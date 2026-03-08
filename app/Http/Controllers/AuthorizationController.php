@@ -12,8 +12,6 @@ class AuthorizationController extends Controller
         ]);
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            // Redirect to role-specific landing page
             $role = Auth::user()->role;
             return match ($role) {
                 'cashier'           => redirect()->route('pos'),

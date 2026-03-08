@@ -21,23 +21,18 @@ class ProductController extends Controller
         if ($category && strtolower($category) !== 'all') {
             $query->where('category', $category);
         }
-
         $products = $query->paginate(5)->withQueryString();
-
         return view('Menu-Pricing', compact('products', 'search'));
     }
-
     public function waste(Request $request, Product $product)
     {
         $request->validate([
             'quantity' => 'required|integer|min:1',
             'reason' => 'required|string|max:255',
         ]);
-
         DB::beginTransaction();
         try {
             $product->decrement('stock', $request->quantity);
-
             ProductAuditLog::create([
                 'product_id'   => $product->id,
                 'product_name' => $product->name,
@@ -46,7 +41,6 @@ class ProductController extends Controller
                 'old_price'    => $product->price,
                 'new_price'    => null,
             ]);
-            
             DB::commit();
             return redirect()->back()->with('success', 'Product stock marked as wasted.');
         } catch (\Exception $e) {
@@ -74,19 +68,16 @@ class ProductController extends Controller
             $imagePath = $request->file('image')->store('products', 'public');
             $product->image = $imagePath;
         }
-
         $product->name     = $request->name;
         $product->category = $request->category;
         $product->price    = $request->price;
         $product->save();
-
         $newValues = [
             'name' => $product->name,
             'category' => $product->category,
             'price' => (float)$product->price,
             'image' => $product->image,
         ];
-
         ProductAuditLog::create([
             'product_id'   => $product->id,
             'product_name' => $product->name, 
@@ -97,10 +88,8 @@ class ProductController extends Controller
             'old_values'   => $oldValues,
             'new_values'   => $newValues,
         ]);
-
         return redirect()->back()->with('success', 'Product updated successfully.');
     }
-
     public function destroy(Product $product)
     {
         $oldValues = [
@@ -109,7 +98,6 @@ class ProductController extends Controller
             'price' => (float)$product->price,
             'image' => $product->image,
         ];
-
         ProductAuditLog::create([
             'product_id'   => $product->id,
             'product_name' => $product->name,
@@ -120,11 +108,9 @@ class ProductController extends Controller
             'old_values'   => $oldValues,
             'new_values'   => null,
         ]);
-
         $product->delete();
         return redirect()->back()->with('success', 'Product deleted successfully.');
     }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -138,21 +124,18 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('products', 'public');       
         }
-
         $product = Product::create([
             'name'     => $request->name,
             'category' => $request->category,
             'price'    => $request->price,
             'image'    => $imagePath,
         ]); 
-
         $newValues = [
             'name' => $product->name,
             'category' => $product->category,
             'price' => (float)$product->price,
             'image' => $product->image,
         ];
-
         ProductAuditLog::create([
             'product_id'   => $product->id,
             'product_name' => $product->name,
@@ -163,7 +146,6 @@ class ProductController extends Controller
             'old_values'   => null,
             'new_values'   => $newValues,
         ]);
-
         return redirect()->back()->with('success', 'Item Added');
     }
 }

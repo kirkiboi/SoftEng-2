@@ -14,10 +14,10 @@
                 <h2 class="page-title">Kitchen Production</h2>
             </div>
             <div class="header-right">
-                <button class="action-button start-shift-btn" id="openStartShift">
+                <!-- <button class="action-button start-shift-btn" id="openStartShift">
                     <i class="fa-solid fa-sun"></i>
                     <span>Start Shift</span>
-                </button>
+                </button> -->
 
                 <button class="action-button recipe-manager-btn" id="openRecipeManager">
                     <i class="fa-solid fa-book"></i>

@@ -15,18 +15,12 @@ use App\Models\IngredientAuditLog;
 
 class ReportController extends Controller
 {
-    /**
-     * Financial Dashboard
-     */
+   
     public function dashboard()
     {
-        // 1. Revenue Metrics
         $totalRevenue = Transaction::sum('total_amount');
         $todayRevenue = Transaction::whereDate('created_at', Carbon::today())->sum('total_amount');
-        
-        // 2. Cost Analysis — Refactored to avoid N+1 issues
-        // We calculate the average cost per serving for each product across all valid production batches
-        // and then multiply by the total quantity sold for that product.
+
         
         $productCosts = DB::table('kitchen_production_logs')
             ->join('kitchen_stock_deductions', 'kitchen_production_logs.id', '=', 'kitchen_stock_deductions.kitchen_production_log_id')
@@ -54,7 +48,6 @@ class ReportController extends Controller
             }
         }
 
-        // Wasted cost (for transparency — not counted in profit margin)
         $wasteCost = DB::table('kitchen_stock_deductions')
             ->join('kitchen_production_logs', 'kitchen_stock_deductions.kitchen_production_log_id', '=', 'kitchen_production_logs.id')
             ->where('kitchen_production_logs.status', 'wasted')
@@ -64,7 +57,6 @@ class ReportController extends Controller
         $grossProfit = $totalRevenue - $totalCost;
         $profitMargin = $totalRevenue > 0 ? ($grossProfit / $totalRevenue) * 100 : 0;
 
-        // 3. Top Selling Products
         $topProducts = DB::table('transaction_items')
             ->select('product_name', DB::raw('SUM(quantity) as total_sold'), DB::raw('SUM(subtotal) as revenue'))
             ->groupBy('product_name')
@@ -72,7 +64,6 @@ class ReportController extends Controller
             ->limit(5)
             ->get();
 
-        // 4. Sales Trend (Past 7 days)
         $salesTrend = Transaction::select(
                 DB::raw('DATE(created_at) as date'),
                 DB::raw('SUM(total_amount) as total')
@@ -88,13 +79,8 @@ class ReportController extends Controller
         ));
     }
 
-    /**
-     * Cost & Variance Report
-     * Compares theoretical usage (from recipes × times_cooked) vs actual usage (deductions)
-     */
     public function costVariance()
     {
-        // Refactored to use a single query for theoretical and actual usage
         $variances = DB::table('ingredients')
             ->leftJoin('kitchen_stock_deductions', 'ingredients.id', '=', 'kitchen_stock_deductions.ingredient_id')
             ->leftJoin('recipes', 'ingredients.id', '=', 'recipes.ingredient_id')
@@ -114,12 +100,9 @@ class ReportController extends Controller
             ->get();
 
         foreach($variances as $v) {
-            // Actual usage needs to be carefully summed because of joins. 
-            // Better to use subqueries or separate optimized queries if joins cause double-counting.
-            // Let's refine this to be safer.
+        
         }
 
-        // Safer approach using subqueries for precise aggregation
         $variances = DB::table('ingredients')
             ->select(
                 'ingredients.id as ingredient_id',
@@ -138,7 +121,6 @@ class ReportController extends Controller
         foreach($variances as $v) {
             $v->theoretical_usage = $v->theoretical_usage ?? 0;
             $v->actual_usage = $v->actual_usage ?? 0;
-            // Positive variance = used less than expected (good), Negative = used more (bad)
             $v->variance = $v->theoretical_usage - $v->actual_usage;
             $v->variance_percent = $v->theoretical_usage > 0 ? ($v->variance / $v->theoretical_usage) * 100 : 0;
             $v->variance_cost = $v->variance * $v->cost_per_unit;
@@ -147,12 +129,8 @@ class ReportController extends Controller
         return view('cost-variance', compact('variances'));
     }
 
-    /**
-     * Yield & Forecasting Report
-     */
     public function yieldForecasting()
     {
-        // 1. Production Yield (batch outcome breakdown)
         $productionStats = DB::table('kitchen_production_logs')
             ->select(
                 'status',
@@ -162,20 +140,17 @@ class ReportController extends Controller
             ->groupBy('status')
             ->get();
 
-        // 2. Success Rate (done + served vs total)
         $doneCount = $productionStats->whereIn('status', ['done', 'served'])->sum('count');
         $wastedCount = $productionStats->where('status', 'wasted')->sum('count');
         $totalCount = $productionStats->sum('count');
         $yieldRate = $totalCount > 0 ? ($doneCount / $totalCount) * 100 : 0;
         $wasteRate = $totalCount > 0 ? ($wastedCount / $totalCount) * 100 : 0;
 
-        // 3. Forecasting (Simple 7-day projection with zero-division protection)
         $last7DaysRevenue = Transaction::where('created_at', '>=', Carbon::now()->subDays(7))
             ->sum('total_amount');
         $avgDailySales = $last7DaysRevenue > 0 ? $last7DaysRevenue / 7 : 0;
         $projectedWeeklyRevenue = $avgDailySales * 7;
 
-        // 4. Top produced products
         $topProduced = DB::table('kitchen_production_logs')
             ->select(
                 'product_name',
@@ -188,7 +163,6 @@ class ReportController extends Controller
             ->limit(5)
             ->get();
 
-        // 5. Waste Reason Breakdown
         $wasteReasons = DB::table('kitchen_production_logs')
             ->select(
                 DB::raw("COALESCE(waste_reason, 'Unspecified') as reason"),
@@ -199,7 +173,6 @@ class ReportController extends Controller
             ->orderBy('count', 'desc')
             ->get();
 
-        // 6. Most Wasted Products
         $mostWasted = DB::table('kitchen_production_logs')
             ->select(
                 'product_name',
@@ -219,14 +192,10 @@ class ReportController extends Controller
         ));
     }
 
-    /**
-     * End of Day Report
-     */
     public function endOfDay(Request $request)
     {
         $date = $request->input('date', Carbon::today()->toDateString());
 
-        // ── TAB 1: Point of Sales ──
         $posSales = DB::table('transaction_items')
             ->join('transactions', 'transaction_items.transaction_id', '=', 'transactions.id')
             ->whereDate('transactions.created_at', $date)
@@ -242,8 +211,6 @@ class ReportController extends Controller
         $posTotalQty = $posSales->sum('total_qty');
         $posTotalRevenue = $posSales->sum('total_sales');
 
-        // ── TAB 2: Kitchen Production ──
-        // Optimization: Use with('deductions') only for specific date
         $servedLogs = KitchenProductionLog::with('deductions')
             ->whereDate('created_at', $date)
             ->whereIn('status', ['served', 'done'])
@@ -256,7 +223,6 @@ class ReportController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // ── TAB 3: Inventory Management ──
         $stockLogs = IngredientAuditLog::whereDate('created_at', $date)
             ->whereIn('action', ['stock_in', 'stock_out'])
             ->orderBy('created_at', 'asc')
@@ -268,8 +234,6 @@ class ReportController extends Controller
         $totalStockInCost  = $stockIns->sum('total_cost');
         $totalStockOutCost = $stockOuts->sum('total_cost');
 
-        // ── TAB 4: End of Day Sales ──
-        // Optimization: Single query for both success and waste costs
         $dayCosts = DB::table('kitchen_stock_deductions')
             ->join('kitchen_production_logs', 'kitchen_stock_deductions.kitchen_production_log_id', '=', 'kitchen_production_logs.id')
             ->whereDate('kitchen_production_logs.created_at', $date)
@@ -281,7 +245,6 @@ class ReportController extends Controller
             ->get()
             ->keyBy('status');
 
-        // Counts for End Shift modal
         $queuedCount = KitchenProductionLog::whereDate('created_at', $date)->where('status', 'queued')->count();
         $cookingCount = KitchenProductionLog::whereDate('created_at', $date)->where('status', 'cooking')->count();
         $doneCount = KitchenProductionLog::whereDate('created_at', $date)->whereIn('status', ['done', 'served'])->count();
@@ -301,6 +264,5 @@ class ReportController extends Controller
             'dayIngredientCost', 'dayWasteCost', 'dayTotalCosts', 'dayNetProfit',
             'queuedCount', 'cookingCount', 'doneCount'
         ));
-
     }
 }

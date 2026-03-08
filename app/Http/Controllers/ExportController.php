@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\DB;
 
 class ExportController extends Controller
 {
-    // ──────── POS Transaction History ────────
     public function posHistory(Request $request)
     {
         $query = Transaction::with(['items', 'user'])->latest();
@@ -37,8 +36,6 @@ class ExportController extends Controller
             'pos-transaction-history'
         );
     }
-
-    // ──────── Pricing History ────────
     public function pricingHistory(Request $request)
     {
         $query = ProductAuditLog::with('user')->latest();
@@ -66,8 +63,6 @@ class ExportController extends Controller
             'pricing-history'
         );
     }
-
-    // ──────── Stock History ────────
     public function stockHistory(Request $request)
     {
         $query = IngredientAuditLog::with('user')->whereIn('action', ['stock_in', 'stock_out'])->latest();
@@ -95,8 +90,6 @@ class ExportController extends Controller
             'stock-history'
         );
     }
-
-    // ──────── Ingredient History ────────
     public function ingredientHistory(Request $request)
     {
         $query = IngredientAuditLog::with('user')->whereIn('action', ['created', 'edited', 'deleted'])->latest();
@@ -125,7 +118,6 @@ class ExportController extends Controller
         );
     }
 
-    // ──────── Kitchen Production Logs ────────
     public function kitchenLogs(Request $request)
     {
         $query = KitchenProductionLog::with(['user', 'deductions'])->latest();
@@ -157,7 +149,6 @@ class ExportController extends Controller
         );
     }
 
-    // ──────── Waste Logs ────────
     public function wasteLogs(Request $request)
     {
         $query = ProductAuditLog::with('user')->where('action', 'LIKE', 'Wasted%')->latest();
@@ -182,7 +173,6 @@ class ExportController extends Controller
         }, $fullFilename, ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
 
-    // ──────── Cost & Variance Report ────────
     public function costVariance(Request $request)
     {
         $variances = DB::table('ingredients')
@@ -217,7 +207,6 @@ class ExportController extends Controller
         );
     }
 
-    // ──────── Yield & Forecasting Report ────────
     public function yieldForecasting(Request $request)
     {
         $topProduced = DB::table('kitchen_production_logs')
@@ -248,7 +237,6 @@ class ExportController extends Controller
         );
     }
 
-    // ──────── Helper: Apply Date Range ────────
     private function applyDateRange($query, Request $request)
     {
         if ($request->filled('date_from')) {
@@ -259,7 +247,6 @@ class ExportController extends Controller
         }
     }
 
-    // ──────── Helper: Stream CSV ────────
     private function streamCsv($title, Request $request, array $headers, array $data, string $filename)
     {
         $dateFrom = $request->input('date_from', 'All');
@@ -273,20 +260,15 @@ class ExportController extends Controller
 
         return response()->streamDownload(function () use ($title, $dateLabel, $headers, $data) {
             $handle = fopen('php://output', 'w');
-            // BOM for Excel UTF-8
             fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
-            // Title row
             fputcsv($handle, [$title]);
             fputcsv($handle, [$dateLabel]);
             fputcsv($handle, ['Generated: ' . now()->format('m/d/Y h:i A')]);
-            fputcsv($handle, []); // blank line
-            // Headers
+            fputcsv($handle, []); 
             fputcsv($handle, $headers);
-            // Data
             foreach ($data as $row) {
                 fputcsv($handle, $row);
             }
-            // Total count
             fputcsv($handle, []);
             fputcsv($handle, ['Total Records: ' . count($data)]);
             fclose($handle);

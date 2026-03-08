@@ -25,7 +25,6 @@ class KitchenProductionController extends Controller
         $queued = $productionLogs->get('queued', collect());
         $cooking = $productionLogs->get('cooking', collect());
         $done = $productionLogs->get('done', collect())->take(10);
-        // Wasted items are not shown in the main Kanban columns anymore
         $wasted = collect();
 
         return view('Kitchen-system', compact('products', 'ingredients', 'queued', 'cooking', 'done', 'wasted'));
@@ -45,7 +44,6 @@ class KitchenProductionController extends Controller
             return response()->json(['error' => 'No recipe found for this product. Please add ingredients via Recipe Manager first.'], 422);
         }
 
-        // Check if enough stock for all ingredients
         $insufficientStock = [];
         foreach ($recipes as $recipe) {
             $required = $recipe->quantity * $validated['times_cooked'];
@@ -60,7 +58,6 @@ class KitchenProductionController extends Controller
             ], 422);
         }
 
-        // Create production log and deduct stock in a transaction
         DB::beginTransaction();
         try {
             $log = KitchenProductionLog::create([
@@ -123,7 +120,6 @@ class KitchenProductionController extends Controller
 
         DB::beginTransaction();
         try {
-            // If newly marked as done, increment product stock
             if ($validated['status'] === 'done' && $log->status !== 'done') {
                 $product = Product::find($log->product_id);
                 if ($product) {
@@ -131,7 +127,6 @@ class KitchenProductionController extends Controller
                 }
             }
 
-            // Wasted: no stock increment — ingredients were already deducted
             $updateData = ['status' => $validated['status']];
             if ($validated['status'] === 'wasted' && !empty($validated['waste_reason'])) {
                 $updateData['waste_reason'] = $validated['waste_reason'];
@@ -147,9 +142,6 @@ class KitchenProductionController extends Controller
         }
     }
 
-    /**
-     * Start Shift — Bulk ingredient stock-in
-     */
     public function startShift(Request $request)
     {
         $validated = $request->validate([
@@ -195,9 +187,6 @@ class KitchenProductionController extends Controller
         }
     }
 
-    /**
-     * End Shift — Mark remaining batches as wasted
-     */
     public function endShift()
     {
         $updated = KitchenProductionLog::whereIn('status', ['queued', 'cooking'])
@@ -221,7 +210,6 @@ class KitchenProductionController extends Controller
             return response()->json(['success' => false, 'message' => 'Only queued items can be cancelled.'], 400);
         }
 
-        // Refund ingredients
         DB::beginTransaction();
         try {
             foreach ($log->deductions as $deduction) {
@@ -229,7 +217,6 @@ class KitchenProductionController extends Controller
                 if ($ingredient) {
                     $ingredient->increment('stock', $deduction->quantity_deducted);
                     
-                    // Log audit for refund
                     IngredientAuditLog::create([
                         'user_id' => Auth::id(),
                         'ingredient_id' => $ingredient->id,
@@ -245,10 +232,8 @@ class KitchenProductionController extends Controller
                 }
             }
 
-            // Delete deductions and log
             $log->deductions()->delete();
-            $log->delete(); // Or soft delete if preferred, but user implies "cancel" = remove
-
+            $log->delete(); 
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Batch cancelled and ingredients refunded.']);
         } catch (\Exception $e) {

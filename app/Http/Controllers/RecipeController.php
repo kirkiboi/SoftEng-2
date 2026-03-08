@@ -16,7 +16,6 @@ class RecipeController extends Controller
             'quantity'      => 'required|numeric|min:0.01',
         ]);
 
-        // Find or create a batch size for this product
         $batchSize = BatchSize::firstOrCreate(
             ['product_id' => $validated['product_id']],
             ['servings' => 1]
